@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(title, content)">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet" />
+    <link href="/css/admin.css" rel="stylesheet" />
+    <title th:text="${title}">Admin Dashboard</title>
+</head>
+<body>
+<div class="v13_2574" style="position: relative; width: 100%; height: 900px; overflow: hidden; background: #fff;">
+    <!-- Topbar & Background -->
+    <div class="v13_2575"></div>
+    <div class="v13_2576"></div>
+    <span class="v13_2577">MÀN HÌNH 04 — ADMIN DASHBOARD (WINFORM STYLE)</span>
+    <div class="v13_2578"></div>
+    <span class="v13_2579">🏥 Hệ Thống Quản Lý Phòng Khám v1.0 — Admin Panel</span>
+    <div class="v13_2580"></div><span class="v13_2581">—</span>
+    <div class="v13_2582"></div><span class="v13_2583">□</span>
+    <div class="v13_2584"></div><span class="v13_2585">✕</span>
+    
+    <!-- Sidebar background & user info -->
+    <div class="v13_2586"></div><div class="v13_2587"></div><div class="v13_2588"></div>
+    <span class="v13_2589">👨‍💼</span>
+    <span class="v13_2590" th:text="${session.loggedInUser?.hoTen}">Admin</span>
+    <span class="v13_2591" th:text="${session.role}">Quản trị viên</span>
+    <div class="v13_2592"></div><span class="v13_2593">ONLINE</span>
+    <div class="v13_2594"></div><div class="v13_2595"></div>
+    
+    <!-- Menu items -->
+    <a th:href="@{/admin/dashboard}" style="text-decoration:none;"><span class="v13_2596">📊</span><span class="v13_2597">Dashboard</span></a><div class="v13_2598"></div>
+    <a th:href="@{/admin/lich-hen}" style="text-decoration:none;"><span class="v13_2599">📅</span><span class="v13_2600">Quản Lý Lịch Hẹn</span><div class="v13_2601"></div><span class="v13_2602">12</span><div class="v13_2603"></div></a>
+    <a th:href="@{/admin/benh-nhan}" style="text-decoration:none;"><span class="v13_2604">👥</span><span class="v13_2605">Quản Lý Bệnh Nhân</span></a><div class="v13_2606"></div>
+    <a th:href="@{/admin/bac-si}" style="text-decoration:none;"><span class="v13_2607">👨‍⚕️</span><span class="v13_2608">Quản Lý Bác Sĩ</span></a><div class="v13_2609"></div>
+    <a th:href="@{/admin/chuyen-khoa}" style="text-decoration:none;"><span class="v13_2610">🏥</span><span class="v13_2611">Chuyên Khoa</span></a><div class="v13_2612"></div>
+    <a th:href="@{/admin/dich-vu}" style="text-decoration:none;"><span class="v13_2613">💊</span><span class="v13_2614">Dịch Vụ / Thuốc</span></a><div class="v13_2615"></div>
+    <span class="v13_2616">🧪</span><span class="v13_2617">Xét Nghiệm</span><div class="v13_2618"></div>
+    <span class="v13_2619">💰</span><span class="v13_2620">Thanh Toán</span><div class="v13_2621"></div>
+    <span class="v13_2622">📊</span><span class="v13_2623">Báo Cáo</span><div class="v13_2624"></div><div class="v13_2625"></div>
+    <span class="v13_2626">⚙</span><span class="v13_2627">Cài Đặt</span><div class="v13_2628"></div>
+    <a th:href="@{/admin/tai-khoan}" style="text-decoration:none;"><span class="v13_2629">🔒</span><span class="v13_2630">Phân Quyền</span></a><div class="v13_2631"></div>
+    <a th:href="@{/logout}" style="text-decoration:none;"><span class="v13_2632">🚪</span><span class="v13_2633">Đăng Xuất</span></a>
+    
+    <!-- Footer actions -->
+    <div class="v13_2634"></div><div class="v13_2635"></div><span class="v13_2636">🔄 Làm mới</span>
+    <div class="v13_2637"></div><span class="v13_2638">📤 Xuất Excel</span>
+    <div class="v13_2639"></div><span class="v13_2640">🖨 In báo cáo</span>
+    
+    <!-- Main Content Injection -->
+    <div th:replace="${content}" style="position: absolute; left: 240px; top: 100px; width: calc(100% - 240px); height: calc(100% - 130px); z-index: 100;"></div>
+    
+    <!-- Status Bar -->
+    <div class="v13_2878"></div><span class="v13_2879">Đã kết nối | DB: phongkham_db | User: admin@phongkham.vn | Session: 02:34:12</span><span class="v13_2880">v1.0.0</span><div class="v13_2881"></div>
+</div>
+</body>
+</html>

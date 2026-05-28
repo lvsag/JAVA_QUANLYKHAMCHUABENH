@@ -153,4 +153,18 @@ public class AdminBacSiController {
         bacSiService.saveBacSi(bacSi);
         return "redirect:/admin/bac-si";
     }
+
+    @GetMapping("/xoa/{id}")
+    public String xoaBacSi(@PathVariable String id, @RequestHeader(value = "referer", required = false) String referer) {
+        bacSiService.getBacSiById(id).ifPresent(bs -> {
+            bs.setTrangThai("Đã nghỉ việc"); // Soft delete
+            bacSiService.saveBacSi(bs);
+        });
+        
+        // Return to the previous page (could be ChuyenKhoa list or BacSi list)
+        if (referer != null) {
+            return "redirect:" + referer;
+        }
+        return "redirect:/admin/bac-si";
+    }
 }

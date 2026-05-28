@@ -22,6 +22,109 @@ public class HoSoController {
     @Autowired
     private BenhNhanRepository benhNhanRepository;
 
+    @Autowired
+    private com.java.BaoCaoDoAn.Repository.TaiKhoanRepository taiKhoanRepository;
+
+    @Autowired
+    private com.java.BaoCaoDoAn.Repository.LichHenRepository lichHenRepository;
+
+    @GetMapping("/lich-su-kham")
+    public String showHistory(HttpSession session, Model model) {
+        TaiKhoan user = (TaiKhoan) session.getAttribute("loggedInUser");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        Optional<BenhNhan> bnOpt = benhNhanRepository.findByTaiKhoan_MaTaiKhoan(user.getMaTaiKhoan());
+        if (bnOpt.isPresent()) {
+            BenhNhan bn = bnOpt.get();
+            model.addAttribute("benhNhan", bn);
+            model.addAttribute("lichHens", lichHenRepository.findByBenhNhan_MaBenhNhanOrderByNgayHenDescGioHenDesc(bn.getMaBenhNhan()));
+        }
+        return "public/lich-su-kham";
+    }
+
+    @GetMapping("/don-thuoc")
+    public String showPrescriptions(HttpSession session, Model model) {
+        TaiKhoan user = (TaiKhoan) session.getAttribute("loggedInUser");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        Optional<BenhNhan> bnOpt = benhNhanRepository.findByTaiKhoan_MaTaiKhoan(user.getMaTaiKhoan());
+        if (bnOpt.isPresent()) {
+            model.addAttribute("benhNhan", bnOpt.get());
+        }
+        return "public/don-thuoc";
+    }
+
+    @GetMapping("/xet-nghiem")
+    public String showTestResults(HttpSession session, Model model) {
+        TaiKhoan user = (TaiKhoan) session.getAttribute("loggedInUser");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        Optional<BenhNhan> bnOpt = benhNhanRepository.findByTaiKhoan_MaTaiKhoan(user.getMaTaiKhoan());
+        if (bnOpt.isPresent()) {
+            model.addAttribute("benhNhan", bnOpt.get());
+        }
+        return "public/xet-nghiem";
+    }
+
+    @GetMapping("/bao-mat")
+    public String showSecurity(HttpSession session, Model model) {
+        TaiKhoan user = (TaiKhoan) session.getAttribute("loggedInUser");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        Optional<BenhNhan> bnOpt = benhNhanRepository.findByTaiKhoan_MaTaiKhoan(user.getMaTaiKhoan());
+        if (bnOpt.isPresent()) {
+            model.addAttribute("benhNhan", bnOpt.get());
+        }
+        return "public/bao-mat";
+    }
+
+    @PostMapping("/doi-mat-khau")
+    public String changePassword(@org.springframework.web.bind.annotation.RequestParam String oldPassword,
+                                 @org.springframework.web.bind.annotation.RequestParam String newPassword,
+                                 @org.springframework.web.bind.annotation.RequestParam String confirmPassword,
+                                 HttpSession session,
+                                 RedirectAttributes redirectAttributes) {
+        TaiKhoan user = (TaiKhoan) session.getAttribute("loggedInUser");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        Optional<TaiKhoan> tkOpt = taiKhoanRepository.findById(user.getMaTaiKhoan());
+        if (tkOpt.isPresent()) {
+            TaiKhoan tk = tkOpt.get();
+            
+            if (!org.mindrot.jbcrypt.BCrypt.checkpw(oldPassword, tk.getMatKhau())) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu hiện tại không đúng.");
+                return "redirect:/ho-so/bao-mat";
+            }
+            
+            if (!newPassword.equals(confirmPassword)) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu xác nhận không khớp.");
+                return "redirect:/ho-so/bao-mat";
+            }
+            
+            if (!newPassword.matches(".*\\d.*") || !newPassword.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?].*")) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu mới phải chứa ít nhất 1 chữ số và 1 ký tự đặc biệt.");
+                return "redirect:/ho-so/bao-mat";
+            }
+
+            tk.setMatKhau(org.mindrot.jbcrypt.BCrypt.hashpw(newPassword, org.mindrot.jbcrypt.BCrypt.gensalt()));
+            taiKhoanRepository.save(tk);
+            
+            redirectAttributes.addFlashAttribute("successMessage", "Đổi mật khẩu thành công!");
+        }
+
+        return "redirect:/ho-so/bao-mat";
+    }
+
     @GetMapping
     public String showProfile(HttpSession session, Model model) {
         TaiKhoan user = (TaiKhoan) session.getAttribute("loggedInUser");
@@ -51,6 +154,27 @@ public class HoSoController {
 
         Optional<BenhNhan> bnOpt = benhNhanRepository.findByTaiKhoan_MaTaiKhoan(user.getMaTaiKhoan());
         if (bnOpt.isPresent()) {
+            if (formBenhNhan.getChieuCao() != null && formBenhNhan.getChieuCao().compareTo(java.math.BigDecimal.ZERO) < 0) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Chiều cao không được âm.");
+                return "redirect:/ho-so";
+            }
+            if (formBenhNhan.getCanNang() != null && formBenhNhan.getCanNang().compareTo(java.math.BigDecimal.ZERO) < 0) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Cân nặng không được âm.");
+                return "redirect:/ho-so";
+            }
+            if (formBenhNhan.getSoCCCD() != null && !formBenhNhan.getSoCCCD().isEmpty() && !formBenhNhan.getSoCCCD().matches("^\\d{12}$")) {
+                redirectAttributes.addFlashAttribute("errorMessage", "CCCD phải bao gồm đúng 12 chữ số.");
+                return "redirect:/ho-so";
+            }
+            if (formBenhNhan.getHoTenNguoiThan() != null && !formBenhNhan.getHoTenNguoiThan().isEmpty() && !formBenhNhan.getHoTenNguoiThan().matches("^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỮỰỲỴÝỶỸửữựỳỵỷỹ\\s]+$")) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Họ tên người thân không được chứa số hoặc ký tự đặc biệt.");
+                return "redirect:/ho-so";
+            }
+            if (formBenhNhan.getSdtNguoiThan() != null && !formBenhNhan.getSdtNguoiThan().isEmpty() && !formBenhNhan.getSdtNguoiThan().matches("^\\d{10}$")) {
+                redirectAttributes.addFlashAttribute("errorMessage", "SĐT người thân phải bao gồm đúng 10 chữ số.");
+                return "redirect:/ho-so";
+            }
+
             BenhNhan bn = bnOpt.get();
             // Update Basic Info
             bn.setHoTen(formBenhNhan.getHoTen());

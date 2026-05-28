@@ -96,6 +96,39 @@ public class AuthController {
             return "public/register";
         }
 
+        if (!email.toLowerCase().endsWith("@gmail.com")) {
+            model.addAttribute("error", "Vui lòng sử dụng địa chỉ email định dạng @gmail.com.");
+            return "public/register";
+        }
+
+        if (!soDienThoai.matches("^\\d{10}$")) {
+            model.addAttribute("error", "Số điện thoại phải bao gồm đúng 10 chữ số.");
+            return "public/register";
+        }
+
+        if (!hoTen.matches("^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỮỰỲỴÝỶỸửữựỳỵỷỹ\\s]+$")) {
+            model.addAttribute("error", "Họ tên không được chứa số hoặc ký tự đặc biệt.");
+            return "public/register";
+        }
+
+        if (!password.matches(".*\\d.*") || !password.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?].*")) {
+            model.addAttribute("error", "Mật khẩu phải chứa ít nhất 1 chữ số và 1 ký tự đặc biệt.");
+            return "public/register";
+        }
+
+        if (ngaySinh != null && !ngaySinh.isEmpty()) {
+            try {
+                java.time.LocalDate dob = java.time.LocalDate.parse(ngaySinh);
+                if (!dob.isBefore(java.time.LocalDate.now())) {
+                    model.addAttribute("error", "Ngày sinh phải nhỏ hơn ngày hiện tại.");
+                    return "public/register";
+                }
+            } catch (Exception e) {
+                model.addAttribute("error", "Ngày sinh không hợp lệ.");
+                return "public/register";
+            }
+        }
+
         if (taiKhoanRepository.findByEmail(email).isPresent() || taiKhoanRepository.findByTenDangNhap(email).isPresent()) {
             model.addAttribute("error", "Email này đã được sử dụng.");
             return "public/register";
@@ -142,5 +175,79 @@ public class AuthController {
             model.addAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
             return "public/register";
         }
+    }
+
+    @GetMapping("/forgot-password")
+    public String showForgotPasswordForm() {
+        return "public/forgot-password";
+    }
+
+    @PostMapping("/forgot-password")
+    public String processForgotPassword(@RequestParam String soDienThoai,
+                                        @RequestParam String ngaySinh,
+                                        @RequestParam String soCCCD,
+                                        HttpSession session,
+                                        Model model) {
+        try {
+            java.util.Date dob = new java.text.SimpleDateFormat("yyyy-MM-dd").parse(ngaySinh);
+            Optional<com.java.BaoCaoDoAn.Model.BenhNhan> bnOpt = benhNhanRepository.findBySoDienThoaiAndNgaySinhAndSoCCCD(soDienThoai, dob, soCCCD);
+            
+            if (bnOpt.isPresent() && bnOpt.get().getTaiKhoan() != null) {
+                // Save account ID to session for reset step
+                session.setAttribute("resetAccountId", bnOpt.get().getTaiKhoan().getMaTaiKhoan());
+                return "redirect:/reset-password";
+            } else {
+                model.addAttribute("error", "Thông tin không khớp với bất kỳ tài khoản nào trong hệ thống.");
+                return "public/forgot-password";
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", "Dữ liệu không hợp lệ.");
+            return "public/forgot-password";
+        }
+    }
+
+    @GetMapping("/reset-password")
+    public String showResetPasswordForm(HttpSession session) {
+        if (session.getAttribute("resetAccountId") == null) {
+            return "redirect:/forgot-password";
+        }
+        return "public/reset-password";
+    }
+
+    @PostMapping("/reset-password")
+    public String processResetPassword(@RequestParam String newPassword,
+                                       @RequestParam String confirmPassword,
+                                       HttpSession session,
+                                       Model model) {
+        Integer accountId = (Integer) session.getAttribute("resetAccountId");
+        if (accountId == null) {
+            return "redirect:/forgot-password";
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            model.addAttribute("error", "Mật khẩu xác nhận không khớp.");
+            return "public/reset-password";
+        }
+
+        if (!newPassword.matches(".*\\d.*") || !newPassword.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?].*")) {
+            model.addAttribute("error", "Mật khẩu phải chứa ít nhất 1 chữ số và 1 ký tự đặc biệt.");
+            return "public/reset-password";
+        }
+
+        Optional<TaiKhoan> tkOpt = taiKhoanRepository.findById(accountId);
+        if (tkOpt.isPresent()) {
+            TaiKhoan tk = tkOpt.get();
+            tk.setMatKhau(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
+            taiKhoanRepository.save(tk);
+            
+            // Clear session
+            session.removeAttribute("resetAccountId");
+            
+            model.addAttribute("success", "Đổi mật khẩu thành công!");
+            return "public/reset-password";
+        }
+
+        model.addAttribute("error", "Không tìm thấy tài khoản.");
+        return "public/reset-password";
     }
 }

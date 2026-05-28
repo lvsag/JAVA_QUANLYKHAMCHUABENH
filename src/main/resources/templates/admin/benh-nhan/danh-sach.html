@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Quản Lý Bệnh Nhân', ~{::section})}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Quản Lý Bệnh Nhân', 'benh-nhan', ~{::section})}">
 <head>
     <title>Quản lý Bệnh Nhân - Admin</title>
 </head>
@@ -14,7 +14,7 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="font-size: 16px; margin: 0; color: #455A64;">👥 Danh Sách Bệnh Nhân</h2>
                 <div>
-                    <button style="background: #1565C0; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-size: 14px; cursor: pointer;">+ Bệnh nhân mới</button>
+                    <a th:href="@{/admin/benh-nhan/them}" style="background: #1565C0; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-size: 14px; cursor: pointer; text-decoration: none;">+ Bệnh nhân mới</a>
                     <button style="background: #F5F8FF; border: 1px solid #90B8F8; color: #1565C0; padding: 8px 16px; border-radius: 4px; margin-left: 10px; cursor: pointer;">🔍 Lọc</button>
                 </div>
             </div>
@@ -40,7 +40,9 @@
                         <td style="padding: 12px;" th:text="${bn.soDienThoai}">0901234567</td>
                         <td style="padding: 12px;" th:text="${bn.diaChi}">Hà Nội</td>
                         <td style="padding: 12px;">
-                            <a href="#" style="color: #1565C0; text-decoration: none;">Chi tiết</a>
+                            <a th:href="@{/admin/benh-nhan/chi-tiet/{id}(id=${bn.maBenhNhan})}" style="color: #1565C0; text-decoration: none; margin-right: 8px;">Chi tiết</a>
+                            <a th:href="@{/admin/benh-nhan/sua/{id}(id=${bn.maBenhNhan})}" style="color: #2563EB; text-decoration: none; margin-right: 8px;">Sửa</a>
+                            <a th:href="@{/admin/benh-nhan/xoa/{id}(id=${bn.maBenhNhan})}" onclick="return confirm('Bạn có chắc chắn muốn xóa bệnh nhân này?')" style="color: #DC2626; text-decoration: none;">Xóa</a>
                         </td>
                     </tr>
                 </tbody>

@@ -15,4 +15,12 @@ public class LichHenService {
     public List<LichHen> getAllLichHen() {
         return lichHenRepository.findAll();
     }
+
+    public java.util.Optional<LichHen> getLichHenById(String id) {
+        return lichHenRepository.findById(id);
+    }
+
+    public void saveLichHen(LichHen lichHen) {
+        lichHenRepository.save(lichHen);
+    }
 }

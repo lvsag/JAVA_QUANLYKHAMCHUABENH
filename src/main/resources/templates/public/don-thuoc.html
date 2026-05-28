@@ -134,7 +134,7 @@
             </div>
             
             <div class="sidebar-menu">
-                <a href="/ho-so" class="menu-item active">
+                <a href="/ho-so" class="menu-item">
                     <span class="menu-icon">👤</span>
                     <div>
                         <div>Thông tin cá nhân</div>
@@ -155,7 +155,7 @@
                         <div style="font-size: 12px; color: #64748B;">Xem tất cả lịch hẹn</div>
                     </div>
                 </a>
-                <a href="/ho-so/don-thuoc" class="menu-item">
+                <a href="/ho-so/don-thuoc" class="menu-item active">
                     <span class="menu-icon">💊</span>
                     <div>
                         <div>Đơn thuốc của tôi</div>
@@ -193,174 +193,19 @@
         </div>
         
         <!-- Main Content -->
-        <form class="main-content" action="/ho-so/cap-nhat" method="post" th:object="${benhNhan}">
+        <div class="main-content">
             <div class="page-header">
-                <h1 class="page-title">👤 Hồ Sơ Cá Nhân</h1>
-                <div>
-                    <button type="submit" class="btn btn-primary">💾 Lưu Thay Đổi</button>
-                    <button type="button" class="btn btn-secondary" onclick="window.print()">📤 Xuất PDF</button>
-                </div>
+                <h1 class="page-title">💊 Đơn Thuốc Của Tôi</h1>
             </div>
             
-            <div th:if="${successMessage}" class="alert alert-success">
-                ✅ <span th:text="${successMessage}">Thành công</span>
-            </div>
-            <div th:if="${errorMessage}" class="alert alert-danger">
-                ❌ <span th:text="${errorMessage}">Lỗi</span>
-            </div>
-            
-            <!-- Basic Info -->
-            <div class="form-section">
-                <h3 class="section-title">Thông Tin Cơ Bản</h3>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label">Họ và tên *</label>
-                        <input type="text" class="form-control" th:field="*{hoTen}" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Ngày sinh</label>
-                        <input type="date" class="form-control" th:field="*{ngaySinh}">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Giới tính</label>
-                        <select class="form-control" th:field="*{gioiTinh}">
-                            <option value="Nam">Nam</option>
-                            <option value="Nữ">Nữ</option>
-                            <option value="Khác">Khác</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Quốc tịch</label>
-                        <input type="text" class="form-control" th:field="*{quocTich}">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Số điện thoại *</label>
-                        <input type="text" class="form-control" th:field="*{soDienThoai}" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Email *</label>
-                        <input type="email" class="form-control" th:field="*{email}" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Số CCCD / CMND</label>
-                        <input type="text" class="form-control" th:field="*{soCCCD}" pattern="^\d{12}$" title="Vui lòng nhập đúng 12 chữ số">
-                    </div>
-                    <div class="form-group full-width">
-                        <label class="form-label">Địa chỉ thường trú</label>
-                        <input type="text" class="form-control" th:field="*{diaChi}">
-                    </div>
-                </div>
+            <div th:if="${#lists.isEmpty(donThuocs)}" style="text-align: center; padding: 50px 20px; background: white; border-radius: 12px; border: 1px solid #E2E8F0;">
+                <span style="font-size: 40px;">💊</span>
+                <h3 style="margin-top: 15px; color: #1E293B;">Chưa có đơn thuốc nào</h3>
+                <p style="color: #64748B; margin-top: 10px;">Bạn chưa có đơn thuốc nào được kê từ bác sĩ trong hệ thống.</p>
             </div>
             
-            <!-- Medical Info -->
-            <div class="form-section">
-                <h3 class="section-title">Thông Tin Y Tế</h3>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label">Nhóm máu</label>
-                        <select class="form-control" th:field="*{nhomMau}">
-                            <option value="">-- Chọn nhóm máu --</option>
-                            <option value="O+">O+</option>
-                            <option value="O-">O-</option>
-                            <option value="A+">A+</option>
-                            <option value="A-">A-</option>
-                            <option value="B+">B+</option>
-                            <option value="B-">B-</option>
-                            <option value="AB+">AB+</option>
-                            <option value="AB-">AB-</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Chiều cao (cm)</label>
-                        <input type="number" step="0.1" min="0" class="form-control" th:field="*{chieuCao}">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Cân nặng (kg)</label>
-                        <input type="number" step="0.1" min="0" class="form-control" th:field="*{canNang}">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Số Thẻ BHYT</label>
-                        <input type="text" class="form-control" th:field="*{soBHYT}">
-                    </div>
-                    <div class="form-group full-width">
-                        <label class="form-label">Dị ứng thuốc / Thực phẩm</label>
-                        <input type="text" class="form-control" th:field="*{diUngThuoc}" placeholder="Ví dụ: Penicillin, Hải sản...">
-                    </div>
-                    <div class="form-group full-width">
-                        <label class="form-label">Tiền sử bệnh mãn tính</label>
-                        <input type="text" class="form-control" th:field="*{tienSuBenhManTinh}" placeholder="Ví dụ: Huyết áp cao, Tiểu đường type 2...">
-                    </div>
-                    <div class="form-group full-width">
-                        <label class="form-label">Ghi chú y tế</label>
-                        <textarea class="form-control" th:field="*{ghiChuYTe}" placeholder="Ghi chú thêm để bác sĩ nắm rõ tình trạng..."></textarea>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Emergency Contact -->
-            <div class="form-section">
-                <h3 class="section-title">Người Thân Liên Hệ Khi Cần</h3>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label">Họ tên người thân</label>
-                        <input type="text" class="form-control" th:field="*{hoTenNguoiThan}" pattern="^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỮỰỲỴÝỶỸửữựỳỵỷỹ\s]+$" title="Không được chứa số hoặc ký tự đặc biệt">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Quan hệ</label>
-                        <select class="form-control" th:field="*{quanHeNguoiThan}">
-                            <option value="">-- Chọn --</option>
-                            <option value="Vợ/Chồng">Vợ / Chồng</option>
-                            <option value="Bố/Mẹ">Bố / Mẹ</option>
-                            <option value="Con cái">Con cái</option>
-                            <option value="Anh/Chị/Em">Anh / Chị / Em</option>
-                            <option value="Khác">Khác</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Số điện thoại người thân</label>
-                        <input type="text" class="form-control" th:field="*{sdtNguoiThan}" pattern="^\d{10}$" title="Vui lòng nhập đúng 10 chữ số">
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Notification Settings -->
-            <div class="form-section" style="max-width: 500px;">
-                <h3 class="section-title">Tùy Chọn Thông Báo</h3>
-                <div class="toggle-row">
-                    <span class="toggle-label">Nhận email nhắc lịch hẹn</span>
-                    <label class="switch">
-                        <input type="checkbox" th:field="*{nhanEmailNhacLich}">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <div class="toggle-row">
-                    <span class="toggle-label">Nhận SMS nhắc lịch hẹn</span>
-                    <label class="switch">
-                        <input type="checkbox" th:field="*{nhanSMSNhacLich}">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <div class="toggle-row">
-                    <span class="toggle-label">Nhận email kết quả xét nghiệm</span>
-                    <label class="switch">
-                        <input type="checkbox" th:field="*{nhanEmailKetQua}">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <div class="toggle-row">
-                    <span class="toggle-label">Nhận tin tức sức khỏe hàng tuần</span>
-                    <label class="switch">
-                        <input type="checkbox" th:field="*{nhanTinTucSucKhoe}">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-            </div>
-            
-            <div style="border-top: 1px solid #F1F5F9; padding-top: 20px; display: flex; gap: 15px;">
-                <button type="submit" class="btn btn-primary" style="padding: 12px 30px;">Lưu Thay Đổi</button>
-                <a href="/ho-so" class="btn btn-secondary" style="padding: 12px 30px;">Hủy Bỏ</a>
-            </div>
-        </form>
+            <!-- When there is data, render the list of prescriptions here -->
+        </div>
     </div>
 
     <!-- Footer -->

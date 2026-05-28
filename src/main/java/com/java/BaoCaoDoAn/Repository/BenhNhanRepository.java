@@ -12,4 +12,5 @@ public interface BenhNhanRepository extends JpaRepository<BenhNhan, String> {
     Optional<BenhNhan> findByTaiKhoan_MaTaiKhoan(Integer maTaiKhoan);
     List<BenhNhan> findByHoTenContainingIgnoreCase(String hoTen);
     Optional<BenhNhan> findBySoDienThoai(String soDienThoai);
+    Optional<BenhNhan> findBySoDienThoaiAndNgaySinhAndSoCCCD(String soDienThoai, java.util.Date ngaySinh, String soCCCD);
 }

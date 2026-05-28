@@ -150,19 +150,19 @@
                 <div class="form-grid">
                     <div class="form-group full-width">
                         <label>Họ và tên *</label>
-                        <input type="text" name="hoTen" placeholder="VD: Nguyễn Văn A" required />
+                        <input type="text" name="hoTen" placeholder="VD: Nguyễn Văn A" required pattern="^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỮỰỲỴÝỶỸửữựỳỵỷỹ\s]+$" title="Họ tên không được chứa số hoặc ký tự đặc biệt" />
                     </div>
                     <div class="form-group">
                         <label>Email *</label>
-                        <input type="email" name="email" placeholder="email@gmail.com" required />
+                        <input type="email" name="email" placeholder="email@gmail.com" required pattern=".*@gmail\.com" title="Vui lòng sử dụng địa chỉ email định dạng @gmail.com" />
                     </div>
                     <div class="form-group">
                         <label>Số điện thoại *</label>
-                        <input type="text" name="soDienThoai" placeholder="0901 234 567" required />
+                        <input type="text" name="soDienThoai" placeholder="0901 234 567" required pattern="^\d{10}$" title="Số điện thoại phải bao gồm đúng 10 chữ số" />
                     </div>
                     <div class="form-group">
                         <label>Ngày sinh</label>
-                        <input type="date" name="ngaySinh" />
+                        <input type="date" name="ngaySinh" th:max="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" />
                     </div>
                     <div class="form-group">
                         <label>Giới tính</label>
@@ -190,7 +190,7 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Mật khẩu *</label>
-                        <input type="password" name="password" placeholder="••••••••" required />
+                        <input type="password" name="password" placeholder="••••••••" required pattern="(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':\\|,.<>\/?]).+" title="Mật khẩu phải chứa ít nhất 1 chữ số và 1 ký tự đặc biệt" />
                     </div>
                     <div class="form-group">
                         <label>Xác nhận mật khẩu *</label>

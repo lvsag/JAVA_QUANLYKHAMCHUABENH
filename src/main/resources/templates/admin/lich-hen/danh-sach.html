@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Quản Lý Lịch Hẹn', ~{::section})}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Quản Lý Lịch Hẹn', 'lich-hen', ~{::section})}">
 <head>
     <title>Quản lý Lịch Hẹn - Admin</title>
 </head>
@@ -14,7 +14,7 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="font-size: 16px; margin: 0; color: #455A64;">📅 Danh Sách Lịch Hẹn</h2>
                 <div>
-                    <button style="background: #1565C0; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-size: 14px; cursor: pointer;">+ Đặt lịch hộ</button>
+                    <a th:href="@{/admin/lich-hen/them}" style="background: #1565C0; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-size: 14px; cursor: pointer; text-decoration: none;">+ Đặt lịch hộ</a>
                     <button style="background: #F5F8FF; border: 1px solid #90B8F8; color: #1565C0; padding: 8px 16px; border-radius: 4px; margin-left: 10px; cursor: pointer;">🔍 Lọc</button>
                 </div>
             </div>
@@ -41,8 +41,12 @@
                         <td style="padding: 12px;">
                             <span th:style="${lh.trangThai == 'Chờ xác nhận'} ? 'background: #FFF3E0; color: #E65100; padding: 4px 8px; border-radius: 12px; font-size: 11px;' : (${lh.trangThai == 'Đã xác nhận'} ? 'background: #E3F2FD; color: #1565C0; padding: 4px 8px; border-radius: 12px; font-size: 11px;' : 'background: #E8F5E9; color: #2E7D32; padding: 4px 8px; border-radius: 12px; font-size: 11px;')}" th:text="${lh.trangThai}">Chờ xác nhận</span>
                         </td>
-                        <td style="padding: 12px;">
-                            <a href="#" style="color: #1565C0; text-decoration: none;">Chi tiết</a>
+                        <td style="padding: 12px; display: flex; gap: 8px;">
+                            <a th:if="${lh.trangThai == 'Chờ xác nhận'}" th:href="@{/admin/lich-hen/duyet/{id}(id=${lh.maLichHen})}" style="color: #059669; text-decoration: none; font-weight: 500;" title="Xác nhận">✅ Duyệt</a>
+                            <a th:if="${lh.trangThai == 'Đã xác nhận'}" th:href="@{/admin/lich-hen/hoan-thanh/{id}(id=${lh.maLichHen})}" style="color: #2563EB; text-decoration: none; font-weight: 500;" title="Hoàn thành">✔️ Xong</a>
+                            <a th:if="${lh.trangThai == 'Chờ xác nhận' or lh.trangThai == 'Đã xác nhận'}" th:href="@{/admin/lich-hen/huy/{id}(id=${lh.maLichHen})}" onclick="return confirm('Xác nhận hủy lịch hẹn này?')" style="color: #DC2626; text-decoration: none; font-weight: 500;" title="Hủy lịch">❌ Hủy</a>
+                            
+                            <a th:href="@{/admin/lich-hen/sua/{id}(id=${lh.maLichHen})}" style="color: #475569; text-decoration: none; font-weight: 500; margin-left: 8px;" title="Sửa">✏️ Sửa</a>
                         </td>
                     </tr>
                 </tbody>

@@ -30,4 +30,8 @@ public class BenhNhanService {
         }
         return benhNhanRepository.save(benhNhan);
     }
+
+    public void deleteBenhNhan(String id) {
+        benhNhanRepository.deleteById(id);
+    }
 }

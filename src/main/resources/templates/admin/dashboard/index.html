@@ -1,42 +1,155 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Admin Dashboard', ~{::section})}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Admin Dashboard', 'dashboard', ~{::section})}">
 <head>
     <title>Admin Dashboard</title>
 </head>
 <body>
     <section>
-        <span class="v13_2641">Cập nhật: 17/05/2025 08:30</span><div class="v13_2642"></div>
-        <span class="v13_2643">Tổng Quan Hệ Thống</span>
-        <span class="v13_2644">Chào buổi sáng, Admin!</span><div class="v13_2645"></div>
-        <span class="v13_2646">⚠ 3 thuốc/vật tư sắp hết hàng</span><div class="v13_2647"></div><div class="v13_2648"></div><div class="v13_2649"></div>
-        <span class="v13_2650">📅</span><span class="v13_2651">48</span>
-        <span class="v13_2652">Lịch hẹn hôm nay</span><span class="v13_2653">↑ 12% so với hôm qua</span><span class="v13_2654">Chờ xác nhận: 12</span><div class="v13_2655"></div><div class="v13_2656"></div><div class="v13_2657"></div>
-        <span class="v13_2658">👥</span><span class="v13_2659">1,248</span>
-        <span class="v13_2660">Tổng bệnh nhân</span><span class="v13_2661">↑ 8 bệnh nhân mới tuần này</span><div class="v13_2662"></div><div class="v13_2663"></div><div class="v13_2664"></div>
-        <span class="v13_2665">💰</span><span class="v13_2666">12.4M</span>
-        <span class="v13_2667">Doanh thu hôm nay (đồng)</span><span class="v13_2668">↑ 15% so với hôm qua</span><div class="v13_2669"></div><div class="v13_2670"></div><div class="v13_2671"></div>
-        <span class="v13_2672">⚠</span><span class="v13_2673">3</span>
-        <span class="v13_2674">Thuốc / VT sắp hết</span><span class="v13_2675">Cần nhập thêm khẩn</span><div class="v13_2676"></div>
-        <span class="v13_2677">Xem ngay →</span><div class="v13_2678"></div><div class="v13_2679"></div><div class="v13_2680"></div>
-        <span class="v13_2681">📋 Danh Sách Lịch Hẹn Hôm Nay</span><div class="v13_2682"></div><div class="v13_2683"></div>
-        <span class="v13_2684">+ Thêm mới</span><div class="v13_2685"></div>
-        <span class="v13_2686">🔍 Lọc</span><div class="v13_2687"></div>
-        <span class="v13_2688">Tìm kiếm</span><div class="v13_2689"></div>
-        <span class="v13_2690">STT</span><span class="v13_2691">Bệnh nhân</span><span class="v13_2692">Bác sĩ</span><span class="v13_2693">Giờ hẹn</span><span class="v13_2694">Trạng thái</span><span class="v13_2695">Thao tác</span><div class="v13_2696"></div><div class="v13_2697"></div><div class="v13_2698"></div><div class="v13_2699"></div><div class="v13_2700"></div><div class="v13_2701"></div>
-        <span class="v13_2702">01</span><span class="v13_2703">Nguyễn Văn An</span><span class="v13_2704">BS. Minh</span><span class="v13_2705">07:30</span><div class="v13_2706"></div>
-        <span class="v13_2707">Chờ xác nhận</span><span class="v13_2708">✓ Duyệt </span><div class="v13_2709"></div>
-        <span class="v13_2710">02</span><span class="v13_2711">Trần Thị Bích</span><span class="v13_2712">BS. Lan</span><span class="v13_2713">08:00</span><div class="v13_2714"></div>
-        <span class="v13_2715">Đã xác nhận</span><span class="v13_2716">✏ ✗</span><div class="v13_2717"></div>
-        <span class="v13_2718">03</span><span class="v13_2719">Lê Văn Cường</span><span class="v13_2720">BS. Nam</span><span class="v13_2721">08:30</span><div class="v13_2722"></div>
-        <span class="v13_2723">Đang khám</span><span class="v13_2724">✏ ✗</span><div class="v13_2725"></div>
-        <span class="v13_2726">04</span><span class="v13_2727">Phạm Thị Dung</span><span class="v13_2728">BS. Minh</span><span class="v13_2729">09:00</span><div class="v13_2730"></div>
-        <span class="v13_2731">Chờ xác nhận</span><span class="v13_2732">✓ Duyệt </span><div class="v13_2733"></div>
-        <span class="v13_2734">05</span><span class="v13_2735">Hoàng Minh Tú</span><span class="v13_2736">BS. Lan</span><span class="v13_2737">09:30</span><div class="v13_2738"></div>
-        <span class="v13_2739">Đã xác nhận</span><span class="v13_2740">✏ ✗</span><div class="v13_2741"></div>
-        <span class="v13_2742">06</span><span class="v13_2743">Ngô Thị Hà</span><span class="v13_2744">BS. Hùng</span><span class="v13_2745">10:00</span><div class="v13_2746"></div>
-        <span class="v13_2747">Đã hủy</span><span class="v13_2748">✏</span><span class="v13_2749">• • •</span><div class="v13_2750"></div>
-        <span class="v13_2751">Hiển thị 1-10 / 48 lịch hẹn</span><div class="v13_2752"></div>
-        <span class="v13_2753">◀</span><div class="v13_2754"></div><span class="v13_2755">1</span><div class="v13_2756"></div><span class="v13_2757">2</span><div class="v13_2758"></div><span class="v13_2759">▶</span><div class="v13_2760"></div><div class="v13_2761"></div><div class="v13_2762"></div><div class="v13_2763"></div>
+        <style>
+            /* Dashboard Grid Layout */
+            .dashboard-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 24px; }
+            
+            .stat-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #E2E8F0; }
+            .stat-card .icon { font-size: 24px; margin-bottom: 12px; display: inline-block; padding: 10px; border-radius: 8px; background: #EFF6FF; }
+            .stat-card .value { font-size: 24px; font-weight: 700; color: #1E293B; margin-bottom: 4px; }
+            .stat-card .label { font-size: 14px; color: #64748B; margin-bottom: 8px; }
+            .stat-card .trend { font-size: 12px; font-weight: 500; color: #10B981; }
+            .stat-card .trend.danger { color: #EF4444; }
+
+            .dashboard-tables { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+            
+            .card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #E2E8F0; padding: 20px; }
+            .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+            .card-title { font-size: 16px; font-weight: 600; color: #1E293B; }
+            
+            table { width: 100%; border-collapse: collapse; font-size: 14px; }
+            th { text-align: left; padding: 12px; color: #64748B; font-weight: 600; border-bottom: 2px solid #E2E8F0; background: #F8FAFC; }
+            td { padding: 12px; border-bottom: 1px solid #E2E8F0; color: #334155; }
+            tr:hover td { background: #F8FAFC; }
+            
+            .badge { padding: 4px 8px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+            .badge-success { background: #DCFCE7; color: #16A34A; }
+            .badge-warning { background: #FEF9C3; color: #CA8A04; }
+            .badge-danger { background: #FEE2E2; color: #DC2626; }
+            .badge-info { background: #DBEAFE; color: #2563EB; }
+        </style>
+
+        <!-- Thẻ Thống Kê -->
+        <div class="dashboard-grid">
+            <div class="stat-card">
+                <div class="icon">📅</div>
+                <div class="value" th:text="${totalAppointments}">48</div>
+                <div class="label">Lịch hẹn hôm nay</div>
+                <div class="trend">Chờ xác nhận: <span th:text="${totalAppointments}">0</span></div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="icon">👥</div>
+                <div class="value" th:text="${totalPatients}">1,248</div>
+                <div class="label">Tổng bệnh nhân</div>
+                <div class="trend">Dữ liệu thực tế từ DB</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="icon">💰</div>
+                <div class="value" th:text="${#numbers.formatDecimal(revenueToday, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">12,400,000 VNĐ</div>
+                <div class="label">Doanh thu hôm nay</div>
+                <div class="trend">Dữ liệu từ Hóa Đơn</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="icon" style="background: #FEF2F2;">⚠</div>
+                <div class="value" th:text="${lowStockCount}">3</div>
+                <div class="label">Thuốc / VT sắp hết</div>
+                <div class="trend danger">Cần nhập thêm khẩn</div>
+            </div>
+        </div>
+
+        <!-- Bảng Dữ Liệu -->
+        <div class="dashboard-tables">
+            <!-- Danh sách lịch hẹn -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">📋 Lịch Hẹn Hôm Nay</div>
+                    <a href="/admin/lich-hen" style="color: #2563EB; font-size: 14px; text-decoration: none;">Xem tất cả →</a>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mã LH</th>
+                            <th>Bệnh nhân</th>
+                            <th>Bác sĩ</th>
+                            <th>Giờ hẹn</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="lh : ${todayAppointments}">
+                            <td th:text="${lh.MaLichHen}">LH-01</td>
+                            <td th:text="${lh.TenBenhNhan}" style="font-weight: 500;">Nguyễn Văn A</td>
+                            <td th:text="${lh.TenBacSi}">BS. B</td>
+                            <td th:text="${lh.GioHen}">08:00</td>
+                            <td>
+                                <span class="badge" 
+                                      th:classappend="${lh.TrangThai == 'Chờ xác nhận' ? 'badge-warning' : (lh.TrangThai == 'Đã xác nhận' ? 'badge-info' : (lh.TrangThai == 'Đã hủy' ? 'badge-danger' : 'badge-success'))}"
+                                      th:text="${lh.TrangThai}">Chờ xác nhận</span>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(todayAppointments)}">
+                            <td colspan="5" style="text-align: center; color: #94A3B8;">Không có lịch hẹn nào hôm nay</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Cột phải: Bác sĩ & Tồn kho -->
+            <div>
+                <!-- Bác sĩ làm việc -->
+                <div class="card" style="margin-bottom: 20px;">
+                    <div class="card-header">
+                        <div class="card-title">👨‍⚕️ Bác Sĩ Đang Làm Việc</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Bác sĩ</th>
+                                <th>Chuyên khoa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="bs : ${workingDoctors}">
+                                <td th:text="${bs.TenBacSi}" style="font-weight: 500;">BS. A</td>
+                                <td th:text="${bs.TenChuyenKhoa}">Nội tổng hợp</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Cảnh báo tồn kho -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title" style="color: #DC2626;">⚠ Tồn Kho Thấp</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Vật tư / Thuốc</th>
+                                <th>Tồn</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item : ${lowStockItems}">
+                                <td th:text="${item.Ten}">Paracetamol</td>
+                                <td><span class="badge badge-danger" th:text="${item.TonKho} + ' / ' + ${item.NguongCanhBao}">2 / 10</span></td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(lowStockItems)}">
+                                <td colspan="2" style="text-align: center; color: #16A34A;">Tất cả hàng hóa đầy đủ</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </section>
 </body>
 </html>

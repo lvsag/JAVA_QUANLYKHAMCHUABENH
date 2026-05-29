@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(title, activeMenu, content)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Inter:400,500,600,700&display=swap" rel="stylesheet" />
+    <title th:text="${title}">Admin Dashboard</title>
+    <style>
+        :root {
+            --primary-bg: #F8FAFC;
+            --sidebar-bg: #1E293B;
+            --sidebar-hover: #334155;
+            --sidebar-active: #2563EB;
+            --text-main: #334155;
+            --text-light: #64748B;
+            --white: #FFFFFF;
+            --border-color: #E2E8F0;
+            --accent-blue: #3B82F6;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--primary-bg); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; }
+        
+        /* Sidebar */
+        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--white); display: flex; flex-direction: column; flex-shrink: 0; }
+        .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-header h2 { font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .sidebar-header p { font-size: 12px; color: #94A3B8; margin-top: 4px; }
+        
+        .user-profile { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: #3B82F6; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .user-info h4 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+        .user-info p { font-size: 12px; color: #10B981; display: flex; align-items: center; gap: 4px; }
+        .user-info p::before { content: ""; display: block; width: 8px; height: 8px; background: #10B981; border-radius: 50%; }
+
+        .nav-menu { padding: 20px 0; display: flex; flex-direction: column; gap: 4px; flex-grow: 1; }
+        .nav-item { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: #CBD5E1; text-decoration: none; font-size: 14px; font-weight: 500; transition: 0.2s; }
+        .nav-item:hover { background-color: var(--sidebar-hover); color: var(--white); }
+        .nav-item.active { background-color: var(--sidebar-active); color: var(--white); border-left: 4px solid #60A5FA; }
+        
+        /* Main Content */
+        .main-wrapper { flex-grow: 1; display: flex; flex-direction: column; min-width: 0; }
+        
+        .topbar { height: 60px; background: var(--white); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
+        .topbar-title { font-size: 16px; font-weight: 600; color: var(--text-main); }
+        .topbar-actions { display: flex; align-items: center; gap: 16px; }
+        .btn-action { padding: 8px 16px; background: #F1F5F9; border-radius: 6px; font-size: 13px; font-weight: 500; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .btn-action:hover { background: #E2E8F0; }
+        .btn-danger { color: #EF4444; background: #FEF2F2; }
+        .btn-danger:hover { background: #FEE2E2; }
+        
+        .content-area { padding: 24px; flex-grow: 1; overflow-y: auto; }
+        
+        .status-bar { height: 30px; background: var(--sidebar-bg); color: #94A3B8; font-size: 12px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>🏥 Admin Panel</h2>
+            <p>Phòng Khám Đa Khoa v1.0</p>
+        </div>
+        
+        <div class="user-profile">
+            <div class="user-avatar">👨‍💼</div>
+            <div class="user-info">
+                <h4 th:text="${session.loggedInUser?.hoTen}">Admin</h4>
+                <p th:text="${session.role}">Quản trị viên</p>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <a th:href="@{/admin/dashboard}" class="nav-item" th:classappend="${activeMenu == 'dashboard' ? 'active' : ''}">📊 Dashboard</a>
+            <a th:href="@{/admin/lich-hen}" class="nav-item" th:classappend="${activeMenu == 'lich-hen' ? 'active' : ''}">📅 Quản Lý Lịch Hẹn</a>
+            <a th:href="@{/admin/benh-nhan}" class="nav-item" th:classappend="${activeMenu == 'benh-nhan' ? 'active' : ''}">👥 Quản Lý Bệnh Nhân</a>
+            <a th:href="@{/admin/bac-si}" class="nav-item" th:classappend="${activeMenu == 'bac-si' ? 'active' : ''}">👨‍⚕️ Quản Lý Bác Sĩ</a>
+            <a th:href="@{/admin/chuyen-khoa}" class="nav-item" th:classappend="${activeMenu == 'chuyen-khoa' ? 'active' : ''}">🏥 Chuyên Khoa</a>
+            <a th:href="@{/admin/dich-vu}" class="nav-item" th:classappend="${activeMenu == 'dich-vu' ? 'active' : ''}">💊 Dịch Vụ / Thuốc</a>
+            <a th:href="@{/admin/tai-khoan}" class="nav-item" th:classappend="${activeMenu == 'tai-khoan' ? 'active' : ''}">🔒 Phân Quyền</a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <div class="topbar">
+            <div class="topbar-title" th:text="${title}">Admin Dashboard</div>
+            <div class="topbar-actions">
+                <a href="#" class="btn-action">🔄 Làm mới</a>
+                <a href="#" class="btn-action">📤 Xuất Excel</a>
+                <a th:href="@{/logout}" class="btn-action btn-danger">🚪 Đăng Xuất</a>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <!-- Inject content here -->
+            <div th:replace="${content}"></div>
+        </div>
+        
+        <div class="status-bar">
+            <span>Đã kết nối | DB: phongkham_db | User: <span th:text="${session.loggedInUser?.email}">admin@phongkham.vn</span></span>
+            <span>v1.0.0</span>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt Lịch Thành Công</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --green: #10b981; --blue: #1a56db; --bg: #f8fafc; --text: #1e293b; --border: #e2e8f0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); display: flex; flex-direction: column; min-height: 100vh; }
+
+        .top-banner { background: var(--green); color: white; text-align: center; padding: 12px; font-weight: 600; }
+
+        .success-card { max-width: 650px; margin: 40px auto; background: white; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); padding: 40px; }
+
+        .check-circle { width: 100px; height: 100px; background: #d1fae5; color: var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 50px; margin: 0 auto 20px; border: 4px solid #a7f3d0; }
+
+        h1 { text-align: center; color: var(--green); margin-bottom: 10px; font-size: 28px; }
+        .code-text { text-align: center; color: #64748b; font-size: 15px; margin-bottom: 30px; }
+
+        .detail-box { border: 1px solid var(--blue); border-radius: 8px; padding: 20px; margin-bottom: 20px; background: #eff6ff; }
+        .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed #bfdbfe; font-size: 14px; color: var(--text); }
+        .detail-row:last-child { border: none; font-size: 18px; font-weight: 700; color: var(--blue); padding-bottom: 0; }
+
+        .warning-box { background: #fffbeb; border: 1px solid #fde68a; padding: 16px; border-radius: 8px; font-size: 13px; color: #92400e; margin-bottom: 24px; }
+        .warning-box ul { padding-left: 20px; margin-top: 8px; }
+
+        .btn-group { display: flex; gap: 15px; }
+        .btn { flex: 1; padding: 14px; text-align: center; border-radius: 8px; font-weight: 600; text-decoration: none; transition: 0.2s; }
+        .btn-blue { background: var(--blue); color: white; }
+        .btn-blue:hover { background: #1e40af; }
+        .btn-outline { border: 1px solid var(--blue); color: var(--blue); }
+        .btn-outline:hover { background: #eff6ff; }
+    </style>
+</head>
+<body>
+
+<div class="top-banner">✓ Đặt Lịch Thành Công!</div>
+
+<div class="success-card">
+    <div class="check-circle">✓</div>
+    <h1>Đặt lịch thành công!</h1>
+    <div class="code-text">Mã xác nhận: <strong style="color: var(--text); font-size: 16px;" th:text="${maLichHen}">LH-XXXX</strong></div>
+
+
+    <div class="detail-box" th:if="${lichHen != null}">
+        <div style="font-weight: 600; color: var(--blue); margin-bottom: 10px;">Chi tiết đặt lịch:</div>
+        <div class="detail-row">
+            <span>Bác sĩ:</span>
+            <strong th:text="${lichHen.bacSi != null ? 'BS. ' + lichHen.bacSi.hoTen : 'Khám tổng quát'}"></strong>
+        </div>
+        <div class="detail-row">
+            <span>Thời gian hẹn:</span>
+            <strong th:text="${#dates.format(lichHen.ngayHen, 'dd/MM/yyyy')} + ' lúc ' + ${lichHen.gioHen}"></strong>
+        </div>
+        <div class="detail-row">
+            <span>Trạng thái:</span>
+            <strong>Chờ xác nhận</strong>
+        </div>
+        <div class="detail-row">
+            <span>Yêu cầu chuẩn bị:</span>
+            <span>Vui lòng mang theo CMND/CCCD</span>
+        </div>
+        <div class="detail-row">
+            <span>Ghi chú:</span>
+            <span>Thanh toán tại quầy</span>
+        </div>
+        <div class="detail-row">
+            <span>Người bệnh:</span>
+            <strong th:text="${lichHen.hoTenNguoiKham}"></strong>
+        </div>
+        <div class="detail-row">
+            <span>Tổng phí (dự kiến):</span>
+            <span th:text="${lichHen.phiDuKien != null ? #numbers.formatDecimal(lichHen.phiDuKien, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Tính tại quầy'}"></span>
+        </div>
+    </div>
+
+
+    <div class="warning-box">
+        <strong>💡 Lưu ý quan trọng:</strong>
+        <ul>
+            <li>Đến trước 15 phút làm thủ tục đăng ký</li>
+            <li>Mang CCCD và thẻ BHYT (nếu có)</li>
+            <li>Nhịn ăn trước 4-6h nếu làm xét nghiệm máu</li>
+            <li style="color: #dc2626; font-weight: 600;">Chỉ được hủy lịch khi còn "Chờ xác nhận"</li>
+        </ul>
+    </div>
+
+    <div class="btn-group">
+        <a href="/lich-su-dat-lich" class="btn btn-blue">Xem lịch hẹn</a>
+        <a href="/home" class="btn btn-outline">Về trang chủ</a>
+    </div>
+</div>
+
+</body>
+</html>

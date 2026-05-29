@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Quản Lý Tài Khoản', ~{::section})}">
+<head>
+    <title>Quản lý Tài Khoản - Admin</title>
+</head>
+<body>
+    <section style="padding: 20px; font-family: Inter;">
+        <div style="margin-bottom: 20px;">
+            <h1 style="color: #1565C0; font-size: 24px; font-weight: bold; margin: 0;">Quản Lý Tài Khoản / Phân Quyền</h1>
+            <p style="color: #78909C; font-size: 14px; margin-top: 5px;">Quản lý người dùng, vai trò, khóa/mở khóa tài khoản</p>
+        </div>
+        
+        <div style="background: white; border: 1px solid #E3EDFF; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="font-size: 16px; margin: 0; color: #455A64;">🔒 Danh Sách Tài Khoản</h2>
+                <div>
+                    <a th:href="@{/admin/tai-khoan/them}" style="background: #1565C0; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 14px;">+ Thêm tài khoản</a>
+                    <button style="background: #F5F8FF; border: 1px solid #90B8F8; color: #1565C0; padding: 8px 16px; border-radius: 4px; margin-left: 10px; cursor: pointer;">🔍 Lọc</button>
+                </div>
+            </div>
+            
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                <thead>
+                    <tr style="background: #F0F4FF; color: #1565C0; border-bottom: 2px solid #BBCEF0;">
+                        <th style="padding: 12px;">Username</th>
+                        <th style="padding: 12px;">Họ tên</th>
+                        <th style="padding: 12px;">Vai trò</th>
+                        <th style="padding: 12px;">Email</th>
+                        <th style="padding: 12px;">Trạng thái</th>
+                        <th style="padding: 12px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="tk : ${danhSach}" style="border-bottom: 1px solid #E3EDFF; color: #455A64;">
+                        <td style="padding: 12px; font-weight: bold;" th:text="${tk.tenDangNhap}">admin</td>
+                        <td style="padding: 12px;" th:text="${tk.hoTen}">Admin</td>
+                        <td style="padding: 12px;">
+                            <span style="background: #E8F5E9; color: #2E7D32; padding: 4px 8px; border-radius: 12px; font-size: 11px;" th:text="${tk.vaiTro.tenVaiTro}">ADMIN</span>
+                        </td>
+                        <td style="padding: 12px;" th:text="${tk.email}">admin@g.com</td>
+                        <td style="padding: 12px;">
+                            <span th:style="${tk.trangThai == 'Hoạt động'} ? 'color: #1565C0;' : 'color: #C62828;'" th:text="${tk.trangThai}">Active</span>
+                        </td>
+                        <td style="padding: 12px;">
+                            <a th:href="@{/admin/tai-khoan/sua/{id}(id=${tk.maTaiKhoan})}" style="color: #1565C0; text-decoration: none; margin-right: 10px;">Sửa</a>
+                            <form th:action="@{/admin/tai-khoan/khoa/{id}(id=${tk.maTaiKhoan})}" method="post" style="display:inline;">
+                                <button type="submit" style="background: none; border: none; color: #C62828; cursor: pointer; padding: 0; font-family: Inter; font-size: 13px;" th:text="${tk.trangThai == 'Hoạt động' ? 'Khóa' : 'Mở khóa'}">Khóa</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch Sử Đặt Lịch Khám - Phòng Khám Đa Khoa</title>
+    <style>
+        :root {
+            --primary-color: #0056b3;
+            --light-bg: #f4f6f9;
+            --dark-text: #333333;
+            --border-color: #dee2e6;
+            --radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+        }
+
+        /* Navbar đồng bộ */
+        header {
+            background: #ffffff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .navbar {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+        }
+
+        .logo a {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .nav-links a.active {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .table-responsive {
+            background: #fff;
+            padding: 25px;
+            border-radius: var(--radius);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+
+        /* Badge trạng thái */
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .badge-pending { background-color: #fff3cd; color: #856404; }
+        .badge-confirmed { background-color: #cce5ff; color: #004085; }
+        .badge-completed { background-color: #d4edda; color: #155724; }
+        .badge-cancelled { background-color: #f8d7da; color: #721c24; }
+
+        .btn-cancel {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-cancel:hover { background-color: #bd2130; }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav class="navbar">
+        <div class="logo"><a href="/home">🏥 ĐA KHOA CENTRAL</a></div>
+        <ul class="nav-links">
+            <li><a href="/home">Trang chủ</a></li>
+            <li><a href="/bac-si">Đội ngũ bác sĩ</a></li>
+            <!-- ĐÃ SỬA: Cập nhật link để xóa Session cũ khi bắt đầu đặt lịch mới -->
+            <li><a href="/dat-lich/tao-moi">Đặt lịch ngay</a></li>
+            <li><a href="/lich-su-dat-lich" class="active">Lịch sử khám</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="container">
+    <h2>Lịch Sử Đặt Lịch Hẹn Khám</h2>
+    <p style="color: #666;">Theo dõi tiến độ duyệt lịch và trạng thái buổi khám tại đây</p>
+
+    <!-- Hiển thị thông báo thành công hoặc lỗi -->
+    <div class="alert-success" th:if="${success}" th:text="${success}"></div>
+    <div style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-bottom: 20px;" th:if="${error}" th:text="${error}"></div>
+
+    <div class="table-responsive">
+        <table>
+            <thead>
+            <tr>
+                <th>Mã lịch</th>
+                <th>Bác sĩ</th>
+                <th>Ngày hẹn</th>
+                <th>Giờ khám</th>
+                <th>Người bệnh</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="lh : ${danhSach}">
+                <td th:text="${lh.maLichHen}" style="font-weight: 600;"></td>
+                <td th:text="${lh.bacSi != null ? lh.bacSi.hoTen : 'Chưa phân lịch'}"></td>
+                <!-- Cắt bớt phần thời gian rườm rà, chỉ in ngày -->
+                <td th:text="${#dates.format(lh.ngayHen, 'dd/MM/yyyy')}"></td>
+                <td th:text="${lh.gioHen}"></td>
+                <td th:text="${lh.hoTenNguoiKham}"></td>
+
+                <!-- ĐÃ SỬA: Map đúng giá trị Tiếng Việt từ Database -->
+                <td>
+                    <span th:if="${lh.trangThai == 'Chờ xác nhận'}" class="badge badge-pending">Chờ xác nhận</span>
+                    <span th:if="${lh.trangThai == 'Đã xác nhận'}" class="badge badge-confirmed">Đã xác nhận</span>
+                    <span th:if="${lh.trangThai == 'Hoàn thành'}" class="badge badge-completed">Hoàn thành</span>
+                    <span th:if="${lh.trangThai == 'Đã hủy'}" class="badge badge-cancelled">Đã hủy</span>
+                    <!-- Dự phòng trường hợp trạng thái lạ -->
+                    <span th:if="${lh.trangThai != 'Chờ xác nhận' and lh.trangThai != 'Đã xác nhận' and lh.trangThai != 'Hoàn thành' and lh.trangThai != 'Đã hủy'}" class="badge" th:text="${lh.trangThai}"></span>
+                </td>
+
+                <!-- ĐÃ SỬA: Chỉ hiển thị nút hủy nếu trạng thái là Chờ xác nhận -->
+                <td>
+                    <form th:if="${lh.trangThai == 'Chờ xác nhận'}" th:action="@{/dat-lich/{id}/huy(id=${lh.maLichHen})}" method="POST" onsubmit="return confirm('Bạn chắc chắn muốn hủy lịch hẹn này?')">
+                        <input type="hidden" name="lyDoHuy" value="Bệnh nhân chủ động hủy qua trang web">
+                        <button type="submit" class="btn-cancel">Hủy lịch</button>
+                    </form>
+                    <span th:if="${lh.trangThai != 'Chờ xác nhận'}" style="color: #999; font-size: 13px;">Không khả dụng</span>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(danhSach)}">
+                <td colspan="7" style="text-align: center; color: #888; padding: 30px;">Bạn chưa có lịch hẹn khám nào.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

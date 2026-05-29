@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hệ Thống Quản Lý Phòng Khám v1.0 — Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+          theme: {
+            extend: {
+              fontFamily: {
+                inter: ['Inter', 'sans-serif'],
+              },
+              colors: {
+                'clinic-topbar':   '#154F9D',
+                'clinic-bar':      '#1B66B5',
+                'clinic-sidebar':  '#1E4274',
+                'clinic-sidehead': '#174F9A',
+                'clinic-active':   '#1964B7',
+                'clinic-primary':  '#0B62C0',
+                'clinic-bg':       '#EAF0F7',
+                'clinic-yellow':   '#FFD21F',
+                'clinic-green':    '#2CA24D',
+                'clinic-red':      '#EF3B3B',
+                'clinic-border':   '#C7D4E4',
+                'clinic-theader':  '#DBEAFA',
+                'clinic-row-alt':  '#E7F1FF',
+                'clinic-row-alt2': '#F7FBFF',
+                'clinic-label':    '#43566F',
+                'clinic-text':     '#233A55',
+                'clinic-muted':    '#65758F',
+                'clinic-link':     '#0B62C0',
+              }
+            }
+          }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: #9FC1E9; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-clinic-bg font-inter text-sm min-h-screen flex flex-col">
+
+<!-- App Bar -->
+<div class="bg-clinic-bar flex items-center justify-between px-7 h-[32px] shrink-0">
+    <span class="text-white font-bold text-[12px]">🏥 Hệ Thống Quản Lý Phòng Khám v1.0 — Admin Panel</span>
+    <span class="text-[#DCECFF] font-bold text-[13px]">▣ ▢</span>
+</div>
+
+<!-- Body -->
+<div class="flex flex-1 overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="bg-clinic-sidebar w-[220px] shrink-0 flex flex-col justify-between overflow-y-auto scrollbar-thin">
+
+        <!-- User Info -->
+        <div>
+            <div class="bg-clinic-sidehead px-4 py-4 flex items-start gap-3">
+                <div class="w-11 h-11 rounded-full bg-[#3C6BA9] flex items-center justify-center shrink-0 text-lg">
+                    👨‍💼
+                </div>
+                <div class="mt-0.5">
+                    <div class="text-white font-bold text-[12px]">Admin</div>
+                    <div class="text-[#E6EFFF] text-[10px] mt-0.5">Quản trị viên</div>
+                    <div class="mt-1.5 bg-[#FFD42A] rounded-full px-2 py-0.5 inline-block">
+                        <span class="text-[#073A75] font-bold text-[8px] tracking-wide">ONLINE</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nav Items -->
+            <nav class="mt-4 flex flex-col gap-0">
+                <a href="#" class="flex items-center gap-3 px-7 py-[11px] text-[#DBE9FF] text-[12px] hover:bg-white/5 transition-colors">
+                    <span class="text-[13px]">📊</span>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="#" class="flex items-center justify-between px-7 py-[11px] text-[#DBE9FF] text-[12px] hover:bg-white/5 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <span class="text-[13px]">📅</span>
+                        <span>Quản Lý Lịch Hẹn</span>
+                    </div>
+                    <span class="bg-clinic-red text-white font-bold text-[9px] rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">12</span>
+                </a>
+
+                <a href="#" class="flex items-center gap-3 px-7 py-[11px] text-[#DBE9FF] text-[12px] hover:bg-white/5 transition-colors">
+                    <span class="text-[13px]">👥</span>
+                    <span>Quản Lý Bệnh Nhân</span>
+                </a>
+
+                <a href="#" class="flex items-center gap-3 px-7 py-[11px] text-[#DBE9FF] text-[12px] hover:bg-white/5 transition-colors">
+                    <span class="text-[13px]">👨‍⚕️</span>
+                    <span>Quản Lý Bác Sĩ</span>
+                </a>
+
+                <a href="#" class="flex items-center gap-3 px-7 py-[11px] text-[#DBE9FF] text-[12px] hover:bg-white/5 transition-colors">
+                    <span class="text-[13px]">🏥</span>
+                    <span>Chuyên Khoa</span>
+                </a>
+
+                <a href="#" class="flex items-center gap-3 px-7 py-[11px] text-[#DBE9FF] text-[12px] hover:bg-white/5 transition-colors">
+                    <span class="text-[13px]">💊</span>
+                    <span>Dịch Vụ / Thuốc</span>
+                </a>
+
+                <!-- Active Item -->
+                <a href="#" class="relative flex items-center gap-3 px-7 py-[11px] bg-clinic-active text-white text-[12px] font-bold">
+                    <span class="absolute left-0 top-0 bottom-0 w-[5px] bg-clinic-yellow rounded-r-sm"></span>
+                    <span class="text-[13px]">🧪</span>
+                    <span>Xét Nghiệm</span>
+                </a>
+
+                <a href="#" class="flex items-center gap-3 px-7 py-[11px] text-[#DBE9FF] text-[12px] hover:bg-white/5 transition-colors">
+                    <span class="text-[13px]">💰</span>
+                    <span>Thanh Toán</span>
+                </a>
+
+                <a href="#" class="flex items-center gap-3 px-7 py-[11px] text-[#DBE9FF] text-[12px] hover:bg-white/5 transition-colors">
+                    <span class="text-[13px]">📊</span>
+                    <span>Báo Cáo</span>
+                </a>
+
+                <!-- Divider -->
+                <div class="mx-4 my-3 border-t border-[#3A5C88]"></div>
+
+                <a href="#" class="flex items-center gap-3 px-7 py-[11px] text-[#DBE9FF] text-[12px] hover:bg-white/5 transition-colors">
+                    <span class="text-[13px]">⚙</span>
+                    <span>Cài Đặt</span>
+                </a>
+
+                <a href="#" class="flex items-center gap-3 px-7 py-[11px] text-[#DBE9FF] text-[12px] hover:bg-white/5 transition-colors">
+                    <span class="text-[13px]">🔒</span>
+                    <span>Phân Quyền</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Logout -->
+        <div class="px-7 py-5">
+            <a href="#" class="text-[#FFDAD3] font-bold text-[12px] hover:text-white transition-colors">🚪 Đăng Xuất</a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex flex-col flex-1 overflow-hidden">
+
+        <!-- Toolbar -->
+        <div class="bg-[#F4F7FB] border border-[#CBD6E3] flex items-center justify-between px-2 h-[34px] shrink-0">
+            <div class="flex items-center gap-1.5">
+                <button class="bg-white border border-[#A9BACF] rounded text-[#1C5AA6] text-[11px] px-3 h-5 hover:bg-blue-50 transition-colors">🔄 Làm mới</button>
+                <button class="bg-white border border-[#A9BACF] rounded text-[#1C5AA6] text-[11px] px-3 h-5 hover:bg-blue-50 transition-colors">📤 Xuất Excel</button>
+                <button class="bg-white border border-[#A9BACF] rounded text-[#1C5AA6] text-[11px] px-3 h-5 hover:bg-blue-50 transition-colors">🖨 In báo cáo</button>
+            </div>
+            <span class="text-[#6B7890] text-[11px] pr-2">Cập nhật: 17/05/2025</span>
+        </div>
+
+        <!-- Page Header -->
+        <div class="px-4 pt-3 pb-2 shrink-0">
+            <h1 class="text-[#0757B7] font-bold text-[17px] leading-tight">Thực Hiện / Nhập Kết Quả Cận Lâm Sàng</h1>
+            <p class="text-[#65758F] text-[11px] mt-0.5">Nhận phiếu chỉ định, thực hiện dịch vụ và upload/nhập kết quả</p>
+        </div>
+
+        <!-- Content Panels -->
+        <div class="flex flex-1 gap-3 px-4 pb-4 overflow-hidden">
+
+            <!-- Left Panel: CLS List -->
+            <div class="bg-white border border-clinic-border rounded flex flex-col flex-1 min-w-0 overflow-hidden">
+                <!-- Panel Header -->
+                <div class="bg-clinic-primary rounded-t px-3 py-1.5">
+                    <span class="text-white font-bold text-[12px]">🧪 Danh Sách Phiếu Chỉ Định CLS</span>
+                </div>
+
+                <!-- Filters -->
+                <div class="flex items-center gap-2 px-3 py-2 border-b border-clinic-border">
+                    <button class="bg-white border border-[#A9BACF] rounded text-[#1C5AA6] text-[11px] px-3 py-[3px] hover:bg-blue-50 transition-colors">🔍 Lọc</button>
+                    <button class="bg-white border border-[#A9BACF] rounded text-[#1C5AA6] text-[11px] px-3 py-[3px] hover:bg-blue-50 transition-colors">Tìm mã phiếu</button>
+                </div>
+
+                <!-- Table -->
+                <div class="flex-1 overflow-auto scrollbar-thin">
+                    <table class="w-full border-collapse text-[10px]">
+                        <thead>
+                        <tr class="bg-clinic-theader border border-[#C7D4E4]">
+                            <th class="text-left text-[#1E426C] font-bold py-2 pl-3 pr-2 border-r border-[#D5DFEB] whitespace-nowrap">Mã phiếu</th>
+                            <th class="text-left text-[#1E426C] font-bold py-2 px-3 border-r border-[#D5DFEB] whitespace-nowrap">Bệnh nhân</th>
+                            <th class="text-left text-[#1E426C] font-bold py-2 px-3 border-r border-[#D5DFEB] whitespace-nowrap">Dịch vụ</th>
+                            <th class="text-left text-[#1E426C] font-bold py-2 px-3 border-r border-[#D5DFEB] whitespace-nowrap">Trạng thái</th>
+                            <th class="text-left text-[#1E426C] font-bold py-2 px-3 whitespace-nowrap">Thời gian</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr class="bg-clinic-row-alt border border-[#E1E8F0] cursor-pointer hover:bg-blue-100/60 transition-colors">
+                            <td class="py-2 pl-3 pr-2 border-r border-[#D5DFEB]">
+                                <span class="text-clinic-link font-medium">CLS001</span>
+                            </td>
+                            <td class="py-2 px-3 border-r border-[#D5DFEB] text-clinic-text">Nguyễn Văn A</td>
+                            <td class="py-2 px-3 border-r border-[#D5DFEB] text-clinic-text">Xét nghiệm máu</td>
+                            <td class="py-2 px-3 border-r border-[#D5DFEB] text-clinic-text">Chờ</td>
+                            <td class="py-2 px-3 text-clinic-text">08:30</td>
+                        </tr>
+                        <tr class="bg-white border border-[#E1E8F0] cursor-pointer hover:bg-blue-50 transition-colors">
+                            <td class="py-2 pl-3 pr-2 border-r border-[#D5DFEB]">
+                                <span class="text-clinic-link font-medium">CLS002</span>
+                            </td>
+                            <td class="py-2 px-3 border-r border-[#D5DFEB] text-clinic-text">Trần Thị B</td>
+                            <td class="py-2 px-3 border-r border-[#D5DFEB] text-clinic-text">X-quang ngực</td>
+                            <td class="py-2 px-3 border-r border-[#D5DFEB] text-clinic-text">Đang làm</td>
+                            <td class="py-2 px-3 text-clinic-text">09:20</td>
+                        </tr>
+                        <tr class="bg-clinic-row-alt2 border border-[#E1E8F0] cursor-pointer hover:bg-blue-50 transition-colors">
+                            <td class="py-2 pl-3 pr-2 border-r border-[#D5DFEB]">
+                                <span class="text-clinic-link font-medium">CLS003</span>
+                            </td>
+                            <td class="py-2 px-3 border-r border-[#D5DFEB] text-clinic-text">Lê Văn C</td>
+                            <td class="py-2 px-3 border-r border-[#D5DFEB] text-clinic-text">Siêu âm bụng</td>
+                            <td class="py-2 px-3 border-r border-[#D5DFEB] text-clinic-text">Chờ</td>
+                            <td class="py-2 px-3 text-clinic-text">10:15</td>
+                        </tr>
+                        <tr class="bg-white border border-[#E1E8F0] cursor-pointer hover:bg-blue-50 transition-colors">
+                            <td class="py-2 pl-3 pr-2 border-r border-[#D5DFEB]">
+                                <span class="text-clinic-link font-medium">CLS004</span>
+                            </td>
+                            <td class="py-2 px-3 border-r border-[#D5DFEB] text-clinic-text">Phạm Thị D</td>
+                            <td class="py-2 px-3 border-r border-[#D5DFEB] text-clinic-text">Nước tiểu</td>
+                            <td class="py-2 px-3 border-r border-[#D5DFEB] text-clinic-text">Có kết quả</td>
+                            <td class="py-2 px-3 text-clinic-text">11:05</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Right Panel: CLS Details -->
+            <div class="bg-white border border-clinic-border rounded flex flex-col w-[400px] xl:w-[460px] shrink-0 overflow-hidden">
+                <!-- Panel Header -->
+                <div class="bg-clinic-primary rounded-t px-3 py-1.5">
+                    <span class="text-white font-bold text-[12px]">📄 Thông Tin Phiếu CLS</span>
+                </div>
+
+                <!-- Info Fields -->
+                <div class="flex flex-col gap-0 px-4 pt-4 pb-2">
+                    <div class="flex items-start py-[9px] border-b border-[#EDF2F7] last:border-0">
+                        <span class="text-clinic-label font-bold text-[11px] w-32 shrink-0">Mã phiếu</span>
+                        <span class="text-clinic-text text-[11px]">CLS001</span>
+                    </div>
+                    <div class="flex items-start py-[9px] border-b border-[#EDF2F7]">
+                        <span class="text-clinic-label font-bold text-[11px] w-32 shrink-0">Bệnh nhân</span>
+                        <span class="text-clinic-text text-[11px]">Nguyễn Văn A</span>
+                    </div>
+                    <div class="flex items-start py-[9px] border-b border-[#EDF2F7]">
+                        <span class="text-clinic-label font-bold text-[11px] w-32 shrink-0">Dịch vụ</span>
+                        <span class="text-clinic-text text-[11px]">Xét nghiệm máu</span>
+                    </div>
+                    <div class="flex items-start py-[9px] border-b border-[#EDF2F7]">
+                        <span class="text-clinic-label font-bold text-[11px] w-32 shrink-0">Loại mẫu</span>
+                        <span class="text-clinic-text text-[11px]">Máu tĩnh mạch</span>
+                    </div>
+                    <div class="flex items-start py-[9px] border-b border-[#EDF2F7]">
+                        <span class="text-clinic-label font-bold text-[11px] w-32 shrink-0">Bác sĩ chỉ định</span>
+                        <span class="text-clinic-text text-[11px]">TS.BS. Nguyễn Văn Minh</span>
+                    </div>
+                    <div class="flex items-start py-[9px]">
+                        <span class="text-clinic-label font-bold text-[11px] w-32 shrink-0">Ghi chú</span>
+                        <span class="text-clinic-text text-[11px]">Nhịn ăn trước 8 tiếng</span>
+                    </div>
+                </div>
+
+                <!-- File Upload Area -->
+                <div class="px-4 pb-4 mt-1 flex-1 flex flex-col">
+                    <div class="bg-[#FBFDFF] border border-[#9FC1E9] rounded-md flex flex-col items-center justify-center flex-1 min-h-[90px] gap-1 py-4 cursor-pointer hover:bg-blue-50/50 transition-colors">
+                        <span class="text-clinic-primary text-[26px] leading-none">☁</span>
+                        <span class="text-[#315478] text-[11px] mt-1 text-center px-2">Kéo thả file kết quả hoặc chọn file</span>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-3 mt-4">
+                        <button class="flex-1 bg-clinic-green border border-clinic-green rounded text-white text-[11px] py-[5px] flex items-center justify-center gap-1 hover:bg-green-700 transition-colors">
+                            ✓ Hoàn tất
+                        </button>
+                        <button class="flex-1 bg-clinic-primary border border-clinic-primary rounded text-white text-[11px] py-[5px] flex items-center justify-center gap-1 hover:bg-blue-800 transition-colors">
+                            💾 Lưu kết quả
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Status Bar -->
+        <div class="bg-[#F4F7FB] border-t border-[#CBD6E3] flex items-center justify-between px-4 h-[22px] shrink-0">
+            <span class="text-[#75859A] text-[9px]">Đã kết nối | DB: phongkham_db | User: admin@phongkham.vn | Session: 02:34:12</span>
+            <span class="text-[#75859A] text-[9px]">v1.0.0</span>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

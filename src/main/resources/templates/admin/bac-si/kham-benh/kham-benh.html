@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bác sĩ khám bệnh ngoại trú</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', -apple-system, Roboto, Helvetica, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-[#ECF0F8] m-0 p-0 h-screen flex flex-col overflow-hidden">
+<div class="flex flex-col h-full">
+
+    <!-- App bar -->
+    <div class="bg-[#1565C0] flex items-center justify-between px-5 py-1.5 shrink-0">
+            <span class="text-white text-xs">
+                🏥 Hệ Thống Quản Lý Khám Chữa Bệnh — Admin Panel
+            </span>
+        <div class="flex items-center gap-1">
+            <button class="w-5 h-5 rounded bg-white/20 flex items-center justify-center text-white text-[10px] hover:bg-white/30">
+                —
+            </button>
+            <button class="w-5 h-5 rounded bg-white/20 flex items-center justify-center text-white text-[10px] hover:bg-white/30">
+                □
+            </button>
+            <button class="w-5 h-5 rounded bg-[#E53935]/80 flex items-center justify-center text-white text-[10px] hover:bg-[#E53935]">
+                ✕
+            </button>
+        </div>
+    </div>
+
+    <!-- Main layout -->
+    <div class="flex flex-1 overflow-hidden">
+        <!-- Sidebar toggle for mobile -->
+        <button id="sidebarToggle" class="hidden absolute top-24 left-4 z-40 lg:hidden text-[#455A64] p-2 bg-white rounded shadow">
+            ☰
+        </button>
+
+        <!-- Sidebar overlay for mobile -->
+        <div id="sidebarOverlay" class="hidden fixed inset-0 bg-black/50 z-20 lg:hidden"></div>
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="
+                fixed lg:relative z-30 lg:z-auto
+                flex flex-col bg-[#1A3A6B] shrink-0
+                w-[220px] h-full
+                transition-transform duration-300 -translate-x-full lg:translate-x-0
+            ">
+            <!-- User profile -->
+            <div class="bg-[#0D47A1] px-4 py-4 flex items-center gap-3">
+                <div class="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center text-lg shrink-0">
+                    👨‍💼
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-white text-[11px] font-bold">Doctor</span>
+                    <span class="text-white text-[10px] font-normal">
+                            Quản trị viên
+                        </span>
+                    <span class="mt-1 inline-flex items-center justify-center bg-[#FFD740] rounded-full px-2 py-0.5 w-fit">
+                            <span class="text-[#0D47A1] text-[8px] font-bold">
+                                ONLINE
+                            </span>
+                        </span>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex flex-col flex-1 pt-4">
+                <div class="nav-item relative flex items-center gap-3 px-5 py-2.5 cursor-pointer bg-[#1565C0]">
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-[#FFD740]"></div>
+                    <span class="text-sm">🩺</span>
+                    <span class="text-xs font-bold text-white">Khám bệnh</span>
+                </div>
+                <div class="nav-item relative flex items-center gap-3 px-5 py-2.5 cursor-pointer hover:bg-white/5">
+                    <span class="text-sm">🧪</span>
+                    <span class="text-xs text-[#90B8F8]">Chỉ định DV</span>
+                </div>
+                <div class="nav-item relative flex items-center gap-3 px-5 py-2.5 cursor-pointer hover:bg-white/5">
+                    <span class="text-sm">💊</span>
+                    <span class="text-xs text-[#90B8F8]">Đơn thuốc</span>
+                </div>
+                <div class="nav-item relative flex items-center gap-3 px-5 py-2.5 cursor-pointer hover:bg-white/5">
+                    <span class="text-sm">📈</span>
+                    <span class="text-xs text-[#90B8F8]">Xem báo cáo</span>
+                </div>
+            </nav>
+
+            <!-- Logout -->
+            <div class="flex items-center gap-3 px-5 py-4 cursor-pointer hover:bg-white/5">
+                <span class="text-sm">🚪</span>
+                <span class="text-xs text-[#EF9A9A]">Đăng Xuất</span>
+            </div>
+        </aside>
+
+        <!-- Content -->
+        <div class="flex flex-col flex-1 overflow-hidden">
+            <!-- Status bar -->
+            <div class="bg-[#E8EDF5] border-b border-[#CBD5E1] flex items-center justify-between px-4 py-2 shrink-0">
+                <button id="mobileMenuBtn" class="lg:hidden text-[#455A64] p-1">
+                    ☰
+                </button>
+                <div class="flex-1"></div>
+                <span class="text-[#78909C] text-[11px]">
+                        Cập nhật: 27/05/2026 07:30
+                    </span>
+            </div>
+
+            <!-- Page header -->
+            <div class="bg-white border-b border-[#CBD5E1] px-5 py-3 shrink-0">
+                <h1 class="text-[#1565C0] text-[17px] font-bold leading-tight">
+                    Bác sĩ khám bệnh ngoại trú
+                </h1>
+                <p class="text-[#78909C] text-[11px] mt-0.5">
+                    Bác sĩ xem bệnh nhân chờ khám, ghi triệu chứng, chẩn đoán và ra chỉ định/kê toa.
+                </p>
+            </div>
+
+            <!-- Main panels -->
+            <div class="flex flex-1 gap-4 p-4 overflow-auto flex-col lg:flex-row">
+                <!-- Left panel: Patient queue -->
+                <div class="flex flex-col bg-white rounded-lg border border-[#CBD5E1] shrink-0 w-full max-w-[360px] lg:w-[360px]">
+                    <!-- Panel header -->
+                    <div class="bg-[#1565C0] rounded-t-lg px-4 py-2">
+                            <span class="text-white text-xs font-bold">
+                                Danh sách bệnh nhân chờ khám
+                            </span>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="flex-1 overflow-auto">
+                        <!-- Table header -->
+                        <div class="grid bg-[#E8EDF5] border-b border-[#CBD5E1] sticky top-0" style="grid-template-columns: 40px 1fr 60px 70px">
+                            <div class="px-3 py-2 text-[10px] font-bold text-[#455A64]">STT</div>
+                            <div class="px-2 py-2 text-[10px] font-bold text-[#455A64] border-l border-[#E0E0E0]">Bệnh nhân</div>
+                            <div class="px-2 py-2 text-[10px] font-bold text-[#455A64] border-l border-[#E0E0E0]">Giờ</div>
+                            <div class="px-2 py-2 text-[10px] font-bold text-[#455A64] border-l border-[#E0E0E0]">TT</div>
+                        </div>
+
+                        <!-- Table rows -->
+                        <div id="patientTable"></div>
+                    </div>
+
+                    <!-- Action buttons -->
+                    <div class="flex gap-3 px-4 py-4 border-t border-[#EEF2F7]">
+                        <button class="flex-1 bg-[#1565C0] text-white text-[11px] font-bold rounded py-1.5 hover:bg-[#1251a3] transition-colors">
+                            Gọi bệnh nhân
+                        </button>
+                        <button class="bg-[#78909C] text-white text-[11px] font-bold rounded px-4 py-1.5 hover:bg-[#607d8b] transition-colors">
+                            Bỏ qua
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right panel: Examination form -->
+                <div class="flex flex-col bg-white rounded-lg border border-[#CBD5E1] flex-1 min-w-0">
+                    <!-- Panel header -->
+                    <div class="bg-[#1565C0] rounded-t-lg px-4 py-2">
+                            <span class="text-white text-xs font-bold">
+                                Thông tin khám bệnh
+                            </span>
+                    </div>
+
+                    <div class="flex flex-col flex-1 overflow-auto p-4 gap-4">
+                        <!-- Row 1: Exam info fields -->
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[11px] font-bold text-[#455A64]">Mã phiếu khám</label>
+                                <div class="border border-[#B0BEC5] rounded px-2.5 py-2 bg-white">
+                                    <span class="text-[11px] text-[#607D8B]" id="examCode">PK000231</span>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[11px] font-bold text-[#455A64]">Bệnh nhân</label>
+                                <div class="border border-[#B0BEC5] rounded px-2.5 py-2 bg-white">
+                                    <span class="text-[11px] text-[#607D8B]" id="patientName">Nguyễn Văn A</span>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[11px] font-bold text-[#455A64]">Phòng khám</label>
+                                <div class="border border-[#B0BEC5] rounded px-2.5 py-2 bg-white">
+                                    <span class="text-[11px] text-[#607D8B]">PK01</span>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[11px] font-bold text-[#455A64]">Bác sĩ</label>
+                                <div class="border border-[#B0BEC5] rounded px-2.5 py-2 bg-white">
+                                    <span class="text-[11px] text-[#607D8B]">BS. Trần Minh</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 2: Symptoms + Medical history -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[11px] font-bold text-[#455A64]">Triệu chứng</label>
+                                <div class="border border-[#B0BEC5] rounded px-2.5 py-2 bg-white min-h-[82px]">
+                                    <span class="text-[11px] text-[#607D8B]">Đau bụng, sốt nhẹ, mệt mỏi</span>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[11px] font-bold text-[#455A64]">Tiền sử bệnh</label>
+                                <div class="border border-[#B0BEC5] rounded px-2.5 py-2 bg-white min-h-[82px]">
+                                    <span class="text-[11px] text-[#607D8B]">Không ghi nhận bệnh nền</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 3: Vital signs + Initial diagnosis -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[11px] font-bold text-[#455A64]">Dấu hiệu sinh tồn</label>
+                                <div class="border border-[#B0BEC5] rounded px-2.5 py-2 bg-white min-h-[82px]">
+                                    <span class="text-[11px] text-[#607D8B]">Mạch 78, HA 120/80, nhiệt độ 37.8°C</span>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[11px] font-bold text-[#455A64]">Chẩn đoán ban đầu</label>
+                                <div class="border border-[#B0BEC5] rounded px-2.5 py-2 bg-white min-h-[82px]">
+                                    <span class="text-[11px] text-[#607D8B]">Theo dõi viêm dạ dày / rối loạn tiêu hóa</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action buttons -->
+                        <div class="flex flex-wrap gap-3">
+                            <button onclick="goToOrder()" class="bg-[#FB8C00] text-white text-[11px] font-bold rounded px-5 py-2 hover:bg-[#e67e00] transition-colors">
+                                Chỉ định dịch vụ
+                            </button>
+                            <button onclick="goToPrescription()" class="bg-[#43A047] text-white text-[11px] font-bold rounded px-5 py-2 hover:bg-[#388e3c] transition-colors">
+                                Kê toa
+                            </button>
+                            <button class="bg-[#6A1B9A] text-white text-[11px] font-bold rounded px-5 py-2 hover:bg-[#5c1787] transition-colors">
+                                Hẹn tái khám
+                            </button>
+                        </div>
+
+                        <!-- Workflow info -->
+                        <div class="bg-[#E8F5E9] border border-[#81C784] rounded-lg p-4 mt-auto">
+                            <p class="text-[#2E7D32] text-[13px] font-bold mb-2">
+                                Luồng xử lý
+                            </p>
+                            <p class="text-[#455A64] text-[11px]">
+                                Khám ban đầu → nếu cần thì chỉ định xét nghiệm/siêu âm/X-quang → nhận kết quả → chẩn đoán cuối → kê toa.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    // Patient data
+    const patients = /*[[${patientQueue}]]*/ [
+        { id: 1, stt: "01", name: "Nguyễn Văn A", time: "08:00", status: "Chờ" },
+        { id: 2, stt: "02", name: "Lê Thị B", time: "08:30", status: "Đang" },
+        { id: 3, stt: "03", name: "Phạm Văn C", time: "09:00", status: "Chờ" },
+        { id: 4, stt: "04", name: "Trần Thị D", time: "09:30", status: "Tái khám" },
+        { id: 5, stt: "05", name: "Hoàng Văn E", time: "10:00", status: "Chờ" },
+    ];
+
+    let selectedPatientId = patients.length ? patients[0].id : 1;
+
+    // Initialize patient table
+    function renderPatientTable() {
+        const table = document.getElementById('patientTable');
+        table.innerHTML = patients.map((patient, idx) => {
+            const isSelected = selectedPatientId === patient.id;
+            const bgColor = isSelected ? 'bg-[#E3EDFF]' : (idx % 2 === 0 ? 'bg-white' : 'bg-[#FAFBFD]');
+            const statusColor =
+                patient.status === 'Chờ' ? 'text-[#78909C]' :
+                patient.status === 'Đang' ? 'text-[#43A047] font-semibold' :
+                patient.status === 'Tái khám' ? 'text-[#FB8C00]' :
+                'text-[#37474F]';
+
+            return `
+                <div
+                    class="grid border-b border-[#EEF2F7] cursor-pointer ${bgColor} hover:bg-[#EEF4FF] transition-colors patient-row"
+                    data-patient-id="${patient.id}"
+                    style="grid-template-columns: 40px 1fr 60px 70px"
+                >
+                    <div class="px-3 py-3 text-[10px] text-[#37474F]">${patient.stt}</div>
+                    <div class="px-2 py-3 text-[10px] text-[#37474F] border-l border-[#E0E0E0]">${patient.name}</div>
+                    <div class="px-2 py-3 text-[10px] text-[#37474F] border-l border-[#E0E0E0]">${patient.time}</div>
+                    <div class="px-2 py-3 border-l border-[#E0E0E0]">
+                        <span class="text-[10px] ${statusColor}">${patient.status}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // Add click handlers
+        document.querySelectorAll('.patient-row').forEach(row => {
+            row.addEventListener('click', () => {
+                selectedPatientId = row.dataset.patientId;
+                renderPatientTable();
+                updatePatientInfo();
+            });
+        });
+    }
+
+    // Update patient info in the form
+    function updatePatientInfo() {
+        const patient = patients.find(p => p.id === selectedPatientId);
+        if (patient) {
+            document.getElementById('patientName').textContent = patient.name;
+            document.getElementById('examCode').textContent = patient.examCode || `PK00023${patient.id}`;
+        }
+    }
+
+    function goToOrder() {
+        window.location.href = '/admin/bac-si/chi-dinh?maPhieuKham=' + encodeURIComponent(selectedPatientId);
+    }
+
+    function goToPrescription() {
+        window.location.href = '/admin/bac-si/ke-thuoc?maPhieuKham=' + encodeURIComponent(selectedPatientId);
+    }
+
+    // Mobile sidebar toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    mobileMenuBtn.addEventListener('click', () => {
+        sidebar.classList.remove('-translate-x-full');
+        sidebarOverlay.classList.remove('hidden');
+    });
+
+    sidebarOverlay.addEventListener('click', () => {
+        sidebar.classList.add('-translate-x-full');
+        sidebarOverlay.classList.add('hidden');
+    });
+
+    // Initialize
+    renderPatientTable();
+    updatePatientInfo();
+</script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Quản Lý Bệnh Nhân', 'benh-nhan', ~{::section})}">
+<head>
+    <title>Quản lý Bệnh Nhân - Admin</title>
+</head>
+<body>
+    <section style="padding: 20px; font-family: Inter;">
+        <div style="margin-bottom: 20px;">
+            <h1 style="color: #1565C0; font-size: 24px; font-weight: bold; margin: 0;">Quản Lý Bệnh Nhân</h1>
+            <p style="color: #78909C; font-size: 14px; margin-top: 5px;">Quản lý hồ sơ bệnh nhân và lịch sử khám</p>
+        </div>
+        
+        <div style="background: white; border: 1px solid #E3EDFF; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="font-size: 16px; margin: 0; color: #455A64;">👥 Danh Sách Bệnh Nhân</h2>
+                <div>
+                    <a th:href="@{/admin/benh-nhan/them}" style="background: #1565C0; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-size: 14px; cursor: pointer; text-decoration: none;">+ Bệnh nhân mới</a>
+                    <button style="background: #F5F8FF; border: 1px solid #90B8F8; color: #1565C0; padding: 8px 16px; border-radius: 4px; margin-left: 10px; cursor: pointer;">🔍 Lọc</button>
+                </div>
+            </div>
+            
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                <thead>
+                    <tr style="background: #F0F4FF; color: #1565C0; border-bottom: 2px solid #BBCEF0;">
+                        <th style="padding: 12px;">Mã BN</th>
+                        <th style="padding: 12px;">Họ tên</th>
+                        <th style="padding: 12px;">Ngày sinh</th>
+                        <th style="padding: 12px;">Giới tính</th>
+                        <th style="padding: 12px;">Số ĐT</th>
+                        <th style="padding: 12px;">Địa chỉ</th>
+                        <th style="padding: 12px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="bn : ${danhSach}" style="border-bottom: 1px solid #E3EDFF; color: #455A64;">
+                        <td style="padding: 12px; font-weight: bold;" th:text="${bn.maBenhNhan}">BN001</td>
+                        <td style="padding: 12px;" th:text="${bn.hoTen}">Nguyễn Văn A</td>
+                        <td style="padding: 12px;" th:text="${bn.ngaySinh != null ? #dates.format(bn.ngaySinh, 'dd/MM/yyyy') : ''}">01/01/1990</td>
+                        <td style="padding: 12px;" th:text="${bn.gioiTinh}">Nam</td>
+                        <td style="padding: 12px;" th:text="${bn.soDienThoai}">0901234567</td>
+                        <td style="padding: 12px;" th:text="${bn.diaChi}">Hà Nội</td>
+                        <td style="padding: 12px;">
+                            <a th:href="@{/admin/benh-nhan/chi-tiet/{id}(id=${bn.maBenhNhan})}" style="color: #1565C0; text-decoration: none; margin-right: 8px;">Chi tiết</a>
+                            <a th:href="@{/admin/benh-nhan/sua/{id}(id=${bn.maBenhNhan})}" style="color: #2563EB; text-decoration: none; margin-right: 8px;">Sửa</a>
+                            <a th:href="@{/admin/benh-nhan/xoa/{id}(id=${bn.maBenhNhan})}" onclick="return confirm('Bạn có chắc chắn muốn xóa bệnh nhân này?')" style="color: #DC2626; text-decoration: none;">Xóa</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Thêm/Sửa Tài Khoản', 'tai-khoan', ~{::section})}">
+<head>
+    <title>Thêm/Sửa Tài Khoản</title>
+</head>
+<body>
+    <section style="padding: 20px; font-family: Inter;">
+        <div style="margin-bottom: 20px;">
+            <h1 style="color: #1565C0; font-size: 24px; font-weight: bold; margin: 0;" th:text="${taiKhoan.maTaiKhoan == null ? 'Thêm Tài Khoản Mới' : 'Cập Nhật Tài Khoản'}">Form</h1>
+            <p style="color: #78909C; font-size: 14px; margin-top: 5px;">Nhập thông tin tài khoản người dùng hệ thống</p>
+        </div>
+        
+        <div style="background: white; border: 1px solid #E3EDFF; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); max-width: 600px;">
+            <form th:action="${taiKhoan.maTaiKhoan == null ? '/admin/tai-khoan/them' : '/admin/tai-khoan/sua/' + taiKhoan.maTaiKhoan}" th:object="${taiKhoan}" method="post">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Tên Đăng Nhập</label>
+                    <input type="text" th:field="*{tenDangNhap}" required style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Mật Khẩu (Để trống nếu không đổi)</label>
+                    <input type="password" th:field="*{matKhau}" th:required="${taiKhoan.maTaiKhoan == null}" style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Email</label>
+                    <input type="email" th:field="*{email}" required style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Họ Tên</label>
+                    <input type="text" th:field="*{hoTen}" required style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Vai Trò</label>
+                    <select th:field="*{vaiTro.maVaiTro}" required style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                        <option th:each="vt : ${vaiTros}" th:value="${vt.maVaiTro}" th:text="${vt.moTa}"></option>
+                    </select>
+                </div>
+                
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <a th:href="@{/admin/tai-khoan}" style="background: #F5F8FF; border: 1px solid #90B8F8; color: #1565C0; padding: 10px 20px; border-radius: 4px; text-decoration: none; font-size: 14px;">Hủy Bỏ</a>
+                    <button type="submit" style="background: #1565C0; border: none; color: white; padding: 10px 20px; border-radius: 4px; font-size: 14px; cursor: pointer; font-family: Inter;">Lưu Thay Đổi</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</body>
+</html>

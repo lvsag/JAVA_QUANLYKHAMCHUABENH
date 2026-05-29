@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Thêm/Sửa Chuyên Khoa', 'chuyen-khoa', ~{::section})}">
+<head>
+    <title>Thêm/Sửa Chuyên Khoa - Admin</title>
+</head>
+<body>
+    <section>
+        <style>
+            .form-container { background: white; border: 1px solid #E2E8F0; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); max-width: 600px; margin: 0 auto; }
+            .form-title { font-size: 20px; font-weight: 700; color: #1E293B; margin-bottom: 24px; text-align: center; }
+            .form-group { margin-bottom: 16px; }
+            .form-label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; }
+            .form-input { width: 100%; padding: 10px 12px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 14px; color: #334155; }
+            .form-input:focus { outline: none; border-color: #2563EB; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+            
+            .btn { padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; }
+            .btn-primary { background: #2563EB; color: white; width: 100%; }
+            .btn-primary:hover { background: #1D4ED8; }
+            .btn-outline { background: white; border: 1px solid #CBD5E1; color: #475569; width: 100%; margin-top: 10px; }
+            .btn-outline:hover { background: #F8FAFC; }
+        </style>
+
+        <div class="form-container">
+            <h2 class="form-title" th:text="${chuyenKhoa.maChuyenKhoa == null ? 'Thêm Chuyên Khoa Mới' : 'Cập Nhật Chuyên Khoa'}">Thêm Chuyên Khoa</h2>
+            
+            <form th:action="@{${chuyenKhoa.maChuyenKhoa == null ? '/admin/chuyen-khoa/them' : '/admin/chuyen-khoa/sua/' + chuyenKhoa.maChuyenKhoa}}" method="post" th:object="${chuyenKhoa}">
+                
+                <div class="form-group" th:if="${chuyenKhoa.maChuyenKhoa != null}">
+                    <label class="form-label">Mã Chuyên Khoa</label>
+                    <input type="text" th:field="*{maChuyenKhoa}" class="form-input" readonly style="background: #F1F5F9;" />
+                </div>
+
+                <div class="form-group" th:if="${chuyenKhoa.maChuyenKhoa == null}">
+                    <label class="form-label">Mã Chuyên Khoa (Nhập tùy ý, VD: CK05)</label>
+                    <input type="text" th:field="*{maChuyenKhoa}" class="form-input" required placeholder="Nhập mã chuyên khoa..." />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tên Chuyên Khoa</label>
+                    <input type="text" th:field="*{tenChuyenKhoa}" class="form-input" required placeholder="Nhập tên chuyên khoa..." />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Mô Tả</label>
+                    <textarea th:field="*{moTa}" class="form-input" rows="4" placeholder="Nhập mô tả về chuyên khoa..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Trạng Thái</label>
+                    <select th:field="*{trangThai}" class="form-input">
+                        <option value="Hoạt động">Hoạt động</option>
+                        <option value="Tạm ngưng">Tạm ngưng</option>
+                    </select>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <button type="submit" class="btn btn-primary" th:text="${chuyenKhoa.maChuyenKhoa == null ? 'Lưu Chuyên Khoa' : 'Cập Nhật'}">Lưu</button>
+                    <button type="button" class="btn btn-outline" onclick="window.location.href='/admin/chuyen-khoa'">Hủy bỏ</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</body>
+</html>

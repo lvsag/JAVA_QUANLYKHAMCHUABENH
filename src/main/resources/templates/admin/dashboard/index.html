@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Admin Dashboard', 'dashboard', ~{::section})}">
+<head>
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <section>
+        <style>
+            /* Dashboard Grid Layout */
+            .dashboard-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 24px; }
+            
+            .stat-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #E2E8F0; }
+            .stat-card .icon { font-size: 24px; margin-bottom: 12px; display: inline-block; padding: 10px; border-radius: 8px; background: #EFF6FF; }
+            .stat-card .value { font-size: 24px; font-weight: 700; color: #1E293B; margin-bottom: 4px; }
+            .stat-card .label { font-size: 14px; color: #64748B; margin-bottom: 8px; }
+            .stat-card .trend { font-size: 12px; font-weight: 500; color: #10B981; }
+            .stat-card .trend.danger { color: #EF4444; }
+
+            .dashboard-tables { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+            
+            .card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #E2E8F0; padding: 20px; }
+            .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+            .card-title { font-size: 16px; font-weight: 600; color: #1E293B; }
+            
+            table { width: 100%; border-collapse: collapse; font-size: 14px; }
+            th { text-align: left; padding: 12px; color: #64748B; font-weight: 600; border-bottom: 2px solid #E2E8F0; background: #F8FAFC; }
+            td { padding: 12px; border-bottom: 1px solid #E2E8F0; color: #334155; }
+            tr:hover td { background: #F8FAFC; }
+            
+            .badge { padding: 4px 8px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+            .badge-success { background: #DCFCE7; color: #16A34A; }
+            .badge-warning { background: #FEF9C3; color: #CA8A04; }
+            .badge-danger { background: #FEE2E2; color: #DC2626; }
+            .badge-info { background: #DBEAFE; color: #2563EB; }
+        </style>
+
+        <!-- Thẻ Thống Kê -->
+        <div class="dashboard-grid">
+            <div class="stat-card">
+                <div class="icon">📅</div>
+                <div class="value" th:text="${totalAppointments}">48</div>
+                <div class="label">Lịch hẹn hôm nay</div>
+                <div class="trend">Chờ xác nhận: <span th:text="${totalAppointments}">0</span></div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="icon">👥</div>
+                <div class="value" th:text="${totalPatients}">1,248</div>
+                <div class="label">Tổng bệnh nhân</div>
+                <div class="trend">Dữ liệu thực tế từ DB</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="icon">💰</div>
+                <div class="value" th:text="${#numbers.formatDecimal(revenueToday, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">12,400,000 VNĐ</div>
+                <div class="label">Doanh thu hôm nay</div>
+                <div class="trend">Dữ liệu từ Hóa Đơn</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="icon" style="background: #FEF2F2;">⚠</div>
+                <div class="value" th:text="${lowStockCount}">3</div>
+                <div class="label">Thuốc / VT sắp hết</div>
+                <div class="trend danger">Cần nhập thêm khẩn</div>
+            </div>
+        </div>
+
+        <!-- Bảng Dữ Liệu -->
+        <div class="dashboard-tables">
+            <!-- Danh sách lịch hẹn -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">📋 Lịch Hẹn Hôm Nay</div>
+                    <a href="/admin/lich-hen" style="color: #2563EB; font-size: 14px; text-decoration: none;">Xem tất cả →</a>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mã LH</th>
+                            <th>Bệnh nhân</th>
+                            <th>Bác sĩ</th>
+                            <th>Giờ hẹn</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="lh : ${todayAppointments}">
+                            <td th:text="${lh.MaLichHen}">LH-01</td>
+                            <td th:text="${lh.TenBenhNhan}" style="font-weight: 500;">Nguyễn Văn A</td>
+                            <td th:text="${lh.TenBacSi}">BS. B</td>
+                            <td th:text="${lh.GioHen}">08:00</td>
+                            <td>
+                                <span class="badge" 
+                                      th:classappend="${lh.TrangThai == 'Chờ xác nhận' ? 'badge-warning' : (lh.TrangThai == 'Đã xác nhận' ? 'badge-info' : (lh.TrangThai == 'Đã hủy' ? 'badge-danger' : 'badge-success'))}"
+                                      th:text="${lh.TrangThai}">Chờ xác nhận</span>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(todayAppointments)}">
+                            <td colspan="5" style="text-align: center; color: #94A3B8;">Không có lịch hẹn nào hôm nay</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Cột phải: Bác sĩ & Tồn kho -->
+            <div>
+                <!-- Bác sĩ làm việc -->
+                <div class="card" style="margin-bottom: 20px;">
+                    <div class="card-header">
+                        <div class="card-title">👨‍⚕️ Bác Sĩ Đang Làm Việc</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Bác sĩ</th>
+                                <th>Chuyên khoa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="bs : ${workingDoctors}">
+                                <td th:text="${bs.TenBacSi}" style="font-weight: 500;">BS. A</td>
+                                <td th:text="${bs.TenChuyenKhoa}">Nội tổng hợp</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Cảnh báo tồn kho -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title" style="color: #DC2626;">⚠ Tồn Kho Thấp</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Vật tư / Thuốc</th>
+                                <th>Tồn</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item : ${lowStockItems}">
+                                <td th:text="${item.Ten}">Paracetamol</td>
+                                <td><span class="badge badge-danger" th:text="${item.TonKho} + ' / ' + ${item.NguongCanhBao}">2 / 10</span></td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(lowStockItems)}">
+                                <td colspan="2" style="text-align: center; color: #16A34A;">Tất cả hàng hóa đầy đủ</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

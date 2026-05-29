@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Thêm/Sửa Lịch Hẹn', 'lich-hen', ~{::section})}">
+<head>
+    <title>Thêm/Sửa Lịch Hẹn</title>
+</head>
+<body>
+    <section style="padding: 20px; font-family: Inter;">
+        <div style="margin-bottom: 20px;">
+            <h1 style="color: #1565C0; font-size: 24px; font-weight: bold; margin: 0;" th:text="${lichHen.maLichHen == null ? 'Đặt Lịch Khám (Hộ)' : 'Cập Nhật Lịch Hẹn'}">Form Lịch Hẹn</h1>
+            <p style="color: #78909C; font-size: 14px; margin-top: 5px;">Sắp xếp lịch khám và phân bổ bác sĩ</p>
+        </div>
+        
+        <div style="background: white; border: 1px solid #E3EDFF; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); max-width: 800px;">
+            <form th:action="${lichHen.maLichHen == null ? '/admin/lich-hen/them' : '/admin/lich-hen/sua/' + lichHen.maLichHen}" th:object="${lichHen}" method="post" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Chọn Bệnh Nhân <span style="color:red">*</span></label>
+                    <select th:field="*{benhNhan.maBenhNhan}" required style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                        <option value="">-- Chọn bệnh nhân --</option>
+                        <option th:each="bn : ${benhNhans}" th:value="${bn.maBenhNhan}" th:text="${bn.hoTen + ' (' + bn.soDienThoai + ')'}"></option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Chọn Bác Sĩ</label>
+                    <select th:field="*{bacSi.maBacSi}" style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                        <option value="">-- Có thể để trống nếu chưa phân công --</option>
+                        <option th:each="bs : ${bacSis}" th:value="${bs.maBacSi}" th:text="${bs.hoTen + ' - ' + bs.chuyenKhoa.tenChuyenKhoa}"></option>
+                    </select>
+                </div>
+
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Ngày Khám <span style="color:red">*</span></label>
+                    <input type="date" th:field="*{ngayHen}" required style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                </div>
+                
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Giờ Khám <span style="color:red">*</span></label>
+                    <input type="time" th:field="*{gioHen}" required style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                </div>
+                
+                <div style="grid-column: 1 / -1;">
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Lý Do Khám / Triệu Chứng</label>
+                    <textarea th:field="*{trieuChung}" rows="3" style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box; resize: vertical;"></textarea>
+                </div>
+
+                <div th:if="${lichHen.maLichHen != null}">
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Trạng Thái</label>
+                    <select th:field="*{trangThai}" required style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                        <option value="Chờ xác nhận">Chờ xác nhận</option>
+                        <option value="Đã xác nhận">Đã xác nhận</option>
+                        <option value="Đã hoàn thành">Đã hoàn thành</option>
+                        <option value="Đã hủy">Đã hủy</option>
+                    </select>
+                </div>
+                
+                <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                    <a th:href="@{/admin/lich-hen}" style="background: #F5F8FF; border: 1px solid #90B8F8; color: #1565C0; padding: 10px 20px; border-radius: 4px; text-decoration: none; font-size: 14px;">Hủy Bỏ</a>
+                    <button type="submit" style="background: #1565C0; border: none; color: white; padding: 10px 20px; border-radius: 4px; font-size: 14px; cursor: pointer; font-family: Inter;">Lưu Lịch Hẹn</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Thêm/Sửa Bệnh Nhân', 'benh-nhan', ~{::section})}">
+<head>
+    <title>Thêm/Sửa Bệnh Nhân</title>
+</head>
+<body>
+    <section style="padding: 20px; font-family: Inter;">
+        <div style="margin-bottom: 20px;">
+            <h1 style="color: #1565C0; font-size: 24px; font-weight: bold; margin: 0;" th:text="${benhNhan.maBenhNhan == null ? 'Thêm Bệnh Nhân Mới' : 'Cập Nhật Bệnh Nhân'}">Form Bệnh Nhân</h1>
+            <p style="color: #78909C; font-size: 14px; margin-top: 5px;">Quản lý thông tin cá nhân và bảo hiểm y tế</p>
+        </div>
+        
+        <div style="background: white; border: 1px solid #E3EDFF; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); max-width: 800px;">
+            <form th:action="${benhNhan.maBenhNhan == null ? '/admin/benh-nhan/them' : '/admin/benh-nhan/sua/' + benhNhan.maBenhNhan}" th:object="${benhNhan}" method="post" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                
+                <div style="grid-column: 1 / -1; margin-bottom: 10px;">
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Họ và Tên <span style="color:red">*</span></label>
+                    <input type="text" th:field="*{hoTen}" required style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                </div>
+                
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Giới Tính <span style="color:red">*</span></label>
+                    <select th:field="*{gioiTinh}" required style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                        <option value="Nam">Nam</option>
+                        <option value="Nữ">Nữ</option>
+                        <option value="Khác">Khác</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Ngày Sinh</label>
+                    <input type="date" th:field="*{ngaySinh}" style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                </div>
+                
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Số Điện Thoại</label>
+                    <input type="text" th:field="*{soDienThoai}" style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                </div>
+                
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Căn Cước Công Dân (CCCD)</label>
+                    <input type="text" th:field="*{cccd}" style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                </div>
+
+                <div style="grid-column: 1 / -1;">
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Địa Chỉ</label>
+                    <input type="text" th:field="*{diaChi}" style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                </div>
+                
+                <div style="grid-column: 1 / -1; margin-top: 10px; border-top: 1px solid #E3EDFF; padding-top: 15px;">
+                    <h3 style="font-size: 15px; color: #1565C0; margin-bottom: 15px;">Thông tin Bảo Hiểm Y Tế</h3>
+                </div>
+
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Số thẻ BHYT</label>
+                    <input type="text" th:field="*{soBHYT}" style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                </div>
+
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Ngày hết hạn BHYT</label>
+                    <input type="date" th:field="*{ngayHetHanBHYT}" style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                </div>
+                
+                <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                    <a th:href="@{/admin/benh-nhan}" style="background: #F5F8FF; border: 1px solid #90B8F8; color: #1565C0; padding: 10px 20px; border-radius: 4px; text-decoration: none; font-size: 14px;">Hủy Bỏ</a>
+                    <button type="submit" style="background: #1565C0; border: none; color: white; padding: 10px 20px; border-radius: 4px; font-size: 14px; cursor: pointer; font-family: Inter;">Lưu Bệnh Nhân</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</body>
+</html>

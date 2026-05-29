@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký tài khoản - Phòng Khám Đa Khoa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+            background-color: #F8FAFC;
+        }
+        
+        /* Left Panel - Branding */
+        .left-panel {
+            flex: 1;
+            background: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            text-align: center;
+            position: fixed;
+            width: 40%;
+            height: 100vh;
+        }
+        .left-panel .icon { font-size: 80px; margin-bottom: 20px; }
+        .left-panel h1 { font-size: 32px; font-weight: 700; margin: 0 0 10px 0; }
+        .left-panel p { font-size: 16px; color: #BFDBFE; font-weight: 300; margin: 0; max-width: 300px; line-height: 1.5; }
+        
+        /* Right Panel - Register Form */
+        .right-panel {
+            flex: 1;
+            margin-left: 40%;
+            display: flex;
+            justify-content: center;
+            padding: 60px 40px;
+            background-color: #FFFFFF;
+        }
+        .register-box {
+            width: 100%;
+            max-width: 600px;
+        }
+        .register-box h2 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #0F172A;
+            margin: 0 0 10px 0;
+            text-align: center;
+        }
+        .register-box p.subtitle {
+            text-align: center;
+            color: #64748B;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1E40AF;
+            margin: 25px 0 15px 0;
+            border-bottom: 1.5px solid #E2E8F0;
+            padding-bottom: 8px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px 20px;
+        }
+        .form-group { margin-bottom: 5px; }
+        .form-group.full-width { grid-column: span 2; }
+        
+        .form-group label { display: block; font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 6px; }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #E2E8F0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            background-color: #F8FAFC;
+            box-sizing: border-box;
+            transition: all 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus { border-color: #2563EB; background-color: #FFF; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        
+        .form-options { display: flex; align-items: center; margin: 25px 0; }
+        .form-options label { font-size: 13px; color: #475569; display: flex; align-items: center; cursor: pointer; }
+        .form-options input[type="checkbox"] { margin-right: 10px; cursor: pointer; width: 16px; height: 16px; }
+        
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background-color: #2563EB;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(37,99,235,0.2);
+            transition: background 0.2s, transform 0.1s;
+        }
+        .btn-submit:hover { background-color: #1D4ED8; }
+        .btn-submit:active { transform: translateY(1px); }
+        
+        .error-msg { color: #DC2626; font-size: 14px; margin-bottom: 20px; text-align: center; background: #FEF2F2; padding: 10px; border-radius: 6px; border: 1px solid #FCA5A5; }
+        .success-msg { color: #16A34A; font-size: 14px; margin-bottom: 20px; text-align: center; background: #DCFCE7; padding: 10px; border-radius: 6px; border: 1px solid #86EFAC; }
+        
+        .login-link { margin-top: 25px; text-align: center; font-size: 14px; color: #475569; }
+        .login-link a { color: #2563EB; font-weight: 600; text-decoration: none; }
+        .login-link a:hover { text-decoration: underline; }
+        
+        @media (max-width: 900px) {
+            body { flex-direction: column; }
+            .left-panel { position: relative; width: 100%; height: auto; padding: 40px 20px; }
+            .right-panel { margin-left: 0; padding: 40px 20px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .form-group.full-width { grid-column: span 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="left-panel">
+        <div class="icon">🏥</div>
+        <h1>PHÒNG KHÁM ĐA KHOA</h1>
+        <p>Hệ thống quản lý khám chữa bệnh chuyên nghiệp, hiện đại, và tận tâm.</p>
+    </div>
+    
+    <div class="right-panel">
+        <div class="register-box">
+            <h2>TẠO TÀI KHOẢN MỚI</h2>
+            <p class="subtitle">Điền thông tin bên dưới để đăng ký khám bệnh</p>
+            
+            <div th:if="${error}" class="error-msg" th:text="${error}"></div>
+            <div th:if="${success}" class="success-msg" th:text="${success}"></div>
+            
+            <form action="/register" method="post">
+                <div class="section-title">Thông tin cá nhân</div>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label>Họ và tên *</label>
+                        <input type="text" name="hoTen" placeholder="VD: Nguyễn Văn A" required pattern="^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỮỰỲỴÝỶỸửữựỳỵỷỹ\s]+$" title="Họ tên không được chứa số hoặc ký tự đặc biệt" />
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" name="email" placeholder="email@gmail.com" required pattern=".*@gmail\.com" title="Vui lòng sử dụng địa chỉ email định dạng @gmail.com" />
+                    </div>
+                    <div class="form-group">
+                        <label>Số điện thoại *</label>
+                        <input type="text" name="soDienThoai" placeholder="0901 234 567" required pattern="^\d{10}$" title="Số điện thoại phải bao gồm đúng 10 chữ số" />
+                    </div>
+                    <div class="form-group">
+                        <label>Ngày sinh</label>
+                        <input type="date" name="ngaySinh" th:max="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Giới tính</label>
+                        <select name="gioiTinh">
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+                            <option value="Khác">Khác</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Địa chỉ</label>
+                        <input type="text" name="diaChi" placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/TP" />
+                    </div>
+                    <div class="form-group">
+                        <label>CCCD / CMND</label>
+                        <input type="text" name="soCCCD" placeholder="079xxxxxxxxx" />
+                    </div>
+                    <div class="form-group">
+                        <label>Số BHYT (nếu có)</label>
+                        <input type="text" name="soBHYT" placeholder="DN4xxxxxxxxxx" />
+                    </div>
+                </div>
+
+                <div class="section-title">Bảo mật tài khoản</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Mật khẩu *</label>
+                        <input type="password" name="password" placeholder="••••••••" required pattern="(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':\\|,.<>\/?]).+" title="Mật khẩu phải chứa ít nhất 1 chữ số và 1 ký tự đặc biệt" />
+                    </div>
+                    <div class="form-group">
+                        <label>Xác nhận mật khẩu *</label>
+                        <input type="password" name="confirmPassword" placeholder="••••••••" required />
+                    </div>
+                </div>
+                
+                <div class="form-options">
+                    <label>
+                        <input type="checkbox" name="agree" required /> 
+                        Tôi đồng ý với Điều khoản sử dụng và Chính sách bảo mật
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn-submit">TẠO TÀI KHOẢN</button>
+            </form>
+            
+            <div class="login-link">
+                Đã có tài khoản? <a href="/login">Đăng nhập ngay</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ Sơ Cá Nhân - Phòng Khám Đa Khoa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background-color: #F8FAFC; color: #334155; }
+        a { text-decoration: none; color: inherit; }
+        
+        /* Navbar */
+        .navbar { background: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 20px; font-weight: 700; color: #1E40AF; display: flex; align-items: center; gap: 8px; }
+        .nav-links { display: flex; gap: 24px; font-weight: 500; font-size: 15px; }
+        .nav-links a:hover { color: #2563EB; }
+        .nav-links a:hover { color: #2563EB; }
+        .nav-actions { display: flex; align-items: center; gap: 16px; }
+        .user-menu { position: relative; font-weight: 600; color: #1E40AF; display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 10px 0; }
+        .dropdown-menu { display: none; position: absolute; top: 100%; right: 0; background: white; min-width: 180px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; z-index: 1000; }
+        .user-menu:hover .dropdown-menu { display: block; }
+        .dropdown-item { padding: 12px 16px; color: #334155; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
+        .dropdown-item:hover { background: #F1F5F9; color: #2563EB; }
+        .dropdown-divider { height: 1px; background: #E2E8F0; margin: 4px 0; }
+        
+        /* Layout Container */
+        .container { display: flex; gap: 30px; padding: 30px 40px; max-width: 1400px; margin: 0 auto; }
+        
+        /* Sidebar */
+        .sidebar { width: 300px; flex-shrink: 0; display: flex; flex-direction: column; gap: 20px; }
+        .profile-card { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); text-align: center; }
+        .avatar-lg { width: 90px; height: 90px; background: #EFF6FF; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 15px auto; }
+        .profile-name { font-size: 18px; font-weight: 700; color: #0F172A; margin: 0 0 5px 0; }
+        .profile-id { font-size: 13px; color: #64748B; margin: 0; }
+        
+        .sidebar-menu { background: white; border-radius: 12px; padding: 10px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        .menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 25px; color: #475569; font-weight: 500; font-size: 14px; transition: background 0.2s; }
+        .menu-item:hover { background: #F8FAFC; color: #2563EB; }
+        .menu-item.active { background: #EFF6FF; color: #2563EB; border-right: 3px solid #2563EB; }
+        .menu-icon { font-size: 18px; width: 24px; text-align: center; }
+        
+        .health-summary { background: white; border-radius: 12px; padding: 20px 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        .summary-title { font-size: 14px; font-weight: 600; color: #1E293B; margin: 0 0 15px 0; display: flex; justify-content: space-between; }
+        .summary-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; }
+        .summary-row span:first-child { color: #64748B; }
+        .summary-row span:last-child { font-weight: 600; color: #0F172A; text-align: right; }
+        
+        /* Main Content */
+        .main-content { flex: 1; background: white; border-radius: 12px; padding: 35px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #F1F5F9; }
+        .page-title { margin: 0; font-size: 22px; color: #0F172A; display: flex; align-items: center; gap: 10px; }
+        .btn { padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; transition: background 0.2s; }
+        .btn-primary { background: #2563EB; color: white; }
+        .btn-primary:hover { background: #1D4ED8; }
+        .btn-secondary { background: #F1F5F9; color: #334155; }
+        .btn-secondary:hover { background: #E2E8F0; }
+        .btn-danger { background: #FEE2E2; color: #EF4444; }
+        
+        /* Forms */
+        .form-section { margin-bottom: 40px; }
+        .section-title { font-size: 16px; font-weight: 600; color: #1E293B; margin: 0 0 20px 0; }
+        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        .form-label { display: block; font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 8px; }
+        .form-control { width: 100%; padding: 10px 15px; border: 1px solid #E2E8F0; border-radius: 8px; font-family: inherit; font-size: 14px; color: #0F172A; box-sizing: border-box; outline: none; transition: border-color 0.2s; }
+        .form-control:focus { border-color: #2563EB; }
+        textarea.form-control { resize: vertical; min-height: 80px; }
+        
+        /* Toggle Switch */
+        .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #F1F5F9; }
+        .toggle-row:last-child { border-bottom: none; }
+        .toggle-label { font-size: 14px; color: #1E293B; font-weight: 500; }
+        
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #CBD5E1; transition: .3s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: #2563EB; }
+        input:checked + .slider:before { transform: translateX(20px); }
+        
+        /* Alert/Toast */
+        .alert { padding: 15px 20px; border-radius: 8px; margin-bottom: 25px; font-size: 14px; display: flex; align-items: center; gap: 10px; }
+        .alert-success { background: #DCFCE7; color: #166534; border: 1px solid #BBF7D0; }
+        .alert-danger { background: #FEF2F2; color: #DC2626; border: 1px solid #FCA5A5; }
+        
+        /* Footer */
+        .footer { background: #0F172A; color: #94A3B8; padding: 50px 10% 20px 10%; margin-top: 80px; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+        .footer-logo { color: white; font-size: 20px; font-weight: 700; margin-bottom: 15px; }
+        .footer-text { font-size: 14px; line-height: 1.8; margin-bottom: 10px; }
+        .footer-title { color: white; font-weight: 600; margin-bottom: 20px; }
+        .footer-links { list-style: none; padding: 0; margin: 0; }
+        .footer-links li { margin-bottom: 10px; font-size: 14px; }
+        .footer-bottom { border-top: 1px solid #334155; padding-top: 20px; text-align: center; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">🏥 <span th:text="${siteSettings['TenPhongKham'] ?: 'Phòng Khám Đa Khoa'}">Phòng Khám</span></div>
+        <div class="nav-links">
+            <a href="/home">Trang Chủ</a>
+            <a href="/bac-si">Bác Sĩ</a>
+            <a href="#">Dịch Vụ</a>
+            <a href="#">Đặt Lịch Hẹn</a>
+            <a href="/ho-so" style="color: #2563EB; font-weight: 600;">Hồ Sơ Của Tôi</a>
+        </div>
+        <div class="nav-actions">
+            <span style="font-size: 20px; cursor: pointer;">🔔</span>
+            <div class="user-menu" th:if="${session.loggedInUser != null}">
+                👤 <span th:text="${session.loggedInUser.hoTen}">Người dùng</span> ▾
+                <div class="dropdown-menu">
+                    <a href="/ho-so" class="dropdown-item">👤 Hồ sơ cá nhân</a>
+                    <a href="#" class="dropdown-item">📅 Lịch hẹn của tôi</a>
+                    <a href="/ho-so/bao-mat" class="dropdown-item">🔒 Đổi mật khẩu</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="/logout" class="dropdown-item" style="color: #EF4444;">🚪 Đăng xuất</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="profile-card">
+                <div class="avatar-lg">👤</div>
+                <h2 class="profile-name" th:text="${benhNhan.hoTen}">Tên Bệnh Nhân</h2>
+                <p class="profile-id">Bệnh nhân · Mã: <span th:text="${benhNhan.maBenhNhan}">BN-000</span></p>
+            </div>
+            
+            <div class="sidebar-menu">
+                <a href="/ho-so" class="menu-item active">
+                    <span class="menu-icon">👤</span>
+                    <div>
+                        <div>Thông tin cá nhân</div>
+                        <div style="font-size: 12px; color: #64748B;">Cập nhật hồ sơ</div>
+                    </div>
+                </a>
+                <a href="/ho-so/bao-mat" class="menu-item">
+                    <span class="menu-icon">🔒</span>
+                    <div>
+                        <div>Bảo mật tài khoản</div>
+                        <div style="font-size: 12px; color: #64748B;">Đổi mật khẩu</div>
+                    </div>
+                </a>
+                <a href="/ho-so/lich-su-kham" class="menu-item">
+                    <span class="menu-icon">📅</span>
+                    <div>
+                        <div>Lịch sử khám bệnh</div>
+                        <div style="font-size: 12px; color: #64748B;">Xem tất cả lịch hẹn</div>
+                    </div>
+                </a>
+                <a href="/ho-so/don-thuoc" class="menu-item">
+                    <span class="menu-icon">💊</span>
+                    <div>
+                        <div>Đơn thuốc của tôi</div>
+                        <div style="font-size: 12px; color: #64748B;">Xem & tải đơn thuốc</div>
+                    </div>
+                </a>
+                <a href="/ho-so/xet-nghiem" class="menu-item">
+                    <span class="menu-icon">🔬</span>
+                    <div>
+                        <div>Kết quả xét nghiệm</div>
+                        <div style="font-size: 12px; color: #64748B;">XN máu, siêu âm...</div>
+                    </div>
+                </a>
+                <a href="/logout" class="menu-item" style="color: #EF4444; margin-top: 10px; border-top: 1px solid #F1F5F9;">
+                    <span class="menu-icon">🚪</span>
+                    Đăng xuất
+                </a>
+            </div>
+            
+            <div class="health-summary">
+                <h3 class="summary-title">Tóm tắt sức khỏe</h3>
+                <div class="summary-row">
+                    <span>Nhóm máu:</span>
+                    <span th:text="${benhNhan.nhomMau ?: 'Chưa cập nhật'}">O+</span>
+                </div>
+                <div class="summary-row">
+                    <span>Dị ứng thuốc:</span>
+                    <span th:text="${benhNhan.diUngThuoc ?: 'Không có'}">Không</span>
+                </div>
+                <div class="summary-row" style="flex-direction: column; gap: 5px;">
+                    <span>Tiền sử bệnh:</span>
+                    <span style="text-align: left;" th:text="${benhNhan.tienSuBenhManTinh ?: 'Không có'}">Huyết áp cao</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <form class="main-content" action="/ho-so/cap-nhat" method="post" th:object="${benhNhan}">
+            <div class="page-header">
+                <h1 class="page-title">👤 Hồ Sơ Cá Nhân</h1>
+                <div>
+                    <button type="submit" class="btn btn-primary">💾 Lưu Thay Đổi</button>
+                    <button type="button" class="btn btn-secondary" onclick="window.print()">📤 Xuất PDF</button>
+                </div>
+            </div>
+            
+            <div th:if="${successMessage}" class="alert alert-success">
+                ✅ <span th:text="${successMessage}">Thành công</span>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger">
+                ❌ <span th:text="${errorMessage}">Lỗi</span>
+            </div>
+            
+            <!-- Basic Info -->
+            <div class="form-section">
+                <h3 class="section-title">Thông Tin Cơ Bản</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Họ và tên *</label>
+                        <input type="text" class="form-control" th:field="*{hoTen}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ngày sinh</label>
+                        <input type="date" class="form-control" th:field="*{ngaySinh}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Giới tính</label>
+                        <select class="form-control" th:field="*{gioiTinh}">
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+                            <option value="Khác">Khác</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Quốc tịch</label>
+                        <input type="text" class="form-control" th:field="*{quocTich}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Số điện thoại *</label>
+                        <input type="text" class="form-control" th:field="*{soDienThoai}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email *</label>
+                        <input type="email" class="form-control" th:field="*{email}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Số CCCD / CMND</label>
+                        <input type="text" class="form-control" th:field="*{soCCCD}" pattern="^\d{12}$" title="Vui lòng nhập đúng 12 chữ số">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">Địa chỉ thường trú</label>
+                        <input type="text" class="form-control" th:field="*{diaChi}">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Medical Info -->
+            <div class="form-section">
+                <h3 class="section-title">Thông Tin Y Tế</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Nhóm máu</label>
+                        <select class="form-control" th:field="*{nhomMau}">
+                            <option value="">-- Chọn nhóm máu --</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Chiều cao (cm)</label>
+                        <input type="number" step="0.1" min="0" class="form-control" th:field="*{chieuCao}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Cân nặng (kg)</label>
+                        <input type="number" step="0.1" min="0" class="form-control" th:field="*{canNang}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Số Thẻ BHYT</label>
+                        <input type="text" class="form-control" th:field="*{soBHYT}">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">Dị ứng thuốc / Thực phẩm</label>
+                        <input type="text" class="form-control" th:field="*{diUngThuoc}" placeholder="Ví dụ: Penicillin, Hải sản...">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">Tiền sử bệnh mãn tính</label>
+                        <input type="text" class="form-control" th:field="*{tienSuBenhManTinh}" placeholder="Ví dụ: Huyết áp cao, Tiểu đường type 2...">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">Ghi chú y tế</label>
+                        <textarea class="form-control" th:field="*{ghiChuYTe}" placeholder="Ghi chú thêm để bác sĩ nắm rõ tình trạng..."></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Emergency Contact -->
+            <div class="form-section">
+                <h3 class="section-title">Người Thân Liên Hệ Khi Cần</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Họ tên người thân</label>
+                        <input type="text" class="form-control" th:field="*{hoTenNguoiThan}" pattern="^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỮỰỲỴÝỶỸửữựỳỵỷỹ\s]+$" title="Không được chứa số hoặc ký tự đặc biệt">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Quan hệ</label>
+                        <select class="form-control" th:field="*{quanHeNguoiThan}">
+                            <option value="">-- Chọn --</option>
+                            <option value="Vợ/Chồng">Vợ / Chồng</option>
+                            <option value="Bố/Mẹ">Bố / Mẹ</option>
+                            <option value="Con cái">Con cái</option>
+                            <option value="Anh/Chị/Em">Anh / Chị / Em</option>
+                            <option value="Khác">Khác</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Số điện thoại người thân</label>
+                        <input type="text" class="form-control" th:field="*{sdtNguoiThan}" pattern="^\d{10}$" title="Vui lòng nhập đúng 10 chữ số">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Notification Settings -->
+            <div class="form-section" style="max-width: 500px;">
+                <h3 class="section-title">Tùy Chọn Thông Báo</h3>
+                <div class="toggle-row">
+                    <span class="toggle-label">Nhận email nhắc lịch hẹn</span>
+                    <label class="switch">
+                        <input type="checkbox" th:field="*{nhanEmailNhacLich}">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-row">
+                    <span class="toggle-label">Nhận SMS nhắc lịch hẹn</span>
+                    <label class="switch">
+                        <input type="checkbox" th:field="*{nhanSMSNhacLich}">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-row">
+                    <span class="toggle-label">Nhận email kết quả xét nghiệm</span>
+                    <label class="switch">
+                        <input type="checkbox" th:field="*{nhanEmailKetQua}">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-row">
+                    <span class="toggle-label">Nhận tin tức sức khỏe hàng tuần</span>
+                    <label class="switch">
+                        <input type="checkbox" th:field="*{nhanTinTucSucKhoe}">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <div style="border-top: 1px solid #F1F5F9; padding-top: 20px; display: flex; gap: 15px;">
+                <button type="submit" class="btn btn-primary" style="padding: 12px 30px;">Lưu Thay Đổi</button>
+                <a href="/ho-so" class="btn btn-secondary" style="padding: 12px 30px;">Hủy Bỏ</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div>
+                <div class="footer-logo">🏥 <span th:text="${siteSettings != null ? siteSettings['TenPhongKham'] : 'Phòng Khám Đa Khoa'}">Phòng Khám Đa Khoa</span></div>
+                <div class="footer-text">📍 <span th:text="${siteSettings != null ? siteSettings['DiaChi'] : '123 Đường ABC, Quận 1'}">123 Đường ABC, Quận 1</span></div>
+                <div class="footer-text">📞 Hotline: <span th:text="${siteSettings != null ? siteSettings['SoDienThoai'] : '028 1234 5678'}">028 1234 5678</span></div>
+            </div>
+            <div>
+                <div class="footer-title">Chuyên Khoa</div>
+                <ul class="footer-links">
+                    <li th:each="ck : ${footerSpecialties}" th:text="${ck.tenChuyenKhoa}">Chuyên Khoa</li>
+                </ul>
+            </div>
+            <div>
+                <div class="footer-title">Hỗ Trợ</div>
+                <ul class="footer-links">
+                    <li>Đặt lịch hẹn</li>
+                    <li>Tra cứu kết quả</li>
+                    <li>Liên hệ</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 Đồ án Java
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Thêm/Sửa Dịch Vụ', 'dich-vu', ~{::section})}">
+<head>
+    <title>Thêm/Sửa Dịch Vụ</title>
+</head>
+<body>
+    <section style="padding: 20px; font-family: Inter;">
+        <div style="margin-bottom: 20px;">
+            <h1 style="color: #1565C0; font-size: 24px; font-weight: bold; margin: 0;" th:text="${dichVu.maDichVu == null ? 'Thêm Dịch Vụ Mới' : 'Cập Nhật Dịch Vụ'}">Form Dịch Vụ</h1>
+            <p style="color: #78909C; font-size: 14px; margin-top: 5px;">Quản lý thông tin và giá các dịch vụ khám bệnh</p>
+        </div>
+        
+        <div style="background: white; border: 1px solid #E3EDFF; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); max-width: 800px;">
+            <form th:action="${dichVu.maDichVu == null ? '/admin/dich-vu/them' : '/admin/dich-vu/sua/' + dichVu.maDichVu}" th:object="${dichVu}" method="post" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                
+                <div style="grid-column: 1 / -1; margin-bottom: 10px;">
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Tên Dịch Vụ <span style="color:red">*</span></label>
+                    <input type="text" th:field="*{tenDichVu}" required style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                </div>
+                
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Chuyên Khoa <span style="color:red">*</span></label>
+                    <select th:field="*{chuyenKhoa.maChuyenKhoa}" required style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                        <option value="">-- Chọn chuyên khoa --</option>
+                        <option th:each="ck : ${chuyenKhoas}" th:value="${ck.maChuyenKhoa}" th:text="${ck.tenChuyenKhoa}"></option>
+                    </select>
+                </div>
+
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Loại Dịch Vụ</label>
+                    <input type="text" th:field="*{loaiDichVu}" placeholder="VD: Khám bệnh, Xét nghiệm, Siêu âm" style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                </div>
+                
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Giá Dịch Vụ (VNĐ) <span style="color:red">*</span></label>
+                    <input type="number" th:field="*{giaDichVu}" required style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                </div>
+                
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Trạng Thái</label>
+                    <select th:field="*{trangThai}" required style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                        <option value="Đang dùng">Đang dùng</option>
+                        <option value="Ngừng cung cấp">Ngừng cung cấp</option>
+                    </select>
+                </div>
+
+                <div style="grid-column: 1 / -1;">
+                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Mô Tả Dịch Vụ</label>
+                    <textarea th:field="*{moTa}" rows="4" style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box; resize: vertical;"></textarea>
+                </div>
+                
+                <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                    <a th:href="@{/admin/dich-vu}" style="background: #F5F8FF; border: 1px solid #90B8F8; color: #1565C0; padding: 10px 20px; border-radius: 4px; text-decoration: none; font-size: 14px;">Hủy Bỏ</a>
+                    <button type="submit" style="background: #1565C0; border: none; color: white; padding: 10px 20px; border-radius: 4px; font-size: 14px; cursor: pointer; font-family: Inter;">Lưu Dịch Vụ</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</body>
+</html>

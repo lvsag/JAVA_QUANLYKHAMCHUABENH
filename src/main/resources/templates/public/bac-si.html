@@ -209,8 +209,8 @@
                             </div>
                             
                             <div class="doc-actions">
-                                <button class="btn btn-primary">📅 Đặt lịch ngay</button>
-                                <button class="btn btn-secondary">👁 Xem nhanh</button>
+                                <a th:href="@{/dat-lich/tao-moi(maBacSi=${bs.maBacSi})}" class="btn btn-primary" style="display:inline-block; text-align:center; text-decoration:none; box-sizing:border-box;">📅 Đặt lịch ngay</a>
+                                <a th:href="@{/bac-si/{id}(id=${bs.maBacSi})}" class="btn btn-secondary" style="display:inline-block; text-align:center; text-decoration:none; box-sizing:border-box;">👁 Xem nhanh</a>
                             </div>
                         </div>
                     </div>

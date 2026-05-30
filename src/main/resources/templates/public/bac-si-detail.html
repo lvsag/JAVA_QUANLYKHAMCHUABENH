@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="utf-8" />
+  <title>Chi Tiet Bac Si & Dat Lich - Phong Kham Da Khoa</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 14px; background: #f0f4f8; color: #222; }
+
+    /* ===== TOP BANNER ===== */
+    .top-banner {
+      background: #1565c0;
+      color: #fff;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 7px 0;
+      letter-spacing: 0.5px;
+    }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      background: #fff;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      height: 56px;
+      gap: 0;
+    }
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 16px;
+      color: #1565c0;
+      min-width: 200px;
+    }
+    .navbar-brand .icon { font-size: 22px; }
+    .navbar-nav {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex: 1;
+    }
+    .nav-link {
+      padding: 18px 16px;
+      color: #555;
+      text-decoration: none;
+      font-size: 14px;
+      border-bottom: 3px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .nav-link:hover { color: #1565c0; }
+    .nav-link.active { color: #1565c0; font-weight: 600; border-bottom-color: #1565c0; }
+    .navbar-search {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: #f5f7fa;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      padding: 6px 14px;
+      gap: 8px;
+      width: 240px;
+    }
+    .search-box input {
+      border: none; background: transparent; outline: none;
+      font-size: 13px; color: #555; width: 100%;
+    }
+    .notif-btn {
+      background: none; border: none; cursor: pointer;
+      font-size: 18px; position: relative;
+    }
+    .notif-badge {
+      position: absolute; top: -2px; right: -4px;
+      background: #e53935; color: #fff;
+      font-size: 9px; border-radius: 50%;
+      width: 14px; height: 14px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .user-menu {
+      display: flex; align-items: center; gap: 8px;
+      cursor: pointer; padding: 6px 10px;
+      border-radius: 20px; transition: background 0.2s;
+    }
+    .user-menu:hover { background: #f0f4f8; }
+    .avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #1565c0; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+    }
+    .user-name { font-size: 13px; font-weight: 600; color: #333; }
+
+    /* ===== BREADCRUMB ===== */
+    .breadcrumb {
+      background: #fff;
+      border-bottom: 1px solid #ececec;
+      padding: 8px 24px;
+      font-size: 12px;
+      color: #888;
+    }
+    .breadcrumb a { color: #1565c0; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb span { color: #1565c0; font-weight: 600; }
+    .sep { margin: 0 5px; color: #bbb; }
+
+    /* ===== MAIN LAYOUT ===== */
+    .main-container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    /* ===== LEFT PANEL ===== */
+    .left-panel { display: flex; flex-direction: column; gap: 16px; }
+
+    /* DOCTOR CARD */
+    .doctor-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+    }
+    .doctor-header {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .doctor-avatar {
+      width: 90px; height: 90px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 42px;
+      flex-shrink: 0;
+      border: 2px solid #e3f2fd;
+      position: relative;
+    }
+    .verified-badge {
+      position: absolute; bottom: -4px; right: -4px;
+      background: #1565c0; color: #fff;
+      border-radius: 50%; width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; border: 2px solid #fff;
+    }
+    .doctor-info h2 {
+      font-size: 20px; font-weight: 700; color: #1a237e;
+      margin-bottom: 6px;
+    }
+    .tag-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .tag-spec {
+      background: #e3f2fd; color: #1565c0;
+      font-size: 12px; font-weight: 600;
+      padding: 3px 10px; border-radius: 12px;
+    }
+    .tag-active {
+      background: #e8f5e9; color: #2e7d32;
+      font-size: 12px; font-weight: 600;
+      padding: 3px 10px; border-radius: 12px;
+    }
+    .stars { color: #f59e0b; font-size: 15px; letter-spacing: 1px; }
+    .rating-text { font-size: 13px; color: #666; margin-left: 4px; }
+    .doctor-meta { font-size: 13px; color: #555; line-height: 1.8; margin-top: 6px; }
+    .doctor-meta span { margin-right: 4px; }
+
+    /* TABS */
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid #e8eaf0;
+      margin-bottom: 16px;
+      gap: 0;
+    }
+    .tab-btn {
+      padding: 10px 18px;
+      border: none; background: none;
+      font-size: 13px; font-weight: 500;
+      color: #888; cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .tab-btn.active { color: #1565c0; border-bottom-color: #1565c0; font-weight: 700; }
+    .tab-btn:hover { color: #1565c0; }
+
+    /* SECTION HEADINGS */
+    .section-title {
+      font-size: 14px; font-weight: 700; color: #1a237e;
+      margin-bottom: 10px; padding-bottom: 6px;
+      border-bottom: 1px solid #e8eaf0;
+    }
+
+    /* ABOUT */
+    .about-text { font-size: 13px; color: #555; line-height: 1.7; margin-bottom: 14px; }
+
+    /* SPECIALTIES */
+    .specialty-list {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;
+    }
+    .specialty-tag {
+      background: #f0f4ff; color: #3949ab;
+      font-size: 12px; padding: 5px 12px;
+      border-radius: 20px; border: 1px solid #c5cae9;
+      font-weight: 500;
+    }
+
+    /* CREDENTIALS */
+    .cred-item { font-size: 13px; color: #555; line-height: 1.9; }
+
+    /* STATS ROW */
+    .stats-row {
+      display: flex; gap: 12px;
+      background: #f7f9fc; border-radius: 10px;
+      padding: 14px; margin: 14px 0;
+    }
+    .stat-box {
+      flex: 1; text-align: center;
+      border-right: 1px solid #e0e0e0;
+    }
+    .stat-box:last-child { border-right: none; }
+    .stat-number { font-size: 20px; font-weight: 800; color: #1565c0; }
+    .stat-label { font-size: 11px; color: #888; margin-top: 2px; }
+
+    /* REVIEWS */
+    .review-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px;
+    }
+    .review-header h3 { font-size: 14px; font-weight: 700; color: #1a237e; }
+    .view-all { font-size: 12px; color: #1565c0; text-decoration: none; font-weight: 600; }
+    .rating-summary {
+      display: flex; gap: 16px; align-items: center;
+      background: #f7f9fc; border-radius: 10px;
+      padding: 14px; margin-bottom: 14px;
+    }
+    .big-rating { text-align: center; }
+    .big-rating .num { font-size: 36px; font-weight: 900; color: #1565c0; line-height: 1; }
+    .big-rating .stars { font-size: 18px; }
+    .big-rating .count { font-size: 12px; color: #888; }
+    .rating-bars { flex: 1; }
+    .bar-row {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; margin-bottom: 5px;
+    }
+    .bar-label { width: 22px; text-align: right; color: #888; font-weight: 600; }
+    .bar-track {
+      flex: 1; height: 7px; background: #e0e0e0;
+      border-radius: 4px; overflow: hidden;
+    }
+    .bar-fill { height: 100%; border-radius: 4px; background: #f59e0b; }
+    .bar-pct { width: 30px; color: #666; text-align: right; }
+
+    .review-item {
+      padding: 12px 0; border-bottom: 1px solid #f0f0f0;
+    }
+    .review-item:last-child { border-bottom: none; }
+    .review-author {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 5px;
+    }
+    .review-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 14px; color: #fff;
+    }
+    .review-name { font-weight: 600; font-size: 13px; }
+    .review-date { font-size: 11px; color: #aaa; margin-left: auto; }
+    .review-stars { font-size: 13px; color: #f59e0b; }
+    .review-text { font-size: 13px; color: #555; line-height: 1.6; margin-top: 4px; }
+
+    /* ===== RIGHT PANEL ===== */
+    .right-panel { display: flex; flex-direction: column; gap: 16px; }
+
+    .booking-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+      overflow: hidden;
+    }
+    .booking-header {
+      background: #1565c0;
+      color: #fff;
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .booking-body { padding: 16px 20px; }
+
+    /* SCHEDULE TABLE */
+    .schedule-title { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 10px; }
+    .schedule-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 16px; }
+    .schedule-table th {
+      background: #f5f7fa; color: #666; font-weight: 600;
+      padding: 8px 10px; text-align: left;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    .schedule-table td {
+      padding: 8px 10px; border-bottom: 1px solid #f0f0f0;
+      vertical-align: middle;
+    }
+    .schedule-table tr:last-child td { border-bottom: none; }
+    .schedule-table .day-col { font-weight: 600; color: #333; }
+    .badge {
+      display: inline-block; padding: 3px 9px; border-radius: 10px;
+      font-size: 11px; font-weight: 600;
+    }
+    .badge-green { background: #e8f5e9; color: #2e7d32; }
+    .badge-red { background: #ffebee; color: #c62828; }
+    .badge-gray { background: #f5f5f5; color: #999; }
+    .badge-orange { background: #fff3e0; color: #e65100; }
+    .badge-selected { background: #e3f2fd; color: #1565c0; }
+
+    /* CALENDAR */
+    .calendar-section { margin-bottom: 16px; }
+    .cal-and-slots { display: flex; gap: 16px; }
+    .calendar-box { flex: 1; }
+    .cal-header {
+      display: flex; justify-content: space-between; align-items: center;
+      background: #1565c0; color: #fff;
+      padding: 8px 12px; border-radius: 8px 8px 0 0;
+      font-size: 13px; font-weight: 700;
+    }
+    .cal-nav { cursor: pointer; background: none; border: none; color: #fff; font-size: 16px; }
+    .cal-grid {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      background: #f9fafc; border: 1px solid #e0e0e0;
+      border-top: none; border-radius: 0 0 8px 8px;
+      overflow: hidden;
+    }
+    .cal-dow {
+      text-align: center; font-size: 11px; font-weight: 700;
+      color: #888; padding: 6px 2px;
+      background: #f0f4f8;
+    }
+    .cal-day {
+      text-align: center; font-size: 12px;
+      padding: 7px 2px; cursor: pointer;
+      transition: background 0.15s;
+      border-radius: 0;
+    }
+    .cal-day:hover:not(.cal-day-empty):not(.cal-day-full) { background: #e3f2fd; }
+    .cal-day-available { color: #1565c0; font-weight: 600; }
+    .cal-day-full { color: #ccc; background: #fafafa; cursor: default; }
+    .cal-day-empty { color: #ccc; cursor: default; }
+    .cal-day-selected {
+      background: #1565c0 !important; color: #fff !important;
+      font-weight: 700; border-radius: 50%;
+      width: 28px; height: 28px; line-height: 28px;
+      margin: 0 auto; display: flex; align-items: center; justify-content: center;
+    }
+    .cal-day-today { color: #e53935; font-weight: 700; }
+    .cal-legend {
+      display: flex; gap: 12px; font-size: 11px; color: #777;
+      margin-top: 8px; flex-wrap: wrap;
+    }
+    .cal-legend span {
+      display: flex; align-items: center; gap: 4px;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .dot-selected { background: #1565c0; }
+    .dot-available { background: #4caf50; }
+    .dot-full { background: #e0e0e0; }
+
+    /* TIME SLOTS */
+    .slots-box { flex: 1; min-width: 0; }
+    .slots-box h4 { font-size: 13px; font-weight: 700; color: #333; margin-bottom: 8px; }
+    .session-label { font-size: 12px; font-weight: 600; color: #555; margin: 8px 0 6px; }
+    .slots-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 8px; }
+    .slot-btn {
+      padding: 6px 8px; border-radius: 6px; border: 1px solid;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      text-align: center; transition: background 0.15s, color 0.15s;
+      background: #fff;
+    }
+    .slot-available {
+      border-color: #1565c0; color: #1565c0;
+    }
+    .slot-available:hover { background: #e3f2fd; }
+    .slot-full {
+      border-color: #e0e0e0; color: #bbb; background: #fafafa; cursor: default;
+    }
+    .slot-selected { background: #1565c0 !important; color: #fff !important; border-color: #1565c0 !important; }
+    .slot-status { font-size: 10px; font-weight: 400; margin-top: 1px; }
+    .no-shift { font-size: 12px; color: #aaa; font-style: italic; padding: 8px 0; }
+
+    /* BOOKING FORM */
+    .form-section { margin-top: 4px; }
+    .form-title { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 12px; }
+    .form-row { display: flex; gap: 12px; margin-bottom: 12px; }
+    .form-group { flex: 1; }
+    .form-group label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 5px; }
+    .form-group input, .form-group textarea {
+      width: 100%; padding: 9px 12px;
+      border: 1px solid #ddd; border-radius: 7px;
+      font-size: 13px; outline: none;
+      transition: border-color 0.2s;
+      font-family: inherit;
+      background: #fafbfc;
+      color: #333;
+    }
+    .form-group input:focus, .form-group textarea:focus { border-color: #1565c0; background: #fff; }
+    .form-group textarea { resize: vertical; min-height: 70px; }
+
+    /* SUMMARY BOX */
+    .summary-box {
+      background: #f7f9fc; border: 1px solid #e3f2fd;
+      border-radius: 8px; padding: 12px 14px;
+      font-size: 13px; line-height: 1.9; color: #444;
+      margin-bottom: 14px;
+    }
+    .summary-box strong { color: #1a237e; }
+
+    /* ACTIONS */
+    .action-row { display: flex; gap: 10px; margin-bottom: 12px; }
+    .btn-confirm {
+      flex: 2; padding: 12px;
+      background: #1565c0; color: #fff;
+      border: none; border-radius: 8px;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-confirm:hover { background: #0d47a1; }
+    .btn-cancel {
+      flex: 1; padding: 12px;
+      background: #fff; color: #555;
+      border: 1px solid #ddd; border-radius: 8px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-cancel:hover { background: #f5f5f5; }
+    .btn-msg {
+      flex: 1; padding: 12px;
+      background: #fff; color: #1565c0;
+      border: 1px solid #1565c0; border-radius: 8px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-msg:hover { background: #e3f2fd; }
+
+    /* NOTE BOX */
+    .note-box {
+      background: #fffde7; border: 1px solid #fff176;
+      border-radius: 8px; padding: 10px 14px;
+      font-size: 12px; color: #5d4037; line-height: 1.7;
+    }
+    .note-box strong { color: #e65100; }
+
+    /* FOOTER LABEL */
+    .screen-label {
+      text-align: center; font-size: 11px; color: #aaa;
+      padding: 14px 0 20px;
+      border-top: 1px solid #e0e0e0; margin-top: 10px;
+    }
+
+    /* DIVIDER */
+    .divider { border: none; border-top: 1px solid #f0f0f0; margin: 12px 0; }
+  </style>
+</head>
+<body>
+
+<!-- TOP BANNER -->
+<div class="top-banner">MAN HINH 04 -- USER: CHI TIET BAC SI &amp; DAT LICH</div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-brand">
+    <span class="icon">🏥</span>
+    <span>Phong Kham Da Khoa</span>
+  </div>
+  <div class="navbar-nav">
+    <a href="/home" class="nav-link">Trang Chu</a>
+    <a href="/danh-sach-dich-vu" class="nav-link">Dich Vu</a>
+    <a href="/bac-si" class="nav-link active">Đội ngũ Bác Sĩ</a>
+    <a th:href="@{/dat-lich/tao-moi}" class="nav-link">Đặt Lịch Hẹn</a>
+    <a href="/home" class="nav-link">Lien He</a>
+
+  </div>
+  <div class="navbar-search">
+    <div class="search-box">
+      <span>🔍</span>
+      <input type="text" placeholder="Tim kiem bac si, dich vu..."/>
+    </div>
+    <button class="notif-btn" style="position:relative;">
+      🔔
+      <span class="notif-badge">!</span>
+    </button>
+    <div class="navbar-search" th:if="${session.loggedInUser != null}">
+      <div class="user-menu">
+        <div class="avatar">👤</div>
+        <span class="user-name" th:text="${session.loggedInUser.hoTen}"></span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <a href="/home">Trang chu</a><span class="sep">›</span>
+  <a href="/bac-si">Tim kiem bac si</a><span class="sep">›</span>
+  <a href="/danh-sach-dich-vu">Tim Mach</a><span class="sep">›</span>
+  <span th:text="${bacSi.hoTen}">Tên bác sĩ</span>
+</div>
+
+<!-- MAIN -->
+<div class="main-container">
+
+  <!-- ====== LEFT PANEL ====== -->
+  <div class="left-panel">
+
+    <!-- DOCTOR CARD -->
+    <div class="doctor-card">
+      <div class="doctor-header">
+        <div class="doctor-avatar">
+          👨‍⚕️
+          <span class="verified-badge">✓</span>
+        </div>
+        <div class="doctor-info">
+          <h2 th:text="${'BS. ' + bacSi.hoTen}">Tên bác sĩ</h2>
+
+          <div class="tag-row">
+            <span class="tag-spec" th:text="${bacSi.chuyenKhoa != null ? bacSi.chuyenKhoa.tenChuyenKhoa : 'Đa Khoa'}">Chuyên Khoa</span>
+            <span class="tag-active">🟢 Đang làm việc</span>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:4px;margin-bottom:6px;">
+            <span style="color: #f59e0b; font-size: 15px;">★★★★★</span>
+            <b style="font-size:15px;color:#1565c0;" th:text="${bacSi.diemDanhGiaTB != null ? bacSi.diemDanhGiaTB : '5.0'}">5.0</b>
+            <span style="font-size: 13px; color: #666;" th:text="'/ 5 (' + ${bacSi.soLuongDanhGia != null ? bacSi.soLuongDanhGia : '0'} + ' đánh giá)'"></span>
+          </div>
+
+          <div class="doctor-meta">
+            <div>💼 <span th:text="${bacSi.soNamKinhNghiem != null ? bacSi.soNamKinhNghiem : '10'}"></span> năm kinh nghiệm</div>
+            <div>🎓 Bằng cấp: <span th:text="${bacSi.bangCap != null ? bacSi.bangCap : 'Đang cập nhật'}"></span></div>
+            <div>📞 <span th:text="${bacSi.soDienThoai}"></span> &nbsp;|&nbsp; ✉ <span th:text="${bacSi.email}"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABS -->
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('gioi-thieu', this)">Gioi thieu</button>
+        <button class="tab-btn" onclick="showTab('lich-lam-viec', this)">Lich lam viec</button>
+        <button class="tab-btn" onclick="showTab('danh-gia', this)">Danh gia (120)</button>
+        <button class="tab-btn" onclick="showTab('hinh-anh', this)">Hinh anh</button>
+      </div>
+
+      <!-- TAB: GIOI THIEU -->
+      <div id="gioi-thieu">
+        <div class="section-title">Ve bac si</div>
+        <p class="about-text" th:text="${bacSi.gioiThieu != null ? bacSi.gioiThieu : 'Thông tin giới thiệu đang được cập nhật.'}"></p>
+        <div class="section-title">Chuyen mon chinh</div>
+        <div class="specialty-list">
+          <span class="specialty-tag" th:text="${bacSi.chuyenKhoa != null ? bacSi.chuyenKhoa.tenChuyenKhoa : 'Đa Khoa'}">Đa Khoa</span>
+        </div>
+
+        <div class="section-title">Bằng cấp & Chứng chỉ</div>
+        <div class="cred-item">
+          <div>🎓 Chứng chỉ hành nghề: <span th:text="${bacSi.chungChiHanhNghe != null ? bacSi.chungChiHanhNghe : 'Đang cập nhật'}"></span></div>
+          <div>🏥 Nơi công tác: <span th:text="${bacSi.phongKham != null ? bacSi.phongKham : 'Phòng khám Đa khoa Central'}"></span></div>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-box">
+            <div class="stat-number" th:text="${bacSi.soBenhNhanDaKham != null ? bacSi.soBenhNhanDaKham : '0'}">0</div>
+            <div class="stat-label">Bệnh nhân đã khám</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number" th:text="${bacSi.diemDanhGiaTB != null ? bacSi.diemDanhGiaTB + '★' : '5.0★'}">5.0★</div>
+            <div class="stat-label">Đánh giá trung bình</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number" th:text="${bacSi.soNamKinhNghiem != null ? bacSi.soNamKinhNghiem + '+' : '5+'}">5+</div>
+            <div class="stat-label">Năm kinh nghiệm</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: LICH LAM VIEC (hidden by default) -->
+      <div id="lich-lam-viec" style="display:none;">
+        <p class="about-text">Xem lich lam viec ben phan Dat Lich Hen →</p>
+      </div>
+
+      <!-- TAB: DANH GIA (hidden) -->
+      <div id="danh-gia" style="display:none;">
+        <p class="about-text">Xem danh gia phia duoi →</p>
+      </div>
+
+      <!-- TAB: HINH ANH (hidden) -->
+      <div id="hinh-anh" style="display:none;">
+        <p class="about-text">Chua co hinh anh.</p>
+      </div>
+    </div>
+
+    <!-- REVIEWS -->
+    <div class="doctor-card">
+      <div class="review-header">
+        <h3>⭐ Danh gia cua benh nhan</h3>
+        <a href="#danh-gia" class="view-all">Xem tat ca →</a>
+      </div>
+      <div class="rating-summary">
+        <div class="big-rating">
+          <div class="num">4.9</div>
+          <div class="stars">★★★★★</div>
+          <div class="count">120 danh gia</div>
+        </div>
+        <div class="rating-bars">
+          <div class="bar-row">
+            <span class="bar-label">5★</span>
+            <div class="bar-track"><div class="bar-fill" style="width:88%"></div></div>
+            <span class="bar-pct">88%</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">4★</span>
+            <div class="bar-track"><div class="bar-fill" style="width:11%;background:#8bc34a"></div></div>
+            <span class="bar-pct">11%</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">3★</span>
+            <div class="bar-track"><div class="bar-fill" style="width:1%;background:#e0e0e0"></div></div>
+            <span class="bar-pct">1%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-item">
+        <div class="review-author">
+          <div class="review-avatar" style="background:#1565c0;">N</div>
+          <div>
+            <div class="review-name">Nguyen Thi Lan</div>
+            <div class="review-stars">★★★★★</div>
+          </div>
+          <span class="review-date">15/05/2025</span>
+        </div>
+        <div class="review-text">Bac si rat tan tam, giai thich benh ro rang. Phong kham sach se, nhan vien than thien.</div>
+      </div>
+
+      <div class="review-item">
+        <div class="review-author">
+          <div class="review-avatar" style="background:#43a047;">T</div>
+          <div>
+            <div class="review-name">Tran Van An</div>
+            <div class="review-stars">★★★★</div>
+          </div>
+          <span class="review-date">10/05/2025</span>
+        </div>
+        <div class="review-text">Kham rat ki, ke don thuoc hop ly. Se quay lai tai kham vao thang sau.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== RIGHT PANEL ====== -->
+  <div class="right-panel">
+    <div class="booking-card">
+      <div class="booking-header">📅 Dat Lich Hen</div>
+      <div class="booking-body">
+
+        <!-- SCHEDULE TABLE -->
+        <div class="schedule-title">Lich lam viec trong tuan</div>
+        <table class="schedule-table">
+          <thead>
+          <tr>
+            <th>Thu</th>
+            <th>Ca sang</th>
+            <th>Ca chieu</th>
+            <th>Slot con lai</th>
+            <th>Trang thai</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td class="day-col">Thu 2</td>
+            <td>07:30 – 11:30</td>
+            <td>—</td>
+            <td>4 slot</td>
+            <td><span class="badge badge-green">Lam viec</span></td>
+          </tr>
+          <tr>
+            <td class="day-col">Thu 3</td>
+            <td>—</td><td>—</td><td>—</td>
+            <td><span class="badge badge-gray">Nghi</span></td>
+          </tr>
+          <tr style="background:#f0f4ff;">
+            <td class="day-col" style="color:#1565c0;font-weight:700;">Thu 4 ✓</td>
+            <td>07:30 – 11:30</td>
+            <td>—</td>
+            <td style="color:#e53935;font-weight:700;">0 slot</td>
+            <td><span class="badge badge-red">Het cho</span></td>
+          </tr>
+          <tr>
+            <td class="day-col">Thu 5</td>
+            <td>—</td><td>—</td><td>—</td>
+            <td><span class="badge badge-gray">Nghi</span></td>
+          </tr>
+          <tr>
+            <td class="day-col">Thu 6</td>
+            <td>07:30 – 11:30</td>
+            <td>—</td>
+            <td style="color:#e65100;font-weight:700;">2 slot</td>
+            <td><span class="badge badge-orange">Con it cho</span></td>
+          </tr>
+          </tbody>
+        </table>
+
+        <!-- CALENDAR + SLOTS -->
+        <div class="calendar-section">
+          <div class="schedule-title" style="margin-bottom:10px;">Chon ngay kham</div>
+          <div class="cal-and-slots">
+            <!-- Calendar -->
+            <div class="calendar-box">
+              <div class="cal-header">
+                <button class="cal-nav">◀</button>
+                <span>Thang 5 / 2025</span>
+                <button class="cal-nav">▶</button>
+              </div>
+              <div class="cal-grid">
+                <div class="cal-dow">CN</div>
+                <div class="cal-dow">T2</div>
+                <div class="cal-dow">T3</div>
+                <div class="cal-dow">T4</div>
+                <div class="cal-dow">T5</div>
+                <div class="cal-dow">T6</div>
+                <div class="cal-dow">T7</div>
+                <!-- Week 1 -->
+                <div class="cal-day cal-day-empty">27</div>
+                <div class="cal-day cal-day-available">1</div>
+                <div class="cal-day cal-day-empty">2</div>
+                <div class="cal-day cal-day-available">3</div>
+                <div class="cal-day cal-day-empty">4</div>
+                <div class="cal-day cal-day-available">5</div>
+                <div class="cal-day">6</div>
+                <!-- Week 2 -->
+                <div class="cal-day">7</div>
+                <div class="cal-day cal-day-available">8</div>
+                <div class="cal-day cal-day-empty">9</div>
+                <div class="cal-day" style="color:#e53935;font-weight:700;position:relative;">
+                  <span style="background:#e53935;color:#fff;border-radius:50%;padding:2px 5px;font-size:11px;">10</span>
+                </div>
+                <div class="cal-day cal-day-empty">11</div>
+                <div class="cal-day cal-day-available">12</div>
+                <div class="cal-day">13</div>
+                <!-- Week 3 -->
+                <div class="cal-day">14</div>
+                <div class="cal-day cal-day-available">15</div>
+                <div class="cal-day cal-day-empty">16</div>
+                <div class="cal-day cal-day-full">17</div>
+                <div class="cal-day cal-day-empty">18</div>
+                <div class="cal-day" style="display:flex;align-items:center;justify-content:center;">
+                  <span class="cal-day-selected">19</span>
+                </div>
+                <div class="cal-day">20</div>
+              </div>
+              <div class="cal-legend" style="margin-top:8px;">
+                <span><span class="dot dot-selected"></span> Da chon</span>
+                <span><span class="dot dot-available"></span> Con slot</span>
+                <span><span class="dot dot-full"></span> Het cho</span>
+              </div>
+            </div>
+
+            <!-- Time Slots -->
+            <div class="slots-box">
+              <h4>Khung gio (Thu 6, 19/05)</h4>
+              <div class="session-label">Buoi sang:</div>
+              <div class="slots-grid">
+                <button class="slot-btn slot-available">
+                  07:30<div class="slot-status" style="color:#4caf50;">Con cho</div>
+                </button>
+                <button class="slot-btn slot-available">
+                  08:00<div class="slot-status" style="color:#4caf50;">Con cho</div>
+                </button>
+                <button class="slot-btn slot-available slot-selected">
+                  08:30<div class="slot-status">Con cho</div>
+                </button>
+                <button class="slot-btn slot-full">
+                  09:00<div class="slot-status">Het cho</div>
+                </button>
+                <button class="slot-btn slot-full">
+                  09:30<div class="slot-status">Het cho</div>
+                </button>
+                <button class="slot-btn slot-available">
+                  10:00<div class="slot-status" style="color:#4caf50;">Con cho</div>
+                </button>
+                <button class="slot-btn slot-available">
+                  10:30<div class="slot-status" style="color:#4caf50;">Con cho</div>
+                </button>
+                <button class="slot-btn slot-available">
+                  11:00<div class="slot-status" style="color:#4caf50;">Con cho</div>
+                </button>
+              </div>
+              <div class="session-label">Buoi chieu:</div>
+              <div class="no-shift">Bac si khong lam viec buoi chieu ngay nay</div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="divider"/>
+
+        <!-- BOOKING FORM -->
+        <div class="form-section">
+          <div class="form-title">Thong tin dat lich</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Ho ten benh nhan</label>
+              <input type="text" value="Nguyen Van An (tu dong dien)" readonly/>
+            </div>
+            <div class="form-group">
+              <label>So dien thoai</label>
+              <input type="text" value="0901 234 567 (tu dong dien)" readonly/>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:14px;">
+            <label>Ly do kham / Trieu chung</label>
+            <textarea placeholder="Mo ta trieu chung, tien su benh, thuoc dang dung..."></textarea>
+          </div>
+        </div>
+
+        <!-- SUMMARY -->
+        <div class="summary-box">
+          <div>📋 <strong>Tom tat lich hen</strong></div>
+          <div>👨‍⚕️ <span th:text="${bacSi.hoTen} + ' — ' + (${bacSi.chuyenKhoa != null ? bacSi.chuyenKhoa.tenChuyenKhoa : 'Đa Khoa'})">Tên Bác Sĩ</span></div>
+          <div>📅 Thu 6, 19/05/2025 — 07:30 sang</div>
+          <div>📍 <span th:text="${bacSi.phongKham != null ? bacSi.phongKham : 'Chưa cập nhật phòng khám'}">Phòng Khám</span></div>
+          <div>💰 <span th:text="${bacSi.phiKham != null ? #numbers.formatDecimal(bacSi.phiKham, 0, 'COMMA', 0, 'POINT') + ' VNĐ' : 'Chưa cập nhật'} + ' | BHYT: Chua ap dung'">Phí khám</span></div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="action-row">
+          <a th:href="@{/dat-lich/tao-moi(maBacSi=${bacSi.maBacSi})}" class="btn-confirm" style="text-align: center; text-decoration: none;">Đặt Lịch Hẹn</a>
+
+          <a href="/home" class="btn-cancel" style="text-align: center; text-decoration: none;">↩ Huy bo</a>
+          <button class="btn-msg">💬 Nhan tin BS</button>
+        </div>
+
+        <!-- NOTE -->
+        <div class="note-box">
+          <strong>📝 Luu y:</strong> Vui long den truoc gio hen 15 phut de lam thu tuc. Mang theo CCCD va the BHYT (neu co).<br/>
+          Ban chi duoc huy lich khi lich hen o trang thai "Cho xac nhan". Email xac nhan se gui tu dong.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER LABEL -->
+<div class="screen-label">
+  Screen 15 — Chi Tiet Bac Si | Profile day du + Chuyen mon + Bang cap | Lich lam viec tuan | Mini calendar + Time slots | Form dat lich inline | Summary box
+</div>
+
+<script>
+  function showTab(id, btn) {
+    ['gioi-thieu','lich-lam-viec','danh-gia','hinh-anh'].forEach(t => {
+      document.getElementById(t).style.display = t === id ? '' : 'none';
+    });
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  // Slot selection
+  document.querySelectorAll('.slot-btn.slot-available').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('slot-selected'));
+      this.classList.add('slot-selected');
+    });
+  });
+</script>
+</body>
+</html>

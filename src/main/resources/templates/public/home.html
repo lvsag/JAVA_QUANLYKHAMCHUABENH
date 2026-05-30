@@ -75,14 +75,14 @@
     <nav class="navbar">
         <div class="logo">🏥 Phòng Khám Đa Khoa</div>
         <div class="nav-links">
-            <a href="/home" style="color: #2563EB; font-weight: 600;">Trang Chủ</a>
-            <a href="/danh-sach-dich-vu">Dịch Vụ</a>
-            <a href="/bac-si">Bác Sĩ</a>
-            <a href="#">Đặt Lịch Hẹn</a>
+            <a th:href="@{/home}" style="color: #2563EB; font-weight: 600;">Trang Chủ</a>
+            <a th:href="@{/danh-sach-dich-vu}">Dịch Vụ</a>
+            <a th:href="@{/bac-si}">Bác Sĩ</a>
+            <a th:href="@{/dat-lich/tao-moi}">Đặt Lịch Hẹn</a>
             <a href="#">Liên Hệ</a>
         </div>
         <div class="nav-actions">
-            <form action="/bac-si" method="get" style="margin: 0;">
+            <form th:action="@{/bac-si}" method="get" style="margin: 0;">
                 <input type="text" name="keyword" class="search-bar" placeholder="🔍 Tìm kiếm dịch vụ, bác sĩ...">
             </form>
             <span style="font-size: 20px; cursor: pointer;">🔔</span>
@@ -90,7 +90,7 @@
                 👤 <span th:text="${session.loggedInUser.hoTen}">Tên người dùng</span> ▾
                 <div class="dropdown-menu">
                     <a href="/ho-so" class="dropdown-item">👤 Hồ sơ cá nhân</a>
-                    <a href="#" class="dropdown-item">📅 Lịch hẹn của tôi</a>
+                    <a href="/lich-su-dat-lich" class="dropdown-item">📅 Lịch hẹn của tôi</a>
                     <a href="/ho-so/bao-mat" class="dropdown-item">🔒 Đổi mật khẩu</a>
                     <div class="dropdown-divider"></div>
                     <a href="/logout" class="dropdown-item" style="color: #EF4444;">🚪 Đăng xuất</a>
@@ -105,8 +105,8 @@
         <div class="hero-text">
             <h1>Chăm sóc sức khỏe toàn diện cho gia đình bạn</h1>
             <p>Đặt lịch khám dễ dàng • Bác sĩ tận tâm • Kết quả nhanh chóng. Phòng khám đạt chuẩn quốc tế mang đến trải nghiệm y tế tuyệt vời nhất.</p>
-            <a href="#" class="btn-primary">Đặt Lịch Ngay &rarr;</a>
-            <a href="#" class="btn-secondary">Xem Dịch Vụ</a>
+            <a href="/dat-lich/tao-moi" class="btn-primary">Đặt Lịch Ngay &rarr;</a>
+            <a href="/danh-sach-dich-vu" class="btn-secondary">Xem Dịch Vụ</a>
         </div>
         <div>
             <!-- Placeholder for Hero Image -->
@@ -139,7 +139,7 @@
     <!-- Specialties Section (DYNAMIC DATA) -->
     <div class="section-header">
         <h2>Danh Mục Chuyên Khoa</h2>
-        <a href="#">Xem tất cả &rarr;</a>
+        <a href="/danh-sach-dich-vu">Xem tất cả &rarr;</a>
     </div>
     <div class="specialties-grid">
         <!-- Render 5 first specialties or display fallback -->
@@ -162,7 +162,7 @@
     <!-- Doctors Section (DYNAMIC DATA) -->
     <div class="section-header">
         <h2>Bác Sĩ Nổi Bật</h2>
-        <a href="#">Xem tất cả &rarr;</a>
+        <a href="/bac-si">Xem tất cả &rarr;</a>
     </div>
     <div class="doctors-grid">
         <!-- Render first 6 doctors -->
@@ -179,7 +179,7 @@
                             📞 <span th:text="${bs.soDienThoai}">000</span>
                         </div>
                     </div>
-                    <button class="btn-book-sm">Đặt Lịch Hẹn</button>
+                    <a th:href="@{/dat-lich/tao-moi(maBacSi=${bs.maBacSi})}" class="btn-book-sm" style="display:block; text-decoration:none; text-align:center; box-sizing:border-box;">Đặt Lịch Hẹn</a>
                 </div>
             </div>
         </th:block>

@@ -12,6 +12,8 @@ import java.sql.Time;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class LichHen {
     @Id
     @Column(name = "MaLichHen", length = 20)

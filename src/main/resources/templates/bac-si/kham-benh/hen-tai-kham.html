@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bác Sĩ - Tạo Lịch Hẹn Tái Khám</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f7f6; color: #333; }
+
+        /* Navbar */
+        .navbar { background: #1a237e; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; height: 64px; color: #fff; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .logo { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .nav-links { display: flex; list-style: none; gap: 24px; margin: 0; height: 100%; }
+        .nav-links a { text-decoration: none; color: rgba(255,255,255,0.7); font-weight: 500; display: flex; align-items: center; transition: 0.2s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; }
+        .nav-actions { display: flex; align-items: center; gap: 16px; }
+        
+        .main-container { max-width: 1000px; margin: 24px auto; padding: 0 16px; }
+        
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .btn-back { background: none; border: none; color: #555; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; text-decoration: none; }
+        .btn-back:hover { color: #1a237e; }
+        .page-title { font-size: 20px; font-weight: 700; color: #1a237e; }
+        
+        .content-grid { display: grid; grid-template-columns: 350px 1fr; gap: 24px; align-items: flex-start; }
+
+        /* Left Column */
+        .left-panel { background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border-top: 4px solid #1a237e; }
+        .patient-info { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+        .avatar { width: 56px; height: 56px; background: #e8eaf6; color: #3949ab; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .p-name { font-size: 16px; font-weight: 700; color: #333; margin-bottom: 4px; }
+        .p-meta { font-size: 13px; color: #666; }
+        
+        .info-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 12px; border-bottom: 1px dashed #eee; padding-bottom: 8px; }
+        .info-row span:first-child { color: #888; }
+        .info-row span:last-child { font-weight: 600; color: #333; }
+
+        .section-title { font-size: 14px; font-weight: 700; color: #3949ab; margin: 24px 0 12px; display: flex; align-items: center; gap: 6px; }
+        .summary-box { background: #f8f9fa; border-left: 3px solid #3949ab; padding: 12px 16px; font-size: 13px; line-height: 1.6; color: #444; border-radius: 0 4px 4px 0; margin-bottom: 16px; }
+
+        /* Right Column */
+        .right-panel { background: #fff; border-radius: 12px; padding: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .panel-title { font-size: 18px; font-weight: 700; color: #333; margin-bottom: 24px; border-bottom: 1px solid #eee; padding-bottom: 12px; }
+        
+        .form-row { display: flex; gap: 16px; margin-bottom: 20px; }
+        .form-group { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-size: 13px; font-weight: 600; color: #555; }
+        .form-control { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; color: #333; outline: none; transition: 0.2s; background: #fff; width: 100%; }
+        .form-control:focus { border-color: #3949ab; box-shadow: 0 0 0 3px rgba(57,73,171,0.1); }
+        select.form-control { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; padding-right: 40px; }
+        textarea.form-control { resize: vertical; min-height: 100px; }
+
+        .toggle-row { display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; padding: 16px; border-radius: 8px; margin-bottom: 30px; }
+        .toggle-info { display: flex; flex-direction: column; gap: 4px; }
+        .toggle-info strong { font-size: 14px; color: #333; }
+        .toggle-info span { font-size: 12px; color: #888; }
+        
+        /* Switch */
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #4caf50; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .form-actions { display: flex; justify-content: flex-end; gap: 16px; border-top: 1px solid #eee; padding-top: 24px; }
+        .btn { padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; border: none; text-decoration: none; display: inline-block; }
+        .btn-cancel { background: #f5f5f5; color: #555; }
+        .btn-cancel:hover { background: #e0e0e0; }
+        .btn-submit { background: #1a237e; color: #fff; }
+        .btn-submit:hover { background: #283593; }
+
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo">
+        <span style="font-size: 22px;">🏥</span> Bảng Điều Khiển Bác Sĩ
+    </div>
+    <ul class="nav-links">
+        <li><a href="#">Lịch làm việc</a></li>
+        <li><a href="#" class="active">Bệnh nhân</a></li>
+        <li><a href="#">Báo cáo</a></li>
+        <li><a href="#">Thông báo</a></li>
+    </ul>
+    <div class="nav-actions">
+        <div style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: #e8eaf6; color: #1a237e; display: flex; align-items: center; justify-content: center;">👨‍⚕️</div>
+            <span th:text="${session.loggedInUser != null ? session.loggedInUser.hoTen : 'BS. Nguyễn Văn Minh'}">TS.BS. Nguyễn Văn Minh</span>
+        </div>
+    </div>
+</header>
+
+<div class="main-container">
+    <div class="top-bar">
+        <a href="javascript:history.back()" class="btn-back">← Quay lại</a>
+        <div class="page-title">Tạo Lịch Hẹn Tái Khám</div>
+        <div style="width: 80px;"></div> <!-- Spacer for flex alignment -->
+    </div>
+
+    <div class="content-grid">
+        <!-- Left Panel -->
+        <div class="left-panel">
+            <div class="patient-info">
+                <div class="avatar">👤</div>
+                <div>
+                    <div class="p-name">Nguyễn Văn An</div>
+                    <div class="p-meta">35 Tuổi - Nam</div>
+                </div>
+            </div>
+
+            <div class="info-row">
+                <span>Mã BN:</span>
+                <span>BN-2025-0001</span>
+            </div>
+            <div class="info-row">
+                <span>SĐT liên hệ:</span>
+                <span>0901 234 567</span>
+            </div>
+            <div class="info-row">
+                <span>Ngày khám hiện tại:</span>
+                <span>15/04/2025</span>
+            </div>
+
+            <div class="section-title">📋 Kết luận lần khám này</div>
+            <div class="summary-box">
+                Huyết áp cao độ 1. Cần theo dõi chỉ số thường xuyên và tái khám để đánh giá hiệu quả của thuốc.
+            </div>
+
+            <div class="section-title">💊 Đơn thuốc liên quan</div>
+            <div class="summary-box">
+                <strong>1. Amlodipine 5mg</strong><br>
+                Sáng 1 viên sau ăn.<br>
+                <em>(Dùng trong 30 ngày)</em>
+            </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="right-panel">
+            <div class="panel-title">Thông tin lịch hẹn tái khám</div>
+            
+            <form th:action="@{/bac-si/hen-tai-kham}" method="POST">
+                <input type="hidden" name="maBenhNhan" value="BN-2025-0001">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Ngày tái khám</label>
+                        <input type="date" name="ngayHen" class="form-control" value="2025-05-15" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Khung giờ</label>
+                        <select name="gioHen" class="form-control" required>
+                            <option value="">-- Chọn khung giờ --</option>
+                            <option value="07:30 - 08:00">07:30 - 08:00</option>
+                            <option value="08:00 - 08:30" selected>08:00 - 08:30</option>
+                            <option value="08:30 - 09:00">08:30 - 09:00</option>
+                            <option value="09:00 - 09:30">09:00 - 09:30</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Chuyên khoa / Phòng khám</label>
+                        <select name="maChuyenKhoa" class="form-control">
+                            <option value="TIM_MACH">Khoa Tim Mạch - Phòng 101</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Hình thức khám</label>
+                        <select name="hinhThuc" class="form-control">
+                            <option value="OFFLINE">Khám trực tiếp</option>
+                            <option value="ONLINE">Khám trực tuyến (Video Call)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 24px;">
+                    <label>Lý do tái khám / Ghi chú cho bệnh nhân</label>
+                    <textarea name="lyDo" class="form-control" placeholder="Nhập lý do để bệnh nhân chuẩn bị...">Kiểm tra lại huyết áp sau 1 tháng sử dụng thuốc.</textarea>
+                </div>
+
+                <div class="toggle-row">
+                    <div class="toggle-info">
+                        <strong>Nhắc lịch tự động</strong>
+                        <span>Gửi SMS nhắc nhở bệnh nhân trước 1 ngày hẹn</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" name="guiSms" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-cancel" onclick="history.back()">Hủy bỏ</button>
+                    <button type="submit" class="btn btn-submit">Xác nhận & Gửi Lịch</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

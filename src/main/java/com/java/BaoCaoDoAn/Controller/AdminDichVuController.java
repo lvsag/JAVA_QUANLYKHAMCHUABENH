@@ -20,15 +20,12 @@ public class AdminDichVuController {
 
     @GetMapping
     public String danhSachDichVu(Model model) {
-        model.addAttribute("danhSach", dichVuService.getAllDichVu());
-        return "admin/dich-vu/danh-sach";
+        return "redirect:/admin/vat-tu";
     }
 
     @GetMapping("/them")
     public String hienThiFormThem(Model model) {
-        model.addAttribute("dichVu", new DichVu());
-        model.addAttribute("chuyenKhoas", chuyenKhoaService.getAllChuyenKhoa());
-        return "admin/dich-vu/form";
+        return "redirect:/admin/vat-tu/dich-vu/them";
     }
 
     @PostMapping("/them")
@@ -42,14 +39,7 @@ public class AdminDichVuController {
 
     @GetMapping("/sua/{id}")
     public String hienThiFormSua(@PathVariable String id, Model model) {
-        DichVu dv = dichVuService.getDichVuById(id);
-        if(dv != null) {
-            model.addAttribute("dichVu", dv);
-        } else {
-            return "redirect:/admin/dich-vu";
-        }
-        model.addAttribute("chuyenKhoas", chuyenKhoaService.getAllChuyenKhoa());
-        return "admin/dich-vu/form";
+        return "redirect:/admin/vat-tu/dich-vu/sua/" + id;
     }
 
     @PostMapping("/sua/{id}")

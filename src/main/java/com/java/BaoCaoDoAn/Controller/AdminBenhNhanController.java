@@ -1,11 +1,17 @@
 package com.java.BaoCaoDoAn.Controller;
 
 import com.java.BaoCaoDoAn.Model.BenhNhan;
+import com.java.BaoCaoDoAn.Model.NhapVienNoiTru;
 import com.java.BaoCaoDoAn.Service.BenhNhanService;
+import com.java.BaoCaoDoAn.Service.NhapVienNoiTruService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 @Controller
 @RequestMapping("/admin/benh-nhan")
@@ -14,9 +20,33 @@ public class AdminBenhNhanController {
     @Autowired
     private BenhNhanService benhNhanService;
 
+    @Autowired
+    private NhapVienNoiTruService nhapVienNoiTruService;
+
     @GetMapping
     public String danhSachBenhNhan(Model model) {
-        model.addAttribute("danhSach", benhNhanService.getAllBenhNhan());
+        List<BenhNhan> danhSach = benhNhanService.getAllBenhNhan();
+        Map<String, Boolean> benhNhanDangNoiTruMap = new HashMap<>();
+        Map<String, String> trangThaiNoiTruMap = new HashMap<>();
+        
+        for (BenhNhan bn : danhSach) {
+            String maBenhNhan = bn.getMaBenhNhan();
+            boolean isDangNoiTru = nhapVienNoiTruService.isBenhNhanDangNoiTru(maBenhNhan);
+            benhNhanDangNoiTruMap.put(maBenhNhan, isDangNoiTru);
+            
+            List<NhapVienNoiTru> records = nhapVienNoiTruService.findByBenhNhan(maBenhNhan);
+            if (records.isEmpty()) {
+                trangThaiNoiTruMap.put(maBenhNhan, "Chưa nội trú");
+            } else if (isDangNoiTru) {
+                trangThaiNoiTruMap.put(maBenhNhan, "Đang nội trú");
+            } else {
+                trangThaiNoiTruMap.put(maBenhNhan, "Đã xuất viện");
+            }
+        }
+        
+        model.addAttribute("danhSach", danhSach);
+        model.addAttribute("benhNhanDangNoiTruMap", benhNhanDangNoiTruMap);
+        model.addAttribute("trangThaiNoiTruMap", trangThaiNoiTruMap);
         return "admin/benh-nhan/danh-sach";
     }
 
@@ -55,8 +85,37 @@ public class AdminBenhNhanController {
     }
 
     @GetMapping("/xoa/{id}")
-    public String xoaBenhNhan(@PathVariable String id) {
-        benhNhanService.deleteBenhNhan(id);
+    public String xoaBenhNhan(@PathVariable String id, RedirectAttributes ra) {
+        try {
+            // 1. Kiểm tra bệnh nhân đang điều trị nội trú
+            if (nhapVienNoiTruService.isBenhNhanDangNoiTru(id)) {
+                ra.addFlashAttribute("errorMessage", "Bệnh nhân đang điều trị nội trú, không thể xóa.");
+                return "redirect:/admin/benh-nhan";
+            }
+            
+            // 2. Kiểm tra nếu có hồ sơ nội trú đã xuất viện
+            List<NhapVienNoiTru> dsNoiTru = nhapVienNoiTruService.findByBenhNhan(id);
+            boolean hasNhapVienRecords = !dsNoiTru.isEmpty();
+            
+            if (hasNhapVienRecords) {
+                // Xóa hồ sơ nội trú liên quan trước
+                nhapVienNoiTruService.deleteByBenhNhan(id);
+            }
+            
+            // 3. Xóa bệnh nhân
+            benhNhanService.deleteBenhNhan(id);
+            
+            if (hasNhapVienRecords) {
+                ra.addFlashAttribute("successMessage", "Đã xóa bệnh nhân và hồ sơ xuất viện liên quan.");
+            } else {
+                ra.addFlashAttribute("successMessage", "Đã xóa bệnh nhân thành công.");
+            }
+            
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            ra.addFlashAttribute("errorMessage", "Không thể xóa bệnh nhân do có dữ liệu liên quan khác (lịch hẹn, hóa đơn, v.v.) chưa được xử lý.");
+        } catch (Exception e) {
+            ra.addFlashAttribute("errorMessage", "Đã xảy ra lỗi trong quá trình xóa bệnh nhân: " + e.getMessage());
+        }
         return "redirect:/admin/benh-nhan";
     }
 }

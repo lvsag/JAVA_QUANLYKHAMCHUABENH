@@ -78,7 +78,16 @@
         <a th:href="@{/admin/benh-nhan}" class="nav-item" th:classappend="${activeMenu == 'benh-nhan' ? 'active' : ''}"><span class="nav-icon">👥</span><span class="nav-text">Quản Lý Bệnh Nhân</span></a>
         <a th:href="@{/admin/bac-si}" class="nav-item" th:classappend="${activeMenu == 'bac-si' ? 'active' : ''}"><span class="nav-icon">👨‍⚕️</span><span class="nav-text">Quản Lý Bác Sĩ</span></a>
         <a th:href="@{/admin/chuyen-khoa}" class="nav-item" th:classappend="${activeMenu == 'chuyen-khoa' ? 'active' : ''}"><span class="nav-icon">🏥</span><span class="nav-text">Chuyên Khoa</span></a>
-        <a th:href="@{/admin/dich-vu}" class="nav-item" th:classappend="${activeMenu == 'dich-vu' ? 'active' : ''}"><span class="nav-icon">💊</span><span class="nav-text">Dịch Vụ / Thuốc</span></a>
+        
+        <!-- VAT TU / DICH VU -->
+        <a th:href="@{/admin/vat-tu}" class="nav-item" th:classappend="${activeMenu == 'vat-tu' || activeMenu == 'dich-vu' ? 'active' : ''}"><span class="nav-icon">💊</span><span class="nav-text">Dịch Vụ / Thuốc</span></a>
+        
+        <!-- PHONG BENH -->
+        <a th:href="@{/admin/phong-benh}" class="nav-item" th:classappend="${activeMenu == 'phong-benh' ? 'active' : ''}"><span class="nav-icon">🏨</span><span class="nav-text">Quản Lý Phòng Bệnh</span></a>
+        
+        <!-- NOI TRU -->
+        <a th:href="@{/admin/noi-tru}" class="nav-item" th:classappend="${activeMenu == 'noi-tru' ? 'active' : ''}"><span class="nav-icon">📋</span><span class="nav-text">Quản Lý Nội Trú</span></a>
+        
         <a th:href="@{/bac-si/ket-qua}" class="nav-item" th:classappend="${activeMenu == 'xet-nghiem' ? 'active' : ''}"><span class="nav-icon">🧪</span><span class="nav-text">Xét Nghiệm</span></a>
         <a href="#" class="nav-item" th:classappend="${activeMenu == 'thanh-toan' ? 'active' : ''}"><span class="nav-icon">💰</span><span class="nav-text">Thanh Toán</span></a>
         <a href="#" class="nav-item" th:classappend="${activeMenu == 'bao-cao' ? 'active' : ''}"><span class="nav-icon">📊</span><span class="nav-text">Báo Cáo</span></a>
@@ -93,8 +102,8 @@
     <div class="topbar">
         <div class="topbar-title" th:text="${title}">Admin Dashboard</div>
         <div class="topbar-actions">
-            <a href="#" class="btn-action">🔄 Làm mới</a>
-            <a href="#" class="btn-action">📤 Xuất Excel</a>
+            <a th:if="${activeMenu != 'phong-benh' && activeMenu != 'vat-tu' && activeMenu != 'noi-tru'}" href="#" class="btn-action">🔄 Làm mới</a>
+            <a th:if="${activeMenu != 'phong-benh' && activeMenu != 'vat-tu' && activeMenu != 'noi-tru'}" href="#" class="btn-action">📤 Xuất Excel</a>
             <a th:href="@{/logout}" class="btn-action btn-danger">🚪 Đăng Xuất</a>
         </div>
     </div>
@@ -103,7 +112,7 @@
         <div th:replace="${content}"></div>
     </div>
 
-    <div class="status-bar">
+    <div class="status-bar" th:if="${activeMenu != 'phong-benh' && activeMenu != 'vat-tu' && activeMenu != 'noi-tru'}">
         <span>Đã kết nối | DB: phongkham_db | User: <span th:text="${session.loggedInUser?.email}">admin@phongkham.vn</span></span>
         <span>v1.0.0</span>
     </div>

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" 
-      th:replace="~{fragments/admin-layout :: layout('Thông Tin Vật Tư Y Tế', 'vat-tu', ~{::section})}">
+      th:replace="~{fragments/admin-layout :: layout('Thông Tin Dịch Vụ', 'vat-tu', ~{::section})}">
 <head>
     <meta charset="UTF-8">
 </head>
@@ -60,50 +60,51 @@
                 ❌ <span th:text="${error}">Lỗi</span>
             </div>
             <div class="form-header">
-                <h2 th:text="${vatTuYTe.maVatTu == null ? 'Thêm Vật Tư Mới' : 'Cập Nhật Vật Tư Y Tế'}">Thông Tin Vật Tư Y Tế</h2>
+                <h2 th:text="${dichVu.maDichVu == null ? 'Thêm Dịch Vụ Mới' : 'Cập Nhật Dịch Vụ'}">Thông Tin Dịch Vụ</h2>
             </div>
-            <form th:action="@{/admin/vat-tu/vattu/luu}" th:object="${vatTuYTe}" method="post">
-                <input type="hidden" th:field="*{maVatTu}" />
+            <form th:action="@{/admin/vat-tu/dich-vu/luu}" th:object="${dichVu}" method="post">
+                <input type="hidden" th:field="*{maDichVu}" />
                 
                 <div class="form-content">
                     <div class="form-grid">
                         <div class="form-group full-width">
-                            <label for="tenVatTu">Tên vật tư <span style="color: red;">*</span></label>
-                            <input type="text" id="tenVatTu" th:field="*{tenVatTu}" required placeholder="Ví dụ: Bông băng, Kim tiêm, Găng tay" />
+                            <label for="tenDichVu">Tên dịch vụ <span style="color: red;">*</span></label>
+                            <input type="text" id="tenDichVu" th:field="*{tenDichVu}" required placeholder="Ví dụ: Khám tổng quát, Xét nghiệm máu" />
                         </div>
                         
                         <div class="form-group">
-                            <label for="donViTinh">Đơn vị tính</label>
-                            <input type="text" id="donViTinh" th:field="*{donViTinh}" placeholder="Ví dụ: Cái, Hộp, Gói" />
+                            <label for="maChuyenKhoa">Chuyên khoa <span style="color: red;">*</span></label>
+                            <select id="maChuyenKhoa" name="maChuyenKhoa" required>
+                                <option value="">-- Chọn chuyên khoa --</option>
+                                <option th:each="ck : ${chuyenKhoas}" 
+                                        th:value="${ck.maChuyenKhoa}" 
+                                        th:text="${ck.tenChuyenKhoa}"
+                                        th:selected="${dichVu.chuyenKhoa != null && ck.maChuyenKhoa == dichVu.chuyenKhoa.maChuyenKhoa}"></option>
+                            </select>
                         </div>
                         
                         <div class="form-group">
-                            <label for="giaNhap">Giá nhập (VNĐ)</label>
-                            <input type="number" id="giaNhap" th:field="*{giaNhap}" step="1000" min="0" />
+                            <label for="loaiDichVu">Loại dịch vụ</label>
+                            <input type="text" id="loaiDichVu" th:field="*{loaiDichVu}" placeholder="VD: Khám bệnh, Chẩn đoán hình ảnh" />
                         </div>
                         
                         <div class="form-group">
-                            <label for="giaBan">Giá bán (VNĐ)</label>
-                            <input type="number" id="giaBan" th:field="*{giaBan}" step="1000" min="0" />
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="tonKho">Số lượng tồn kho</label>
-                            <input type="number" id="tonKho" th:field="*{tonKho}" min="0" />
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="nguongCanhBao">Ngưỡng cảnh báo hết hàng</label>
-                            <input type="number" id="nguongCanhBao" th:field="*{nguongCanhBao}" min="0" />
+                            <label for="giaDichVu">Giá dịch vụ (VNĐ) <span style="color: red;">*</span></label>
+                            <input type="number" id="giaDichVu" th:field="*{giaDichVu}" required min="0" step="1000" />
                         </div>
                         
                         <div class="form-group">
                             <label for="trangThai">Trạng thái</label>
                             <select id="trangThai" th:field="*{trangThai}">
-                                <option value="Còn hàng">Còn hàng</option>
-                                <option value="Hết hàng">Hết hàng</option>
-                                <option value="Ngừng kinh doanh">Ngừng kinh doanh</option>
+                                <option value="Đang dùng">Đang dùng</option>
+                                <option value="Ngừng cung cấp">Ngừng cung cấp</option>
+                                <option value="Ngừng dùng">Ngừng dùng</option>
                             </select>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="moTa">Mô tả dịch vụ</label>
+                            <textarea id="moTa" th:field="*{moTa}" rows="4" placeholder="Nhập mô tả chi tiết về dịch vụ..."></textarea>
                         </div>
                     </div>
                 </div>

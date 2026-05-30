@@ -84,6 +84,13 @@
 
         <!-- Thống kê nhanh -->
         <div class="stats-container">
+            <div th:if="${message}" style="grid-column: span 3; padding: 12px; background: #DCFCE7; color: #166534; border-radius: 6px; margin-bottom: 10px; font-size: 14px;">
+                ✅ <span th:text="${message}">Thông báo thành công</span>
+            </div>
+            <div th:if="${error}" style="grid-column: span 3; padding: 12px; background: #FEF2F2; color: #EF4444; border-radius: 6px; margin-bottom: 10px; font-size: 14px;">
+                ❌ <span th:text="${error}">Thông báo lỗi</span>
+            </div>
+            
             <div class="stat-card">
                 <div class="stat-icon" style="background: #DBEAFE; color: #2563EB;">📋</div>
                 <div class="stat-info">
@@ -112,7 +119,15 @@
             <div class="panel">
                 <div class="panel-header">
                     <h2>📋 Danh Sách Dịch Vụ</h2>
-                    <a th:href="@{/admin/dich-vu/them}" class="btn-sm btn-add">+ Thêm DV</a>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <form th:action="@{/admin/vat-tu}" method="get" style="display: flex; gap: 5px;">
+                            <input type="text" name="keywordDichVu" th:value="${keywordDichVu}" placeholder="Tìm dịch vụ..." 
+                                   style="padding: 5px 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 13px;">
+                            <input type="hidden" name="keywordKho" th:value="${keywordKho}">
+                            <button type="submit" class="btn-sm btn-edit">🔍</button>
+                        </form>
+                        <a th:href="@{/admin/vat-tu/dich-vu/them}" class="btn-sm btn-add">+ Thêm DV</a>
+                    </div>
                 </div>
                 <div class="panel-content">
                     <table>
@@ -136,7 +151,12 @@
                                     <span class="badge badge-success" th:text="${dv.trangThai}">Đang dùng</span>
                                 </td>
                                 <td>
-                                    <a th:href="@{/admin/dich-vu/sua/{id}(id=${dv.maDichVu})}" class="btn-sm btn-edit">Sửa</a>
+                                    <div style="display: flex; gap: 6px;">
+                                        <a th:href="@{/admin/vat-tu/dich-vu/sua/{id}(id=${dv.maDichVu})}" class="btn-sm btn-edit" title="Sửa">✏️</a>
+                                        <a th:href="@{/admin/vat-tu/dich-vu/xoa/{id}(id=${dv.maDichVu})}" 
+                                           class="btn-sm btn-delete" 
+                                           onclick="return confirm('Xác nhận xóa dịch vụ này?')" title="Xóa">🗑️</a>
+                                    </div>
                                 </td>
                             </tr>
                             <tr th:if="${danhSachDichVu.empty}">
@@ -151,7 +171,13 @@
             <div class="panel">
                 <div class="panel-header">
                     <h2>💊 Kho Thuốc và Vật Dụng Y Tế</h2>
-                    <div style="display: flex; gap: 10px;">
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <form th:action="@{/admin/vat-tu}" method="get" style="display: flex; gap: 5px;">
+                            <input type="text" name="keywordKho" th:value="${keywordKho}" placeholder="Tìm thuốc/vật tư..." 
+                                   style="padding: 5px 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 13px;">
+                            <input type="hidden" name="keywordDichVu" th:value="${keywordDichVu}">
+                            <button type="submit" class="btn-sm btn-edit">🔍</button>
+                        </form>
                         <a th:href="@{/admin/vat-tu/thuoc/them}" class="btn-sm btn-add">➕ Thêm thuốc</a>
                         <a th:href="@{/admin/vat-tu/vattu/them}" class="btn-sm btn-add">➕ Thêm vật tư</a>
                     </div>

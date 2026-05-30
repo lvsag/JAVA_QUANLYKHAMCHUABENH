@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Lập Phiếu Nhập Viện Nội Trú', 'benh-nhan', ~{::section})}">
+<head>
+    <title>Nhập Viện Nội Trú</title>
+</head>
+<body>
+    <section>
+        <!-- Import Bootstrap and FontAwesome for premium styling inside the main content -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+        
+        <div class="container-fluid py-4">
+            <!-- Tiêu đề trang -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="h4 mb-0 text-primary fw-bold">🏥 Lập Phiếu Nhập Viện Nội Trú</h2>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a th:href="@{/admin/benh-nhan}">Quản Lý Bệnh Nhân</a></li>
+                        <li class="breadcrumb-item active">Nhập Viện</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <!-- Thông báo lỗi/thành công -->
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <form th:action="@{/admin/noi-tru/luu}" th:object="${nhapVienNoiTru}" method="post">
+                <input type="hidden" name="maBenhNhan" th:value="${benhNhan.maBenhNhan}">
+                
+                <div class="row">
+                    <!-- Panel Trái: Thông tin nhập viện -->
+                    <div class="col-lg-5">
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-primary text-white py-3">
+                                <h5 class="card-title mb-0 h6"><i class="fas fa-file-medical me-2"></i> Thông Tin Nhập Viện</h5>
+                            </div>
+                            <div class="card-body p-4">
+                                <!-- Thông tin bệnh nhân (Readonly) -->
+                                <div class="mb-4 p-3 bg-light rounded border-start border-primary border-4">
+                                    <h6 class="text-primary fw-bold mb-3">Thông tin bệnh nhân</h6>
+                                    <div class="row g-2">
+                                        <div class="col-sm-4 text-muted small">Mã BN:</div>
+                                        <div class="col-sm-8 fw-bold" th:text="${benhNhan.maBenhNhan}"></div>
+                                        <div class="col-sm-4 text-muted small">Họ tên:</div>
+                                        <div class="col-sm-8 fw-bold" th:text="${benhNhan.hoTen}"></div>
+                                        <div class="col-sm-4 text-muted small">Ngày sinh:</div>
+                                        <div class="col-sm-8" th:text="${#dates.format(benhNhan.ngaySinh, 'dd/MM/yyyy')}"></div>
+                                        <div class="col-sm-4 text-muted small">Giới tính:</div>
+                                        <div class="col-sm-8" th:text="${benhNhan.gioiTinh}"></div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-muted">Chẩn Đoán Ban Đầu <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" th:field="*{chanDoan}" rows="3" placeholder="Nhập chẩn đoán từ bác sĩ..." required></textarea>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-muted">Khoa Điều Trị <span class="text-danger">*</span></label>
+                                        <select class="form-select" name="maChuyenKhoa" required>
+                                            <option value="">-- Chọn khoa --</option>
+                                            <option th:each="ck : ${danhSachChuyenKhoa}" 
+                                                    th:value="${ck.maChuyenKhoa}" 
+                                                    th:text="${ck.tenChuyenKhoa}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-muted">Bác Sĩ Phụ Trách</label>
+                                        <select class="form-select" name="maBacSiDieuTri">
+                                            <option value="">-- Chọn bác sĩ --</option>
+                                            <option th:each="bs : ${danhSachBacSi}" 
+                                                    th:value="${bs.maBacSi}" 
+                                                    th:text="${bs.hoTen}"></option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-muted">Ngày Nhập Viện <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" th:field="*{ngayNhapVien}" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-muted">Dự Kiến Điều Trị</label>
+                                        <input type="text" class="form-control" th:field="*{duKienDieuTri}" placeholder="VD: 5 ngày">
+                                    </div>
+                                </div>
+
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end border-top pt-3">
+                                    <a th:href="@{/admin/benh-nhan}" class="btn btn-light px-4">Hủy Bỏ</a>
+                                    <button type="submit" class="btn btn-primary px-4"><i class="fas fa-check-circle me-1"></i> Lập Phiếu</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel Phải: Chọn Phòng/Giường -->
+                    <div class="col-lg-7">
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0 h6"><i class="fas fa-bed me-2"></i> Phân Phòng / Giường Bệnh</h5>
+                                <span class="badge bg-light text-primary">Chỉ hiển thị phòng còn chỗ</span>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-muted">Chọn Phòng Điều Trị <span class="text-danger">*</span></label>
+                                        <select class="form-select form-select-lg" name="maPhong" id="maPhongSelect" required>
+                                            <option value="">-- Chọn phòng bệnh --</option>
+                                            <option th:each="p : ${danhSachPhong}" 
+                                                    th:value="${p.maPhong}" 
+                                                    th:text="${p.maPhong + ' - ' + p.loaiPhong + ' (Khoa: ' + (p.chuyenKhoa != null ? p.chuyenKhoa.tenChuyenKhoa : 'Chưa rõ') + ')'}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-muted">Chọn Giường Bệnh <span class="text-danger">*</span></label>
+                                        <select class="form-select form-select-lg" name="maGiuong" id="maGiuongSelect" required disabled>
+                                            <option value="">-- Chọn giường --</option>
+                                            <option th:each="g : ${danhSachGiuongTrong}" 
+                                                    th:value="${g.maGiuong}" 
+                                                    th:text="${g.soGiuong}"
+                                                    th:data-ma-phong="${g.phongBenh.maPhong}"></option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="bg-light p-4 rounded text-center border-dashed border-2">
+                                    <div id="bedInfoPlaceholder">
+                                        <i class="fas fa-hospital-user fa-3x text-muted mb-3"></i>
+                                        <p class="text-muted">Vui lòng chọn Phòng và Giường để tiếp tục</p>
+                                    </div>
+                                    <div id="bedInfoDisplay" class="d-none">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                                    <i class="fas fa-bed fa-2x"></i>
+                                                </div>
+                                            </div>
+                                            <div class="col text-start">
+                                                <h5 id="selectedBedName" class="mb-1 text-primary fw-bold">GIƯỜNG GD1</h5>
+                                                <p id="selectedRoomName" class="mb-0 text-muted">Phòng: P.101</p>
+                                            </div>
+                                            <div class="col-auto">
+                                                <span class="badge bg-success px-3 py-2">SẴN SÀNG</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Panel Phụ: Gợi ý/Quy định -->
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-4 border-start border-info border-4">
+                                <h6 class="fw-bold text-info mb-2"><i class="fas fa-info-circle me-2"></i> Lưu ý khi phân giường</h6>
+                                <ul class="small text-muted mb-0 ps-3">
+                                    <li>Hệ thống chỉ hiển thị những giường có trạng thái <b>Trống</b>.</li>
+                                    <li>Mỗi bệnh nhân khi nhập viện phải được chỉ định chính xác 1 giường.</li>
+                                    <li>Sau khi lập phiếu, trạng thái giường sẽ tự động chuyển thành <b>Có người</b>.</li>
+                                    <li>Để thay đổi phòng/giường sau khi nhập viện, vui lòng sử dụng chức năng "Chuyển khoa/phòng".</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Script xử lý chọn giường theo phòng -->
+        <script th:inline="javascript">
+            document.addEventListener('DOMContentLoaded', function() {
+                const maPhongSelect = document.getElementById('maPhongSelect');
+                const maGiuongSelect = document.getElementById('maGiuongSelect');
+                const placeholder = document.getElementById('bedInfoPlaceholder');
+                const infoDisplay = document.getElementById('bedInfoDisplay');
+
+                // Lưu trữ toàn bộ giường trống ban đầu từ HTML
+                const allBeds = [];
+                Array.from(maGiuongSelect.options).forEach(opt => {
+                    if (opt.value !== "") {
+                        allBeds.push({
+                            value: opt.value,
+                            text: opt.text,
+                            maPhong: opt.getAttribute('data-ma-phong')
+                        });
+                    }
+                });
+
+                function filterBeds(maPhong) {
+                    // Xóa và reset dropdown giường
+                    maGiuongSelect.innerHTML = '<option value="">-- Chọn giường --</option>';
+                    
+                    if (!maPhong) {
+                        maGiuongSelect.disabled = true;
+                        placeholder.classList.remove('d-none');
+                        infoDisplay.classList.add('d-none');
+                        return;
+                    }
+
+                    // Lọc các giường thuộc phòng được chọn
+                    const filtered = allBeds.filter(b => b.maPhong === maPhong);
+
+                    if (filtered.length > 0) {
+                        filtered.forEach(b => {
+                            const opt = document.createElement('option');
+                            opt.value = b.value;
+                            opt.text = b.text;
+                            opt.setAttribute('data-ma-phong', b.maPhong);
+                            maGiuongSelect.appendChild(opt);
+                        });
+                        maGiuongSelect.disabled = false;
+                    } else {
+                        const opt = document.createElement('option');
+                        opt.value = "";
+                        opt.text = "-- Không có giường trống --";
+                        maGiuongSelect.appendChild(opt);
+                        maGiuongSelect.disabled = true;
+                    }
+                }
+
+                maPhongSelect.addEventListener('change', function() {
+                    filterBeds(this.value);
+                });
+
+                maGiuongSelect.addEventListener('change', function() {
+                    if (this.value) {
+                        placeholder.classList.add('d-none');
+                        infoDisplay.classList.remove('d-none');
+                        document.getElementById('selectedBedName').textContent = 'GIƯỜNG ' + this.options[this.selectedIndex].text;
+                        document.getElementById('selectedRoomName').textContent = 'Phòng: ' + maPhongSelect.options[maPhongSelect.selectedIndex].text.split(' - ')[0];
+                    } else {
+                        placeholder.classList.remove('d-none');
+                        infoDisplay.classList.add('d-none');
+                    }
+                });
+
+                // Nếu đã chọn sẵn phòng khi load lại form có lỗi
+                if (maPhongSelect.value) {
+                    filterBeds(maPhongSelect.value);
+                }
+            });
+        </script>
+    </section>
+</body>
+</html>

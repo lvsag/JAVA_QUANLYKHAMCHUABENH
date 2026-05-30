@@ -23,4 +23,11 @@ public class ThuocService {
     public Optional<Thuoc> getThuoc(Integer maThuoc) {
         return thuocRepository.findById(maThuoc);
     }
+
+    public List<Thuoc> searchThuoc(String keyword) {
+        if (keyword == null || keyword.isEmpty()) {
+            return findAll();
+        }
+        return thuocRepository.findByTenThuocContainingIgnoreCase(keyword);
+    }
 }

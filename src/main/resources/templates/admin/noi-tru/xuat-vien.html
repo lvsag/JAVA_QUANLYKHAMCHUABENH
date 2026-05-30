@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Phiếu Xuất Viện Nội Trú', 'noi-tru', ~{::section})}">
+<head>
+    <title>Xuất Viện Nội Trú</title>
+</head>
+<body>
+    <section>
+        <!-- Import Bootstrap and FontAwesome for premium styling inside the main content -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+
+        <div class="container-fluid py-4">
+            <!-- Tiêu đề trang -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="h4 mb-0 text-primary fw-bold">🏥 Lập Phiếu Xuất Viện Nội Trú</h2>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a th:href="@{/admin/noi-tru}">Quản Lý Nội Trú</a></li>
+                        <li class="breadcrumb-item active">Xuất Viện</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <!-- Thông báo lỗi/thành công -->
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <form th:action="@{/admin/noi-tru/xuat-vien}" method="post">
+                <input type="hidden" name="maNoiTru" th:value="${nhapVienNoiTru.maNoiTru}">
+                
+                <div class="row">
+                    <!-- Panel Trái: Hồ Sơ Xuất Viện -->
+                    <div class="col-lg-7">
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-primary text-white py-3">
+                                <h5 class="card-title mb-0 h6"><i class="fas fa-file-invoice-dollar me-2"></i> Hồ Sơ Xuất Viện</h5>
+                            </div>
+                            <div class="card-body p-4">
+                                <!-- Thông tin chi tiết bệnh nhân -->
+                                <div class="mb-4 p-3 bg-light rounded border-start border-primary border-4">
+                                    <h6 class="text-primary fw-bold mb-3">Thông Tin Hành Chính & Nhập Viện</h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="text-muted small">Mã nội trú:</div>
+                                            <div class="fw-bold text-dark" th:text="${nhapVienNoiTru.maNoiTru}"></div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="text-muted small">Họ tên bệnh nhân:</div>
+                                            <div class="fw-bold text-dark" th:text="${nhapVienNoiTru.benhNhan.hoTen + ' (' + nhapVienNoiTru.benhNhan.maBenhNhan + ')'}"></div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="text-muted small">Phòng / Giường điều trị:</div>
+                                            <div class="fw-bold text-primary" th:text="${'Phòng: ' + nhapVienNoiTru.phongBenh.maPhong + ' - Giường: ' + nhapVienNoiTru.giuongBenh.soGiuong}"></div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="text-muted small">Khoa điều trị:</div>
+                                            <div class="fw-bold text-dark" th:text="${nhapVienNoiTru.chuyenKhoa != null ? nhapVienNoiTru.chuyenKhoa.tenChuyenKhoa : 'Đa Khoa'}"></div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="text-muted small">Bác sĩ phụ trách:</div>
+                                            <div class="fw-bold text-dark" th:text="${nhapVienNoiTru.bacSiDieuTri != null ? nhapVienNoiTru.bacSiDieuTri.hoTen : 'Chưa phân công'}"></div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="text-muted small">Ngày nhập viện:</div>
+                                            <div class="fw-bold text-dark" th:text="${#dates.format(nhapVienNoiTru.ngayNhapVien, 'dd/MM/yyyy')}"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Form điền thông tin xuất viện -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-muted">Chẩn Đoán Ban Đầu</label>
+                                    <input type="text" class="form-control bg-light" th:value="${nhapVienNoiTru.chanDoan}" readonly>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-muted">Ngày Xuất Viện <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" name="ngayXuatVien" th:value="${#dates.format(ngayXuatVienMacDinh, 'yyyy-MM-dd')}" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-muted">Số Ngày Điều Trị (Dự kiến)</label>
+                                        <input type="text" class="form-control bg-light" th:value="${nhapVienNoiTru.duKienDieuTri ?: 'N/A'}" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold small text-muted">Tình Trạng Ra Viện / Ghi Chú Lâm Sàng <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" name="tinhTrangRaVien" rows="4" placeholder="Nhập tình trạng sức khỏe bệnh nhân khi xuất viện, dặn dò của bác sĩ..." required></textarea>
+                                </div>
+
+                                <!-- Thanh nút hành động chính bên trái -->
+                                <div class="d-flex flex-wrap gap-2 justify-content-end border-top pt-3">
+                                    <button type="button" class="btn btn-light border" onclick="window.print()"><i class="fas fa-print me-1"></i> In Giấy Ra Viện</button>
+                                    <button type="button" class="btn btn-info text-white"><i class="fas fa-file-invoice me-1"></i> Chuyển Thanh Toán</button>
+                                    <button type="submit" class="btn btn-success px-4"><i class="fas fa-check-circle me-1"></i> Xác Nhận Xuất Viện</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel Phải: Tổng Hợp Chi Phí -->
+                    <div class="col-lg-5">
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-success text-white py-3">
+                                <h5 class="card-title mb-0 h6"><i class="fas fa-calculator me-2"></i> Tổng Hợp Chi Phí Nội Trú</h5>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped small align-middle mb-4">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Hạng mục chi phí</th>
+                                                <th class="text-end">Thành tiền</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><i class="fas fa-bed text-muted me-2"></i> Tiền Giường Bệnh (Dự tính 300,000 đ/ngày)</td>
+                                                <td class="text-end fw-bold text-dark">900,000 đ</td>
+                                            </tr>
+                                            <tr>
+                                                <td><i class="fas fa-user-md text-muted me-2"></i> Phí Khám &amp; Bác Sĩ Điều Trị</td>
+                                                <td class="text-end fw-bold text-dark" th:text="${#numbers.formatInteger(nhapVienNoiTru.bacSiDieuTri != null ? nhapVienNoiTru.bacSiDieuTri.phiKham : 150000, 0) + ' đ'}">150,000 đ</td>
+                                            </tr>
+                                            <tr>
+                                                <td><i class="fas fa-pills text-muted me-2"></i> Thuốc &amp; Vật Tư Tiêu Hao (Mẫu)</td>
+                                                <td class="text-end fw-bold text-dark">350,000 đ</td>
+                                            </tr>
+                                            <tr>
+                                                <td><i class="fas fa-vial text-muted me-2"></i> Dịch Vụ Xét Nghiệm &amp; Cận Lâm Sàng</td>
+                                                <td class="text-end fw-bold text-dark">500,000 đ</td>
+                                            </tr>
+                                            <tr class="table-warning fw-bold fs-6">
+                                                <td class="text-primary"><i class="fas fa-coins me-2"></i> Tổng chi phí ước tính</td>
+                                                <td class="text-end text-primary">1,900,000 đ</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="alert alert-warning border-0 small mb-4" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Chi phí hiển thị trên đây là <b>chi phí tạm tính</b> dựa trên hồ sơ lâm sàng. Việc thanh toán chính thức sẽ được xử lý tại quầy Viện phí (sau khi bấm "Chuyển Thanh Toán").
+                                </div>
+
+                                <div class="d-grid">
+                                    <a th:href="@{/admin/noi-tru}" class="btn btn-outline-secondary btn-block"><i class="fas fa-arrow-left me-1"></i> Quay lại Danh sách</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+</body>
+</html>

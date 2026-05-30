@@ -56,6 +56,9 @@
         </style>
 
         <div class="form-panel">
+            <div th:if="${error}" style="padding: 12px 24px; background: #FEF2F2; color: #EF4444; border-bottom: 1px solid var(--border-color); font-size: 14px;">
+                ❌ <span th:text="${error}">Lỗi</span>
+            </div>
             <div class="form-header">
                 <h2 th:text="${thuoc.maThuoc == null ? 'Thêm Thuốc Mới' : 'Cập Nhật Thông Tin Thuốc'}">Thông Tin Thuốc</h2>
             </div>
@@ -97,22 +100,22 @@
                         
                         <div class="form-group">
                             <label for="giaNhap">Giá nhập (VNĐ)</label>
-                            <input type="number" id="giaNhap" th:field="*{giaNhap}" step="1000" />
+                            <input type="number" id="giaNhap" th:field="*{giaNhap}" step="1000" min="0" />
                         </div>
                         
                         <div class="form-group">
                             <label for="giaBan">Giá bán (VNĐ)</label>
-                            <input type="number" id="giaBan" th:field="*{giaBan}" step="1000" />
+                            <input type="number" id="giaBan" th:field="*{giaBan}" step="1000" min="0" />
                         </div>
                         
                         <div class="form-group">
                             <label for="tonKho">Số lượng tồn kho</label>
-                            <input type="number" id="tonKho" th:field="*{tonKho}" />
+                            <input type="number" id="tonKho" th:field="*{tonKho}" min="0" />
                         </div>
                         
                         <div class="form-group">
                             <label for="nguongCanhBao">Ngưỡng cảnh báo hết hàng</label>
-                            <input type="number" id="nguongCanhBao" th:field="*{nguongCanhBao}" />
+                            <input type="number" id="nguongCanhBao" th:field="*{nguongCanhBao}" min="0" />
                         </div>
                         
                         <div class="form-group">

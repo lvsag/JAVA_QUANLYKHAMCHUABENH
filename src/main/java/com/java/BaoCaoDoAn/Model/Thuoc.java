@@ -31,6 +31,12 @@ public class Thuoc {
     @Column(name = "HamLuong", length = 50)
     private String hamLuong;
 
+    @Column(name = "NhaSanXuat", length = 200)
+    private String nhaSanXuat;
+
+    @Column(name = "GiaNhap")
+    private BigDecimal giaNhap;
+
     @Column(name = "GiaBan")
     private BigDecimal giaBan;
 

@@ -1,109 +1,323 @@
 package com.java.BaoCaoDoAn.Controller;
 
+import com.java.BaoCaoDoAn.DTO.DatLichRequestDTO;
+import com.java.BaoCaoDoAn.Model.BenhNhan;
+import com.java.BaoCaoDoAn.Model.LichHen;
+import com.java.BaoCaoDoAn.Service.KhungGioGeneratorService;
+import com.java.BaoCaoDoAn.Service.LichHenService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
+@SessionAttributes("datLichSession") // QUAN TRỌNG: Giữ dữ liệu DTO qua 4 bước
 public class HomeController {
 
     @Autowired
     private com.java.BaoCaoDoAn.Repository.BenhNhanRepository benhNhanRepository;
-    
+
     @Autowired
     private com.java.BaoCaoDoAn.Repository.BacSiRepository bacSiRepository;
-    
+
     @Autowired
     private com.java.BaoCaoDoAn.Repository.ChuyenKhoaRepository chuyenKhoaRepository;
 
     @Autowired
-    private com.java.BaoCaoDoAn.Service.DichVuService dichVuService;
+    private com.java.BaoCaoDoAn.Repository.DichVuRepository dichVuRepository;
 
+    @Autowired
+    private LichHenService lichHenService;
+
+    @Autowired
+    private com.java.BaoCaoDoAn.Repository.LichHenRepository lichHenRepository;
+
+    @Autowired
+    private KhungGioGeneratorService khungGioGeneratorService;
+
+    @ModelAttribute("datLichSession")
+    public DatLichRequestDTO setUpDatLichForm() {
+        return new DatLichRequestDTO();
+    }
+
+    // ===================================================================
+    // 1. TRANG CHỦ & TỔNG QUAN
+    // ===================================================================
     @GetMapping("/")
     public String index() {
         return "redirect:/home";
     }
 
     @GetMapping("/home")
-    public String home(org.springframework.ui.Model model) {
-        // Load stats
-        long totalPatients = benhNhanRepository.count();
-        long totalDoctors = bacSiRepository.count();
-        long totalSpecialties = chuyenKhoaRepository.count();
-        
-        // Load lists
-        java.util.List<com.java.BaoCaoDoAn.Model.ChuyenKhoa> specialties = chuyenKhoaRepository.findAll();
-        java.util.List<com.java.BaoCaoDoAn.Model.BacSi> doctors = bacSiRepository.findAll();
-        
-        // Limit to top 5 or 6 for the homepage if necessary, but we'll pass all and let Thymeleaf slice it
-        java.math.BigDecimal averageRating = bacSiRepository.getAverageRating();
-        
-        model.addAttribute("totalPatients", totalPatients);
-        model.addAttribute("totalDoctors", totalDoctors);
-        model.addAttribute("totalSpecialties", totalSpecialties);
-        model.addAttribute("averageRating", averageRating != null ? averageRating : java.math.BigDecimal.ZERO);
-        model.addAttribute("specialties", specialties);
-        model.addAttribute("doctors", doctors);
-        
+    public String home(Model model) {
+        model.addAttribute("totalPatients", benhNhanRepository.count());
+        model.addAttribute("totalDoctors", bacSiRepository.count());
+        model.addAttribute("totalSpecialties", chuyenKhoaRepository.count());
+
+        BigDecimal averageRating = bacSiRepository.getAverageRating();
+        model.addAttribute("averageRating", averageRating != null ? averageRating : BigDecimal.ZERO);
+        model.addAttribute("specialties", chuyenKhoaRepository.findAll());
+        model.addAttribute("doctors", bacSiRepository.findAll());
         return "public/home";
     }
 
+    // ===================================================================
+    // 2. DANH SÁCH BÁC SĨ & CHI TIẾT
+    // ===================================================================
     @GetMapping("/bac-si")
     public String doctors(
-            @org.springframework.web.bind.annotation.RequestParam(value = "keyword", required = false) String keyword,
-            @org.springframework.web.bind.annotation.RequestParam(value = "maChuyenKhoa", required = false) String maChuyenKhoa,
-            @org.springframework.web.bind.annotation.RequestParam(value = "hocVi", required = false) java.util.List<String> hocViList,
-            @org.springframework.web.bind.annotation.RequestParam(value = "rating", required = false) java.math.BigDecimal rating,
-            @org.springframework.web.bind.annotation.RequestParam(value = "sort", required = false, defaultValue = "phu-hop") String sortParam,
-            org.springframework.ui.Model model) {
-        
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "maChuyenKhoa", required = false) String maChuyenKhoa,
+            @RequestParam(value = "hocVi", required = false) List<String> hocViList,
+            @RequestParam(value = "rating", required = false) BigDecimal rating,
+            @RequestParam(value = "sort", required = false, defaultValue = "phu-hop") String sortParam,
+            Model model) {
+
         if (hocViList != null && hocViList.isEmpty()) {
             hocViList = null;
         }
-        
-        org.springframework.data.domain.Sort sortObj = org.springframework.data.domain.Sort.unsorted();
+
+        Sort sortObj = Sort.unsorted();
         if ("danh-gia".equals(sortParam)) {
-            sortObj = org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "diemDanhGiaTB");
+            sortObj = Sort.by(Sort.Direction.DESC, "diemDanhGiaTB");
         } else if ("lich-hen".equals(sortParam)) {
-            sortObj = org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "soBenhNhanDaKham");
+            sortObj = Sort.by(Sort.Direction.DESC, "soBenhNhanDaKham");
         } else {
-            sortObj = org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.ASC, "hoTen");
+            sortObj = Sort.by(Sort.Direction.ASC, "hoTen");
         }
-        
-        java.util.List<com.java.BaoCaoDoAn.Model.BacSi> doctors = bacSiRepository.searchBacSi(keyword, maChuyenKhoa, hocViList, rating, sortObj);
-        java.util.List<com.java.BaoCaoDoAn.Model.ChuyenKhoa> specialties = chuyenKhoaRepository.findAll();
-        
+
+        List<com.java.BaoCaoDoAn.Model.BacSi> doctors = bacSiRepository.searchBacSi(keyword, maChuyenKhoa, hocViList, rating, sortObj);
         model.addAttribute("doctors", doctors);
-        model.addAttribute("specialties", specialties);
+        model.addAttribute("specialties", chuyenKhoaRepository.findAll());
         model.addAttribute("totalDoctors", doctors.size());
-        model.addAttribute("keyword", keyword);
-        model.addAttribute("selectedMaChuyenKhoa", maChuyenKhoa);
-        model.addAttribute("selectedHocVi", hocViList != null ? hocViList : new java.util.ArrayList<>());
-        model.addAttribute("selectedRating", rating);
-        model.addAttribute("selectedSort", sortParam);
-        
+        model.addAttribute("selectedHocVi", hocViList != null ? hocViList : new ArrayList<>());
+
         return "public/bac-si";
     }
 
-    @GetMapping({"/dich-vu", "/danh-sach-dich-vu"})
-    public String services(
-            @org.springframework.web.bind.annotation.RequestParam(value = "keyword", required = false) String keyword,
-            @org.springframework.web.bind.annotation.RequestParam(value = "maChuyenKhoa", required = false) String maChuyenKhoa,
-            @org.springframework.web.bind.annotation.RequestParam(value = "mucGia", required = false) String mucGia,
-            @org.springframework.web.bind.annotation.RequestParam(value = "loaiDichVu", required = false) String loaiDichVu,
-            org.springframework.ui.Model model) {
-        // Added to connect public/danh-sach-dich-vu.html with real service catalog data.
-        // Added alias /danh-sach-dich-vu so existing home.html links keep working.
-        // Added filters for price range and service type so the public comboboxes work.
-        java.util.List<com.java.BaoCaoDoAn.Model.DichVu> dichVus = dichVuService.searchDichVu(keyword, maChuyenKhoa, mucGia, loaiDichVu);
-        model.addAttribute("dichVus", dichVus);
-        model.addAttribute("chuyenKhoas", chuyenKhoaRepository.findAll());
-        model.addAttribute("keyword", keyword);
-        model.addAttribute("selectedMaChuyenKhoa", maChuyenKhoa);
-        model.addAttribute("selectedMucGia", mucGia);
-        model.addAttribute("selectedLoaiDichVu", loaiDichVu);
-        model.addAttribute("totalServices", dichVus.size());
-        model.addAttribute("totalSpecialties", chuyenKhoaRepository.count());
-        return "public/danh-sach-dich-vu";
+    @GetMapping("/bac-si/{maBacSi}")
+    public String doctorDetail(@PathVariable String maBacSi, Model model) {
+        com.java.BaoCaoDoAn.Model.BacSi bacSi = bacSiRepository.findById(maBacSi).orElse(null);
+        if (bacSi == null) return "redirect:/bac-si";
+        model.addAttribute("bacSi", bacSi);
+
+        // Trả về file giao diện bac-si-detail.html
+        return "public/bac-si-detail";
+    }
+
+    // ===================================================================
+    // 3. LUỒNG ĐẶT LỊCH WIZARD 4 BƯỚC
+    // ===================================================================
+
+    // --- BƯỚC 1: CHỌN DỊCH VỤ ---
+    @GetMapping("/dat-lich/buoc-1-dich-vu")
+    public String step1DichVu(
+            @RequestParam(value = "maBacSi", required = false) String maBacSi,
+            @ModelAttribute("datLichSession") DatLichRequestDTO dto,
+            HttpSession session, RedirectAttributes redirectAttrs, Model model) {
+
+        Object user = session.getAttribute("loggedInUser");
+        if (user == null) {
+            redirectAttrs.addFlashAttribute("error", "Vui lòng đăng nhập trước khi đặt lịch.");
+            return "redirect:/login";
+        }
+
+        if (maBacSi != null && !maBacSi.isEmpty()) {
+            dto.setMaBacSi(maBacSi);
+        }
+        model.addAttribute("danhSachDichVu", dichVuRepository.findAll());
+        return "public/dich-vu";
+    }
+
+    // BỔ SUNG HÀM BỊ THIẾU: POST BƯỚC 1
+    @PostMapping("/dat-lich/buoc-1-dich-vu")
+    public String step1Submit(@ModelAttribute("datLichSession") DatLichRequestDTO dto) {
+        return "redirect:/dat-lich/buoc-2-thong-tin";
+    }
+
+    // --- BƯỚC 2: THÔNG TIN ---
+    @GetMapping("/dat-lich/buoc-2-thong-tin")
+    public String step2ThongTin(
+            @ModelAttribute("datLichSession") DatLichRequestDTO dto,
+            Model model, HttpSession session) {
+
+        // 1. Ép kiểu chuẩn xác thành TaiKhoan
+        com.java.BaoCaoDoAn.Model.TaiKhoan tk = (com.java.BaoCaoDoAn.Model.TaiKhoan) session.getAttribute("loggedInUser");
+        if (tk == null) {
+            return "redirect:/login";
+        }
+
+        // 2. TỪ TÀI KHOẢN -> LẤY RA BỆNH NHÂN
+        // LƯU Ý: Dòng chữ "tk.getBenhNhan()" phụ thuộc vào cách bạn thiết kế Entity TaiKhoan.
+        // - Nếu Class TaiKhoan có biến "private BenhNhan benhNhan;", thì dùng lệnh này:
+
+
+        // - Nếu báo đỏ ở getBenhNhan(), nghĩa là bạn đang liên kết bằng ID (Ví dụ: tên đăng nhập).
+        // Khi đó hãy XÓA dòng trên và BỎ COMMENT dòng dưới đây:
+        BenhNhan bn = benhNhanRepository.findByTaiKhoan(tk);
+
+        khungGioGeneratorService.generateSlotsForAll7Days();
+        model.addAttribute("doctors", bacSiRepository.findAll());
+        model.addAttribute("specialties", chuyenKhoaRepository.findAll());
+
+        // Nếu tìm thấy bệnh nhân, tự động điền họ tên và BHYT
+        if (dto.getHoTenNguoiKham() == null || dto.getHoTenNguoiKham().isEmpty()) {
+            if (bn != null) {
+                // Nếu có hồ sơ bệnh nhân thì lấy data từ bệnh nhân
+                dto.setHoTenNguoiKham(bn.getHoTen());
+                dto.setSoBHYT(bn.getSoBHYT());
+            } else {
+                // Nếu chưa có hồ sơ, lấy tạm Tên từ Tài khoản
+                dto.setHoTenNguoiKham(tk.getHoTen());
+            }
+        }
+
+        return "public/dat-lich";
+    }
+
+    // BỔ SUNG HÀM BỊ THIẾU: POST BƯỚC 2
+    @PostMapping("/dat-lich/buoc-2-thong-tin")
+    public String step2Submit(@ModelAttribute("datLichSession") DatLichRequestDTO dto) {
+        return "redirect:/dat-lich/buoc-3-thanh-toan";
+    }
+
+    // --- BƯỚC 3: THANH TOÁN ---
+    // BỔ SUNG HÀM BỊ THIẾU: GET BƯỚC 3
+    @GetMapping("/dat-lich/buoc-3-thanh-toan")
+    public String step3ThanhToan(@ModelAttribute("datLichSession") DatLichRequestDTO dto, Model model) {
+        // 1. Lấy Tên Bác Sĩ từ DB đẩy lên UI
+        if (dto.getMaBacSi() != null && !dto.getMaBacSi().isEmpty()) {
+            bacSiRepository.findById(dto.getMaBacSi()).ifPresent(bs -> model.addAttribute("bacSi", bs));
+        }
+
+        // 2. Tính Tổng Tiền từ danh sách dịch vụ đẩy lên UI
+        double tongTien = lichHenService.tinhTongTien(dto.getDanhSachMaDichVu(), dto.getMaKhuyenMai(), dto.getMaBacSi());
+        model.addAttribute("tongTien", tongTien);
+        return "public/thanh-toan";
+    }
+
+    @PostMapping("/dat-lich/buoc-3-thanh-toan")
+    public String step3Submit(
+            @ModelAttribute("datLichSession") DatLichRequestDTO dto,
+            HttpSession session,
+            RedirectAttributes redirectAttrs) {
+
+        // 1. Ép kiểu chuẩn xác thành TaiKhoan
+        com.java.BaoCaoDoAn.Model.TaiKhoan tk = (com.java.BaoCaoDoAn.Model.TaiKhoan) session.getAttribute("loggedInUser");
+        if (tk == null) {
+            return "redirect:/login";
+        }
+
+        // 2. Lấy Bệnh nhân tương tự như Bước 2
+        //BenhNhan bn = tk.getBenhNhan(); // Hoặc dùng benhNhanRepository.findById(...) như hướng dẫn ở trên
+        BenhNhan bn = benhNhanRepository.findByTaiKhoan(tk);
+        if (bn == null) {
+            redirectAttrs.addFlashAttribute("error", "Không tìm thấy hồ sơ Bệnh nhân của tài khoản này!");
+            return "redirect:/dat-lich/buoc-2-thong-tin";
+        }
+
+        try {
+            LichHen saved = lichHenService.datLich(dto, bn.getMaBenhNhan());
+            session.removeAttribute("datLichSession");
+            return "redirect:/dat-lich/dat-lich-thanh-cong?maLichHen=" + saved.getMaLichHen();
+
+        } catch (Exception e) {
+            System.out.println("========== LỖI KHI LƯU ĐẶT LỊCH ==========");
+            e.printStackTrace();
+            redirectAttrs.addFlashAttribute("error", e.getMessage());
+            return "redirect:/dat-lich/buoc-3-thanh-toan";
+        }
+    }
+
+    // --- BƯỚC 4: THÀNH CÔNG ---
+    @GetMapping("/dat-lich/dat-lich-thanh-cong")
+    public String step4ThanhCong(@RequestParam("maLichHen") String maLichHen, Model model) {
+        LichHen lh = lichHenRepository.findById(maLichHen).orElse(null);
+        model.addAttribute("lichHen", lh);
+        model.addAttribute("maLichHen", maLichHen);
+        return "public/dat-lich-thanh-cong";
+    }
+
+    // ===================================================================
+    // 4. LỊCH SỬ & HỦY LỊCH
+    // ===================================================================
+    // ===================================================================
+    // 4. LỊCH SỬ & HỦY LỊCH
+    // ===================================================================
+    @GetMapping("/lich-su-dat-lich")
+    public String lichSuDatLich(Model model, HttpSession session, RedirectAttributes redirectAttrs) {
+
+        // 1. Lấy Tài khoản từ Session
+        com.java.BaoCaoDoAn.Model.TaiKhoan tk = (com.java.BaoCaoDoAn.Model.TaiKhoan) session.getAttribute("loggedInUser");
+        if (tk == null) return "redirect:/login";
+
+        // 2. Tìm Bệnh nhân thông qua Tài khoản
+        BenhNhan bn = benhNhanRepository.findByTaiKhoan(tk);
+
+        // Nếu Tài khoản này chưa từng tạo hồ sơ bệnh nhân
+        if (bn == null) {
+            redirectAttrs.addFlashAttribute("error", "Bạn chưa có hồ sơ Bệnh nhân, vui lòng cập nhật hồ sơ hoặc đặt lịch khám trước.");
+            return "redirect:/home";
+        }
+
+        // 3. Tìm danh sách lịch hẹn của bệnh nhân này
+        model.addAttribute("danhSach", lichHenService.getLichHenByBenhNhan(bn.getMaBenhNhan()));
+        return "public/lich-su-dat-lich";
+    }
+
+    @PostMapping("/dat-lich/{maLichHen}/huy")
+    public String huyLich(
+            @PathVariable String maLichHen,
+            @RequestParam(value = "lyDoHuy", required = false) String lyDoHuy,
+            HttpSession session,
+            RedirectAttributes redirectAttrs) {
+
+        // 1. Lấy Tài khoản từ Session
+        com.java.BaoCaoDoAn.Model.TaiKhoan tk = (com.java.BaoCaoDoAn.Model.TaiKhoan) session.getAttribute("loggedInUser");
+        if (tk == null) return "redirect:/login";
+
+        // 2. Tìm Bệnh nhân
+        BenhNhan bn = benhNhanRepository.findByTaiKhoan(tk);
+        if (bn == null) {
+            redirectAttrs.addFlashAttribute("error", "Lỗi: Không tìm thấy hồ sơ Bệnh nhân.");
+            return "redirect:/lich-su-dat-lich";
+        }
+
+        try {
+            // 3. Thực hiện hủy lịch
+            lichHenService.huyLich(maLichHen, lyDoHuy, bn.getMaBenhNhan());
+            redirectAttrs.addFlashAttribute("success", "Hủy lịch thành công.");
+        } catch (Exception e) {
+            redirectAttrs.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/lich-su-dat-lich";
+    }
+
+    @GetMapping("/dat-lich/tao-moi")
+    public String taoMoiDatLich(HttpSession session, @RequestParam(value = "maBacSi", required = false) String maBacSi) {
+        // "Quét sạch" giỏ hàng cũ
+        session.removeAttribute("datLichSession");
+
+        // Điều hướng sang Bước 1 (Nếu có truyền mã bác sĩ thì mang theo)
+        if (maBacSi != null && !maBacSi.isEmpty()) {
+            return "redirect:/dat-lich/buoc-1-dich-vu?maBacSi=" + maBacSi;
+        }
+        return "redirect:/dat-lich/buoc-1-dich-vu";
+    }
+
+    // ===================================================================
+    // BÁC SÍ: TẠO LỊCH HẸN TÁI KHÁM
+    // ===================================================================
+    @GetMapping("/bac-si/hen-tai-kham")
+    public String taoLichHenTaiKham(HttpSession session, Model model) {
+        // Trả về UI Hẹn tái khám (Screen 39)
+        return "bac-si/kham-benh/hen-tai-kham";
     }
 }

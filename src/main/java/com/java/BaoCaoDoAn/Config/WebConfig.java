@@ -18,7 +18,8 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(adminInterceptor)
                 // Added/updated: protect doctor workflow pages moved out of /admin/bac-si.
-                .addPathPatterns("/admin/**", "/bac-si/**");
+                .addPathPatterns("/admin/**", "/bac-si/**")
+                .excludePathPatterns("/bac-si", "/bac-si/BS*"); // Exclude public doctor list and details
                 
         registry.addInterceptor(userInterceptor)
                 .addPathPatterns("/ho-so/**");

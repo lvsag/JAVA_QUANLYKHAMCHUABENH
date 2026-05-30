@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bác sĩ khám bệnh ngoại trú</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>body{font-family:Inter,sans-serif}</style>
+</head>
+<body class="min-h-screen bg-[#ECF0F8] text-[#37474F]">
+<div class="h-8 bg-[#1565C0] flex items-center justify-between px-5 text-xs text-white">
+    <span>🏥 Hệ Thống Quản Lý Khám Chữa Bệnh — Doctor Panel</span>
+    <span th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy HH:mm')}">27/05/2026 07:30</span>
+</div>
+
+<div class="flex min-h-[calc(100vh-76px)]">
+    <aside class="w-[220px] bg-[#1A3A6B] flex flex-col shrink-0">
+        <div class="bg-[#0D47A1] px-5 py-5 flex items-center gap-3">
+            <div class="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center text-xl">👨‍⚕️</div>
+            <div><div class="text-white text-xs font-bold">Doctor</div><div class="text-white/80 text-[11px]">Quản trị viên</div><div class="mt-1 rounded-full bg-[#FFD740] px-3 py-0.5 text-[9px] font-extrabold text-[#0D47A1]">ONLINE</div></div>
+        </div>
+        <nav class="mt-24 flex-1">
+            <a th:href="@{/bac-si/kham-benh}" class="relative flex items-center gap-3 bg-[#1565C0] px-6 py-3 text-sm font-bold text-white"><span class="absolute left-0 h-full w-1 bg-[#FFD740]"></span>🩺 Khám bệnh</a>
+            <a th:href="@{/bac-si/chi-dinh(maPhieuKham=${phieuKham != null ? phieuKham.maPhieuKham : ''})}" class="flex items-center gap-3 px-6 py-3 text-sm text-[#90B8F8] hover:bg-white/5">🧪 Chỉ định DV</a>
+            <a th:href="@{/bac-si/ke-thuoc(maPhieuKham=${phieuKham != null ? phieuKham.maPhieuKham : ''})}" class="flex items-center gap-3 px-6 py-3 text-sm text-[#90B8F8] hover:bg-white/5">💊 Đơn thuốc</a>
+            <a th:href="@{/bac-si/ket-qua}" class="flex items-center gap-3 px-6 py-3 text-sm text-[#90B8F8] hover:bg-white/5">🔍 Xem kết quả DV</a>
+            <a th:href="@{/bac-si/bao-cao}" class="flex items-center gap-3 px-6 py-3 text-sm text-[#90B8F8] hover:bg-white/5">📈 Xem báo cáo</a>
+        </nav>
+        <a th:href="@{/logout}" class="px-6 py-6 text-sm font-bold text-[#EF9A9A]">🚪 Đăng Xuất</a>
+    </aside>
+
+    <main class="flex-1 overflow-auto">
+        <div class="border-b border-[#CBD5E1] bg-white px-5 py-3">
+            <h1 class="text-xl font-extrabold text-[#1565C0]">Bác sĩ khám bệnh ngoại trú</h1>
+            <p class="mt-1 text-xs text-[#78909C]">Bác sĩ xem bệnh nhân chờ khám, ghi triệu chứng, chẩn đoán và ra chỉ định/kê toa.</p>
+        </div>
+        <div th:if="${errorMessage}" class="mx-5 mt-5 rounded border border-[#FFB74D] bg-[#FFF3E0] px-4 py-3 text-sm font-bold text-[#E65100]" th:text="${errorMessage}"></div>
+        <div th:if="${successMessage}" class="mx-5 mt-5 rounded border border-green-300 bg-green-50 px-4 py-3 text-sm font-bold text-green-700" th:text="${successMessage}"></div>
+
+        <div class="grid grid-cols-1 gap-5 p-5 lg:grid-cols-[360px_1fr]">
+            <section class="rounded-lg border border-[#CBD5E1] bg-white">
+                <div class="rounded-t-lg bg-[#1565C0] px-4 py-2 text-xs font-bold text-white">Danh sách bệnh nhân chờ khám</div>
+                <table class="w-full text-xs">
+                    <thead class="bg-[#E8EDF5] text-[#455A64]">
+                    <tr><th class="p-3 text-left">STT</th><th class="p-3 text-left">Bệnh nhân</th><th class="p-3 text-left">Giờ</th><th class="p-3 text-left">TT</th></tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item,iter:${phieuKhams}" th:classappend="${phieuKham != null and item.maPhieuKham == phieuKham.maPhieuKham ? 'bg-[#E3EDFF]' : ''}" class="border-b border-[#EEF2F7] hover:bg-[#EEF4FF]">
+                        <td class="p-3" th:text="${#numbers.formatInteger(iter.index + 1, 2)}">01</td>
+                        <td class="p-3"><a th:href="@{/bac-si/kham-benh(maPhieuKham=${item.maPhieuKham})}" th:text="${item.benhNhan != null ? item.benhNhan.hoTen : 'Chưa có bệnh nhân'}">Nguyễn Văn A</a></td>
+                        <td class="p-3" th:text="${item.ngayKham != null ? #dates.format(item.ngayKham,'HH:mm') : '--:--'}">08:00</td>
+                        <td class="p-3" th:text="${item.trangThai}">Chờ</td>
+                    </tr>
+                    <tr th:if="${phieuKhams == null or #lists.isEmpty(phieuKhams)}"><td colspan="4" class="p-6 text-center text-[#78909C]">Chưa có phiếu khám.</td></tr>
+                    </tbody>
+                </table>
+                <div class="flex gap-3 p-4">
+                    <button class="flex-1 rounded bg-[#1565C0] py-2 text-xs font-bold text-white">Gọi bệnh nhân</button>
+                    <a th:href="@{/bac-si/kham-benh}" class="rounded bg-[#78909C] px-8 py-2 text-xs font-bold text-white">Bỏ qua</a>
+                </div>
+            </section>
+
+            <section class="rounded-lg border border-[#CBD5E1] bg-white">
+                <div class="rounded-t-lg bg-[#1565C0] px-4 py-2 text-xs font-bold text-white">Thông tin khám bệnh</div>
+                <form th:if="${phieuKham != null}" th:action="@{/bac-si/kham-benh/luu}" method="post" th:object="${phieuKham}" class="space-y-5 p-5">
+                    <input type="hidden" th:field="*{maPhieuKham}">
+                    <input type="hidden" name="benhNhan.maBenhNhan" th:value="${phieuKham.benhNhan != null ? phieuKham.benhNhan.maBenhNhan : ''}">
+                    <input type="hidden" name="bacSi.maBacSi" th:value="${phieuKham.bacSi != null ? phieuKham.bacSi.maBacSi : ''}">
+                    <div class="grid gap-4 md:grid-cols-4">
+                        <label class="text-xs font-bold">Mã phiếu khám<input class="mt-1 w-full rounded border border-[#B0BEC5] p-2 font-normal text-[#607D8B]" th:field="*{maPhieuKham}" readonly></label>
+                        <label class="text-xs font-bold">Bệnh nhân<input class="mt-1 w-full rounded border border-[#B0BEC5] p-2 font-normal text-[#607D8B]" th:value="${phieuKham.benhNhan != null ? phieuKham.benhNhan.hoTen : ''}" readonly></label>
+                        <label class="text-xs font-bold">Phòng khám<input class="mt-1 w-full rounded border border-[#B0BEC5] p-2 font-normal text-[#607D8B]" th:field="*{phongKham}" placeholder="PK01"></label>
+                        <label class="text-xs font-bold">Bác sĩ<input class="mt-1 w-full rounded border border-[#B0BEC5] p-2 font-normal text-[#607D8B]" th:value="${phieuKham.bacSi != null ? phieuKham.bacSi.hoTen : ''}" readonly></label>
+                    </div>
+                    <div class="grid gap-4 md:grid-cols-2">
+                        <label class="text-xs font-bold">Triệu chứng<textarea class="mt-1 h-24 w-full rounded border border-[#B0BEC5] p-3 font-normal text-[#607D8B]" th:field="*{trieuChung}"></textarea></label>
+                        <label class="text-xs font-bold">Tiền sử bệnh<textarea class="mt-1 h-24 w-full rounded border border-[#B0BEC5] p-3 font-normal text-[#607D8B]" th:field="*{tienSuBenh}"></textarea></label>
+                        <label class="text-xs font-bold">Dấu hiệu sinh tồn<textarea class="mt-1 h-24 w-full rounded border border-[#B0BEC5] p-3 font-normal text-[#607D8B]" th:field="*{dauHieuSinhTon}"></textarea></label>
+                        <label class="text-xs font-bold">Chẩn đoán ban đầu<textarea class="mt-1 h-24 w-full rounded border border-[#B0BEC5] p-3 font-normal text-[#607D8B]" th:field="*{chanDoanBanDau}"></textarea></label>
+                    </div>
+                    <div class="flex flex-wrap gap-4">
+                        <button class="rounded bg-[#1565C0] px-6 py-2 text-xs font-bold text-white">Lưu khám</button>
+                        <a th:href="@{/bac-si/chi-dinh(maPhieuKham=${phieuKham.maPhieuKham})}" class="rounded bg-[#FB8C00] px-6 py-2 text-xs font-bold text-white">Chỉ định dịch vụ</a>
+                        <a th:href="@{/bac-si/ke-thuoc(maPhieuKham=${phieuKham.maPhieuKham})}" class="rounded bg-[#43A047] px-6 py-2 text-xs font-bold text-white">Kê toa</a>
+                    </div>
+                    <div class="rounded-lg border border-[#81C784] bg-[#E8F5E9] p-5 text-xs text-[#455A64]"><b class="block text-base text-[#2E7D32]">Luồng xử lý</b>Khám ban đầu → nếu cần thì chỉ định xét nghiệm/siêu âm/X-quang → nhận kết quả → chẩn đoán cuối → kê toa.</div>
+                </form>
+                <div th:if="${phieuKham == null}" class="p-10 text-center text-sm text-[#78909C]">Chưa có bệnh nhân để khám.</div>
+            </section>
+        </div>
+    </main>
+</div>
+</body>
+</html>

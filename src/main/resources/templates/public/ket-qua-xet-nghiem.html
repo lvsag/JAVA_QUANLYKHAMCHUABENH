@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Screen 18B — User: Xem Kết Quả Xét Nghiệm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+          theme: {
+            extend: {
+              fontFamily: { inter: ['Inter', 'sans-serif'] },
+              colors: {
+                'clinic-topbar':   '#154F9D',
+                'clinic-nav':      '#1B66B5',
+                'clinic-primary':  '#0B62C0',
+                'clinic-bg':       '#EAF0F7',
+                'clinic-border':   '#C7D4E4',
+                'clinic-text':     '#233A55',
+                'clinic-label':    '#43566F',
+                'clinic-muted':    '#65758F',
+                'clinic-red':      '#EF3B3B',
+                'clinic-green':    '#2CA24D',
+                'clinic-yellow':   '#FFD21F',
+                'clinic-orange':   '#E07A00',
+                'clinic-purple':   '#7C3AED',
+              }
+            }
+          }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: #9FC1E9; border-radius: 4px; }
+        .bar-red   { background: #EF3B3B; }
+        .bar-green { background: #2CA24D; }
+    </style>
+</head>
+<body class="bg-clinic-bg font-inter text-sm min-h-screen flex flex-col">
+
+<!-- Navigation Bar -->
+<div class="bg-clinic-nav flex items-center px-4 h-[52px] gap-4 shrink-0">
+    <!-- Brand -->
+    <div class="flex items-center gap-2 mr-4 shrink-0">
+        <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-base">🏥</div>
+        <span class="text-white font-bold text-[13px] hidden sm:block">Phòng Khám Đa Khoa</span>
+    </div>
+
+    <!-- Nav Links -->
+    <nav class="hidden md:flex items-center gap-1">
+        <a href="#" class="relative text-white font-semibold text-[12px] px-3 py-1.5 hover:text-white/80 transition-colors">
+            Trang Chủ
+            <span class="absolute bottom-0 left-3 right-3 h-[2px] bg-clinic-yellow rounded"></span>
+        </a>
+        <a href="#" class="text-white/80 text-[12px] px-3 py-1.5 hover:text-white transition-colors">Dịch Vụ</a>
+        <a href="#" class="text-white/80 text-[12px] px-3 py-1.5 hover:text-white transition-colors">Bác Sĩ</a>
+        <a href="#" class="text-white/80 text-[12px] px-3 py-1.5 hover:text-white transition-colors">Đặt Lịch Hẹn</a>
+        <a href="#" class="text-white/80 text-[12px] px-3 py-1.5 hover:text-white transition-colors">Liên Hệ</a>
+    </nav>
+
+    <!-- Search -->
+    <div class="flex-1 max-w-xs mx-2">
+        <div class="relative">
+            <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-[11px]">🔍</span>
+            <input
+                    type="text"
+                    placeholder="Tìm kiếm dịch vụ, bác sĩ..."
+                    class="w-full bg-white/15 border border-white/25 rounded-full text-white placeholder-white/60 text-[11px] pl-7 pr-3 py-1.5 focus:outline-none focus:bg-white/25 transition-colors"
+            />
+        </div>
+    </div>
+
+    <!-- Right -->
+    <div class="flex items-center gap-2 ml-auto shrink-0">
+        <button class="flex items-center gap-1.5 bg-white/10 border border-white/25 rounded-full px-3 py-1 text-white text-[11px] hover:bg-white/20 transition-colors">
+            🔔 <span>Thông báo</span>
+        </button>
+        <button class="flex items-center gap-1.5 text-white text-[11px] hover:text-white/80 transition-colors">
+            <div class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-base shrink-0">👤</div>
+            <span class="hidden sm:block">Nguyễn A ▾</span>
+        </button>
+    </div>
+</div>
+
+<!-- Body -->
+<div class="flex flex-1 overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="bg-white border-r border-clinic-border w-[200px] xl:w-[220px] shrink-0 flex flex-col overflow-y-auto scrollbar-thin">
+        <!-- Patient Info -->
+        <div class="flex flex-col items-center py-6 px-4 border-b border-clinic-border">
+            <div class="w-14 h-14 rounded-full bg-[#D0E4F7] flex items-center justify-center text-2xl mb-2">👤</div>
+            <div class="text-clinic-text font-bold text-[13px] text-center">Nguyễn Văn An</div>
+            <div class="text-clinic-muted text-[11px] mt-0.5">BN-2025-0001</div>
+        </div>
+
+        <!-- Nav Items -->
+        <nav class="flex flex-col py-2">
+            <a href="#" class="flex items-center gap-2.5 px-4 py-2.5 text-clinic-muted text-[12px] hover:bg-blue-50 transition-colors">
+                <span>📋</span>
+                <span>Lịch sử khám</span>
+            </a>
+            <a href="#" class="flex items-center gap-2.5 px-4 py-2.5 text-clinic-muted text-[12px] hover:bg-blue-50 transition-colors">
+                <span>💊</span>
+                <span>Đơn thuốc</span>
+            </a>
+            <a href="#" class="flex items-center gap-2.5 px-4 py-2.5 bg-blue-50 text-clinic-primary font-semibold text-[12px] border-l-2 border-clinic-primary">
+                <span>🧪</span>
+                <span>Kết quả xét nghiệm</span>
+            </a>
+            <a href="#" class="flex items-center gap-2.5 px-4 py-2.5 text-clinic-muted text-[12px] hover:bg-blue-50 transition-colors">
+                <span>⚙</span>
+                <span>Settings</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 overflow-y-auto scrollbar-thin">
+
+        <!-- Panel Header -->
+        <div class="bg-clinic-primary px-5 py-2.5">
+            <span class="text-white font-bold text-[14px]">🧪 Ket Qua Xet Nghiem</span>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="flex items-center gap-2 px-5 py-3 bg-white border-b border-clinic-border flex-wrap">
+            <button class="border-2 border-clinic-text rounded text-clinic-text font-semibold text-[11px] px-3 py-1 bg-white hover:bg-gray-50 transition-colors">Tất cả</button>
+            <button class="bg-[#1a1a2e] rounded text-white text-[11px] px-3 py-1 hover:bg-[#2a2a3e] transition-colors">Xét nghiệm máu</button>
+            <button class="bg-[#1a1a2e] rounded text-white text-[11px] px-3 py-1 hover:bg-[#2a2a3e] transition-colors">Siêu âm</button>
+            <button class="bg-[#1a1a2e] rounded text-white text-[11px] px-3 py-1 hover:bg-[#2a2a3e] transition-colors">X-quang</button>
+        </div>
+
+        <!-- Results -->
+        <div class="p-4 flex flex-col gap-4">
+
+            <!-- Card 1: Xét Nghiệm Máu -->
+            <div class="bg-white border border-clinic-border rounded-lg overflow-hidden border-l-4 border-l-clinic-primary">
+                <div class="px-4 pt-4 pb-3">
+                    <h3 class="text-clinic-primary font-bold text-[14px]">Xet Nghiem Mau Tong Quat</h3>
+                    <p class="text-clinic-muted text-[11px] mt-1">
+                        Ngay xet nghiem: 15/04/2025 &nbsp;|&nbsp; Bac si chi dinh: TS.BS. Nguyen Van Minh &nbsp;|&nbsp; Phong kham: Tim Mach
+                    </p>
+                </div>
+
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-[11px] border-collapse">
+                        <thead>
+                        <tr class="bg-[#EAF0F7] border-t border-b border-clinic-border">
+                            <th class="text-left text-clinic-label font-bold py-2 px-4 border-r border-clinic-border">Chi so</th>
+                            <th class="text-left text-clinic-label font-bold py-2 px-4 border-r border-clinic-border">Ket qua</th>
+                            <th class="text-left text-clinic-label font-bold py-2 px-4 border-r border-clinic-border">Don vi</th>
+                            <th class="text-left text-clinic-label font-bold py-2 px-4 border-r border-clinic-border">Tham chieu</th>
+                            <th class="text-left text-clinic-label font-bold py-2 px-4 border-r border-clinic-border">Danh gia</th>
+                            <th class="text-left text-clinic-label font-bold py-2 px-4">Bieu do</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr class="border-b border-[#E1E8F0]">
+                            <td class="py-2.5 px-4 text-clinic-text border-r border-[#E1E8F0]">Huyet ap (mmHg)</td>
+                            <td class="py-2.5 px-4 border-r border-[#E1E8F0]">
+                                <span class="text-clinic-red font-bold">145/90</span>
+                            </td>
+                            <td class="py-2.5 px-4 text-clinic-text border-r border-[#E1E8F0]">mmHg</td>
+                            <td class="py-2.5 px-4 text-clinic-text border-r border-[#E1E8F0]">&lt;120/80</td>
+                            <td class="py-2.5 px-4 border-r border-[#E1E8F0]">
+                                <span class="inline-flex items-center gap-1 bg-red-100 text-clinic-red text-[10px] font-semibold px-2 py-0.5 rounded-full">↑ Cao</span>
+                            </td>
+                            <td class="py-2.5 px-4">
+                                <div class="h-3 w-20 rounded-sm bar-red opacity-80"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-2.5 px-4 text-clinic-text border-r border-[#E1E8F0]">Cholesterol (mg/dL)</td>
+                            <td class="py-2.5 px-4 border-r border-[#E1E8F0]">
+                                <span class="text-clinic-green font-bold">185</span>
+                            </td>
+                            <td class="py-2.5 px-4 text-clinic-text border-r border-[#E1E8F0]">mg/dL</td>
+                            <td class="py-2.5 px-4 text-clinic-text border-r border-[#E1E8F0]">&lt;200</td>
+                            <td class="py-2.5 px-4 border-r border-[#E1E8F0]">
+                                <span class="inline-flex items-center gap-1 bg-green-100 text-clinic-green text-[10px] font-semibold px-2 py-0.5 rounded-full">✓ Bình thường</span>
+                            </td>
+                            <td class="py-2.5 px-4">
+                                <div class="h-3 w-16 rounded-sm bar-green opacity-80"></div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Card 2: Siêu Âm -->
+            <div class="bg-white border border-clinic-border rounded-lg border-l-4 border-l-[#7C3AED]">
+                <div class="px-4 pt-4 pb-3 flex items-start justify-between gap-3">
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-[#7C3AED] font-bold text-[14px]">Sieu Am Bung Tong Quat</h3>
+                        <p class="text-clinic-muted text-[11px] mt-1">
+                            Ngay: 15/04/2025 &nbsp;|&nbsp; BS. Nguyễn Văn Minh &nbsp;|&nbsp; Kết quả: Bình thường
+                        </p>
+                        <p class="text-clinic-text text-[12px] mt-2 leading-relaxed">
+                            Gan, lá lách, tụy, thận: kích thước bình thường. Không thay tổn thương bất thường.
+                        </p>
+                        <div class="mt-2">
+                            <span class="inline-flex items-center gap-1 bg-green-100 text-clinic-green text-[10px] font-semibold px-2 py-0.5 rounded-full">✓ Bình thường</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0 mt-1">
+                        <button class="border border-[#9FC1E9] bg-[#EBF4FF] text-clinic-primary text-[11px] px-3 py-1.5 rounded hover:bg-blue-100 transition-colors whitespace-nowrap">Xem file ảnh</button>
+                        <button class="bg-clinic-primary text-white text-[11px] px-3 py-1.5 rounded flex items-center gap-1 hover:bg-blue-800 transition-colors whitespace-nowrap">
+                            <span>📄</span> Tải PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Đường Huyết -->
+            <div class="bg-white border border-clinic-border rounded-lg border-l-4 border-l-[#E07A00]">
+                <div class="px-4 pt-4 pb-4 flex items-start justify-between gap-3">
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-[#E07A00] font-bold text-[14px]">Xet Nghiem Duong Huyet (HbA1c)</h3>
+                        <p class="text-clinic-muted text-[11px] mt-1">
+                            Ngày: 15/04/2025 &nbsp;|&nbsp; Kết quả: HbA1c = 7.2% (cao hơn mục tiêu &lt;7%)
+                        </p>
+                        <div class="flex items-center gap-3 mt-2 flex-wrap">
+                            <span class="inline-flex items-center gap-1 bg-orange-100 text-[#E07A00] text-[10px] font-semibold px-2 py-0.5 rounded-full">⚠ Cần theo dõi</span>
+                            <span class="text-clinic-muted text-[11px]">— Nên tái khám sau 3 tháng</span>
+                        </div>
+                    </div>
+                    <div class="shrink-0 mt-1">
+                        <button class="bg-clinic-primary text-white text-[11px] px-3 py-1.5 rounded flex items-center gap-1 hover:bg-blue-800 transition-colors whitespace-nowrap">
+                            <span>📄</span> Tải PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Bottom Status Bar -->
+<div class="bg-clinic-topbar flex items-center justify-center px-4 h-[28px] shrink-0">
+    <span class="text-white/80 text-[9px] text-center">
+      Screen 18A: Admin Quan Ly Danh Gia (Duyet/An/TL) &nbsp;|&nbsp; Screen 18B: User Xem Ket Qua XN (Bang chi so + Bieu do + Tai PDF)
+    </span>
+</div>
+
+</body>
+</html>

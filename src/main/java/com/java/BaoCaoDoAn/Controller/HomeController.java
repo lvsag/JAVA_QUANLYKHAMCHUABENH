@@ -16,6 +16,9 @@ public class HomeController {
     @Autowired
     private com.java.BaoCaoDoAn.Repository.ChuyenKhoaRepository chuyenKhoaRepository;
 
+    @Autowired
+    private com.java.BaoCaoDoAn.Service.DichVuService dichVuService;
+
     @GetMapping("/")
     public String index() {
         return "redirect:/home";
@@ -80,5 +83,27 @@ public class HomeController {
         model.addAttribute("selectedSort", sortParam);
         
         return "public/bac-si";
+    }
+
+    @GetMapping({"/dich-vu", "/danh-sach-dich-vu"})
+    public String services(
+            @org.springframework.web.bind.annotation.RequestParam(value = "keyword", required = false) String keyword,
+            @org.springframework.web.bind.annotation.RequestParam(value = "maChuyenKhoa", required = false) String maChuyenKhoa,
+            @org.springframework.web.bind.annotation.RequestParam(value = "mucGia", required = false) String mucGia,
+            @org.springframework.web.bind.annotation.RequestParam(value = "loaiDichVu", required = false) String loaiDichVu,
+            org.springframework.ui.Model model) {
+        // Added to connect public/danh-sach-dich-vu.html with real service catalog data.
+        // Added alias /danh-sach-dich-vu so existing home.html links keep working.
+        // Added filters for price range and service type so the public comboboxes work.
+        java.util.List<com.java.BaoCaoDoAn.Model.DichVu> dichVus = dichVuService.searchDichVu(keyword, maChuyenKhoa, mucGia, loaiDichVu);
+        model.addAttribute("dichVus", dichVus);
+        model.addAttribute("chuyenKhoas", chuyenKhoaRepository.findAll());
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("selectedMaChuyenKhoa", maChuyenKhoa);
+        model.addAttribute("selectedMucGia", mucGia);
+        model.addAttribute("selectedLoaiDichVu", loaiDichVu);
+        model.addAttribute("totalServices", dichVus.size());
+        model.addAttribute("totalSpecialties", chuyenKhoaRepository.count());
+        return "public/danh-sach-dich-vu";
     }
 }

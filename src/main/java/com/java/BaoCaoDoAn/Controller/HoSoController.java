@@ -28,6 +28,12 @@ public class HoSoController {
     @Autowired
     private com.java.BaoCaoDoAn.Repository.LichHenRepository lichHenRepository;
 
+    @Autowired
+    private com.java.BaoCaoDoAn.Service.DonThuocService donThuocService;
+
+    @Autowired
+    private com.java.BaoCaoDoAn.Service.KetQuaXetNghiemService ketQuaXetNghiemService;
+
     @GetMapping("/lich-su-kham")
     public String showHistory(HttpSession session, Model model) {
         TaiKhoan user = (TaiKhoan) session.getAttribute("loggedInUser");
@@ -53,7 +59,10 @@ public class HoSoController {
 
         Optional<BenhNhan> bnOpt = benhNhanRepository.findByTaiKhoan_MaTaiKhoan(user.getMaTaiKhoan());
         if (bnOpt.isPresent()) {
-            model.addAttribute("benhNhan", bnOpt.get());
+            // Added to connect public/don-thuoc.html with prescriptions created by doctors.
+            BenhNhan bn = bnOpt.get();
+            model.addAttribute("benhNhan", bn);
+            model.addAttribute("donThuocs", donThuocService.getDonThuocByBenhNhan(bn.getMaBenhNhan()));
         }
         return "public/don-thuoc";
     }
@@ -67,9 +76,29 @@ public class HoSoController {
 
         Optional<BenhNhan> bnOpt = benhNhanRepository.findByTaiKhoan_MaTaiKhoan(user.getMaTaiKhoan());
         if (bnOpt.isPresent()) {
-            model.addAttribute("benhNhan", bnOpt.get());
+            // Added to keep the old /ho-so/xet-nghiem route backed by saved test results.
+            BenhNhan bn = bnOpt.get();
+            model.addAttribute("benhNhan", bn);
+            model.addAttribute("ketQuas", ketQuaXetNghiemService.getKetQuaByBenhNhan(bn.getMaBenhNhan()));
         }
         return "public/xet-nghiem";
+    }
+
+    @GetMapping("/ket-qua-xet-nghiem")
+    public String showKetQuaXetNghiem(HttpSession session, Model model) {
+        TaiKhoan user = (TaiKhoan) session.getAttribute("loggedInUser");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        Optional<BenhNhan> bnOpt = benhNhanRepository.findByTaiKhoan_MaTaiKhoan(user.getMaTaiKhoan());
+        if (bnOpt.isPresent()) {
+            // Added to connect public/ket-qua-xet-nghiem.html with saved test results.
+            BenhNhan bn = bnOpt.get();
+            model.addAttribute("benhNhan", bn);
+            model.addAttribute("ketQuas", ketQuaXetNghiemService.getKetQuaByBenhNhan(bn.getMaBenhNhan()));
+        }
+        return "public/ket-qua-xet-nghiem";
     }
 
     @GetMapping("/bao-mat")

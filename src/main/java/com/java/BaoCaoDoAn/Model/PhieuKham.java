@@ -28,6 +28,10 @@ public class PhieuKham {
     @JoinColumn(name = "MaBacSi")
     private BacSi bacSi;
 
+    // Added: map the clinic room column used by the MySQL schema.
+    @Column(name = "PhongKham", length = 50)
+    private String phongKham;
+
     @Column(name = "NgayKham")
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayKham = new Date();
@@ -44,8 +48,12 @@ public class PhieuKham {
     @Column(name = "ChanDoanBanDau", length = 1000)
     private String chanDoanBanDau;
 
-    @Column(name = "ChanDoanCuoi", length = 1000)
+    @Column(name = "ChanDoanCuoiCung", length = 1000)
     private String chanDoanCuoi;
+
+    // Added: final doctor conclusion from the outpatient examination screen.
+    @Column(name = "KetLuanBacSi", length = 2000)
+    private String ketLuanBacSi;
 
     @Column(name = "TrangThai", length = 30)
     private String trangThai = "Dang kham";

@@ -28,7 +28,7 @@ public class DonThuoc {
     @JoinColumn(name = "MaBacSi")
     private BacSi bacSi;
 
-    @Column(name = "NgayKe")
+    @Column(name = "NgayKeDon")
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayKe = new Date();
 

@@ -11,13 +11,16 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 
 @Controller
-@RequestMapping("/admin/bac-si")
+// Added/updated: routes in this controller are doctor-workflow routes, so they use /bac-si/*
+// and render templates from templates/bac-si/* instead of templates/admin/bac-si/*.
+@RequestMapping("/bac-si")
 public class AdminKhamBenhController {
     private final KhamBenhService khamBenhService;
     private final ChiDinhService chiDinhService;
     private final DonThuocService donThuocService;
     private final KetQuaXetNghiemService ketQuaXetNghiemService;
     private final DichVuService dichVuService;
+    private final ThuocService thuocService;
     private final BenhNhanService benhNhanService;
     private final BacSiService bacSiService;
 
@@ -26,6 +29,7 @@ public class AdminKhamBenhController {
                                    DonThuocService donThuocService,
                                    KetQuaXetNghiemService ketQuaXetNghiemService,
                                    DichVuService dichVuService,
+                                   ThuocService thuocService,
                                    BenhNhanService benhNhanService,
                                    BacSiService bacSiService) {
         this.khamBenhService = khamBenhService;
@@ -33,6 +37,7 @@ public class AdminKhamBenhController {
         this.donThuocService = donThuocService;
         this.ketQuaXetNghiemService = ketQuaXetNghiemService;
         this.dichVuService = dichVuService;
+        this.thuocService = thuocService;
         this.benhNhanService = benhNhanService;
         this.bacSiService = bacSiService;
     }
@@ -59,29 +64,42 @@ public class AdminKhamBenhController {
         model.addAttribute("phieuKhams", phieuKhams);
         model.addAttribute("patientQueue", patientQueue);
         model.addAttribute("phieuKham", selected);
-        return "admin/bac-si/kham-benh/kham-benh";
+        // Added: expose selected exam for dynamic doctor workflow actions.
+        model.addAttribute("selectedPhieuKham", selected);
+        return "bac-si/kham-benh/kham-benh";
     }
 
     @PostMapping("/kham-benh/luu")
     public String luuKhamBenh(@ModelAttribute PhieuKham phieuKham, RedirectAttributes redirectAttributes) {
         // Added to save examination notes from kham-benh.html.
+        if (phieuKham.getMaPhieuKham() == null || phieuKham.getMaPhieuKham().isBlank()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Thiếu mã phiếu khám, không thể lưu thông tin khám.");
+            return "redirect:/bac-si/kham-benh";
+        }
         if (phieuKham.getBenhNhan() == null || phieuKham.getBenhNhan().getMaBenhNhan() == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Can chon benh nhan truoc khi luu phieu kham.");
-            return "redirect:/admin/bac-si/kham-benh";
+            redirectAttributes.addFlashAttribute("errorMessage", "Cần chọn bệnh nhân trước khi lưu phiếu khám.");
+            return "redirect:/bac-si/kham-benh";
+        }
+        if (isBlank(phieuKham.getTrieuChung()) && isBlank(phieuKham.getChanDoanBanDau())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Cần nhập ít nhất triệu chứng hoặc chẩn đoán ban đầu.");
+            return "redirect:/bac-si/kham-benh?maPhieuKham=" + phieuKham.getMaPhieuKham();
         }
         khamBenhService.savePhieuKham(phieuKham);
-        redirectAttributes.addFlashAttribute("successMessage", "Da luu phieu kham.");
-        return "redirect:/admin/bac-si/kham-benh?maPhieuKham=" + phieuKham.getMaPhieuKham();
+        redirectAttributes.addFlashAttribute("successMessage", "Đã lưu thông tin khám bệnh.");
+        return "redirect:/bac-si/kham-benh?maPhieuKham=" + phieuKham.getMaPhieuKham();
     }
 
     @GetMapping("/chi-dinh")
     public String lapPhieuChiDinh(@RequestParam(value = "maPhieuKham", required = false) String maPhieuKham, Model model) {
         // Added to connect phieu-chi-dinh.html with real examination and service data.
         PhieuKham phieuKham = maPhieuKham != null ? khamBenhService.getPhieuKham(maPhieuKham).orElse(null) : null;
+        // Added: combobox source for selecting an examination if the page is opened directly.
+        model.addAttribute("phieuKhams", khamBenhService.getAllPhieuKham());
         model.addAttribute("phieuKham", phieuKham);
         model.addAttribute("dichVus", dichVuService.getAllDichVu());
         model.addAttribute("phieuChiDinh", new PhieuChiDinh());
-        return "admin/bac-si/chi-dinh/phieu-chi-dinh";
+        // Added: selected services are posted back to create PhieuChiDinh + ChiTietChiDinh rows.
+        return "bac-si/chi-dinh/phieu-chi-dinh";
     }
 
     @PostMapping("/chi-dinh/luu")
@@ -95,29 +113,27 @@ public class AdminKhamBenhController {
         PhieuKham phieuKham = maPhieuKham != null && !maPhieuKham.isBlank()
                 ? khamBenhService.getPhieuKham(maPhieuKham).orElse(null)
                 : null;
+        if (phieuKham == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Cần chọn phiếu khám trước khi lập chỉ định dịch vụ.");
+            return "redirect:/bac-si/chi-dinh";
+        }
         BenhNhan benhNhan = resolveBenhNhan(phieuKham, maBenhNhan);
         BacSi bacSi = resolveBacSi(phieuKham, maBacSi);
         if (benhNhan == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Khong tim thay benh nhan cho phieu chi dinh.");
-            return "redirect:/admin/bac-si/chi-dinh";
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy bệnh nhân cho phiếu chỉ định.");
+            return "redirect:/bac-si/chi-dinh?maPhieuKham=" + phieuKham.getMaPhieuKham();
+        }
+        if (bacSi == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy bác sĩ chỉ định.");
+            return "redirect:/bac-si/chi-dinh?maPhieuKham=" + phieuKham.getMaPhieuKham();
+        }
+        if (maDichVu == null || maDichVu.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Cần chọn ít nhất một dịch vụ cận lâm sàng.");
+            return "redirect:/bac-si/chi-dinh?maPhieuKham=" + phieuKham.getMaPhieuKham();
         }
         PhieuChiDinh saved = chiDinhService.taoPhieuChiDinh(phieuKham, benhNhan, bacSi, maDichVu, ghiChu);
-        redirectAttributes.addFlashAttribute("successMessage", "Da tao phieu chi dinh.");
-        return "redirect:/admin/bac-si/chi-dinh/danh-sach?maPhieuChiDinh=" + saved.getMaPhieuChiDinh();
-    }
-
-    @GetMapping("/chi-dinh/danh-sach")
-    public String danhSachPhieuChiDinh(@RequestParam(value = "maPhieuChiDinh", required = false) String maPhieuChiDinh, Model model) {
-        // Added to connect danh-sach-phieu-chi-dinh.html with saved clinical service orders.
-        List<PhieuChiDinh> danhSach = chiDinhService.getAllPhieuChiDinh();
-        PhieuChiDinh selected = maPhieuChiDinh != null
-                ? chiDinhService.getPhieuChiDinh(maPhieuChiDinh).orElse(null)
-                : (danhSach.isEmpty() ? null : danhSach.get(0));
-        model.addAttribute("danhSach", danhSach);
-        model.addAttribute("phieuChiDinh", selected);
-        model.addAttribute("chiTiets", selected == null ? List.of() : chiDinhService.getChiTiet(selected.getMaPhieuChiDinh()));
-        model.addAttribute("ketQua", new KetQuaXetNghiem());
-        return "admin/bac-si/chi-dinh/danh-sach-phieu-chi-dinh";
+        redirectAttributes.addFlashAttribute("successMessage", "Đã tạo phiếu chỉ định dịch vụ.");
+        return "redirect:/bac-si/chi-dinh?maPhieuKham=" + (saved.getPhieuKham() != null ? saved.getPhieuKham().getMaPhieuKham() : "");
     }
 
     @PostMapping("/chi-dinh/ket-qua")
@@ -134,7 +150,7 @@ public class AdminKhamBenhController {
         }
         ketQuaXetNghiemService.saveKetQua(ketQua);
         redirectAttributes.addFlashAttribute("successMessage", "Da luu ket qua.");
-        return "redirect:/admin/bac-si/chi-dinh/danh-sach";
+        return "redirect:/bac-si/ket-qua";
     }
 
     @GetMapping("/ket-qua")
@@ -146,7 +162,8 @@ public class AdminKhamBenhController {
                 : (ketQuas.isEmpty() ? null : ketQuas.get(0));
         model.addAttribute("ketQuas", ketQuas);
         model.addAttribute("ketQua", selected);
-        return "admin/bac-si/ket-qua/xem-ket-qua-xet-nghiem";
+        // Added: results are loaded from KetQuaDichVu via KetQuaXetNghiem mapping.
+        return "bac-si/ket-qua/xem-ket-qua-xet-nghiem";
     }
 
     @PostMapping("/ket-qua/ket-luan")
@@ -154,22 +171,43 @@ public class AdminKhamBenhController {
                              @RequestParam(value = "ketLuanBacSi", required = false) String ketLuanBacSi,
                              RedirectAttributes redirectAttributes) {
         // Added to let the doctor save a conclusion after viewing a result.
-        ketQuaXetNghiemService.getKetQua(maKetQua).ifPresent(ketQua -> {
-            ketQua.setKetLuanBacSi(ketLuanBacSi);
-            ketQua.setTrangThai("Da xem");
-            ketQuaXetNghiemService.saveKetQua(ketQua);
-        });
-        redirectAttributes.addFlashAttribute("successMessage", "Da luu ket luan bac si.");
-        return "redirect:/admin/bac-si/ket-qua?maKetQua=" + maKetQua;
+        if (isBlank(maKetQua)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Thiếu mã kết quả, không thể lưu kết luận.");
+            return "redirect:/bac-si/ket-qua";
+        }
+        if (isBlank(ketLuanBacSi)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Cần nhập kết luận bác sĩ trước khi lưu.");
+            return "redirect:/bac-si/ket-qua?maKetQua=" + maKetQua;
+        }
+        KetQuaXetNghiem ketQua = ketQuaXetNghiemService.getKetQua(maKetQua).orElse(null);
+        if (ketQua == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy kết quả dịch vụ cần kết luận.");
+            return "redirect:/bac-si/ket-qua";
+        }
+        ketQua.setKetLuanBacSi(ketLuanBacSi);
+        ketQua.setTrangThai("Da xem");
+        ketQuaXetNghiemService.saveKetQua(ketQua);
+        redirectAttributes.addFlashAttribute("successMessage", "Đã lưu kết luận bác sĩ.");
+        return "redirect:/bac-si/ket-qua?maKetQua=" + maKetQua;
     }
 
     @GetMapping("/ke-thuoc")
     public String keThuoc(@RequestParam(value = "maPhieuKham", required = false) String maPhieuKham, Model model) {
         // Added to connect ke-thuoc.html with selected examination data.
         PhieuKham phieuKham = maPhieuKham != null ? khamBenhService.getPhieuKham(maPhieuKham).orElse(null) : null;
+        // Added: combobox source for choosing the examination when entering prescription directly.
+        model.addAttribute("phieuKhams", khamBenhService.getAllPhieuKham());
         model.addAttribute("phieuKham", phieuKham);
         model.addAttribute("donThuoc", new DonThuoc());
-        return "admin/bac-si/ke-thuoc/ke-thuoc";
+        // Added: dynamic medicine catalog and stock data for prescription rows.
+        model.addAttribute("thuocs", thuocService.getAllThuoc());
+        return "bac-si/ke-thuoc/ke-thuoc";
+    }
+
+    @GetMapping("/bao-cao")
+    public String baoCao() {
+        // Added: placeholder route so the doctor sidebar has a distinct report page.
+        return "bac-si/bao-cao/xem-bao-cao";
     }
 
     @PostMapping("/ke-thuoc/luu")
@@ -188,14 +226,30 @@ public class AdminKhamBenhController {
         PhieuKham phieuKham = maPhieuKham != null && !maPhieuKham.isBlank()
                 ? khamBenhService.getPhieuKham(maPhieuKham).orElse(null)
                 : null;
+        if (phieuKham == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Cần chọn phiếu khám trước khi kê đơn.");
+            return "redirect:/bac-si/ke-thuoc";
+        }
         BenhNhan benhNhan = resolveBenhNhan(phieuKham, maBenhNhan);
         BacSi bacSi = resolveBacSi(phieuKham, maBacSi);
         if (benhNhan == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Khong tim thay benh nhan cho don thuoc.");
-            return "redirect:/admin/bac-si/ke-thuoc";
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy bệnh nhân cho đơn thuốc.");
+            return "redirect:/bac-si/ke-thuoc?maPhieuKham=" + phieuKham.getMaPhieuKham();
+        }
+        if (bacSi == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy bác sĩ kê đơn.");
+            return "redirect:/bac-si/ke-thuoc?maPhieuKham=" + phieuKham.getMaPhieuKham();
+        }
+        if (isBlank(chanDoan)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Cần nhập chẩn đoán trước khi lưu đơn thuốc.");
+            return "redirect:/bac-si/ke-thuoc?maPhieuKham=" + phieuKham.getMaPhieuKham();
+        }
+        if (tenThuoc == null || tenThuoc.stream().allMatch(this::isBlank)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Cần chọn ít nhất một thuốc trong đơn.");
+            return "redirect:/bac-si/ke-thuoc?maPhieuKham=" + phieuKham.getMaPhieuKham();
         }
         DonThuoc saved = donThuocService.taoDonThuoc(phieuKham, benhNhan, bacSi, chanDoan, loiDan, tenThuoc, lieuDung, soLanTrongNgay, soLuong, ghiChu);
-        redirectAttributes.addFlashAttribute("successMessage", "Da luu don thuoc.");
+        redirectAttributes.addFlashAttribute("successMessage", "Đã lưu đơn thuốc.");
         return "redirect:/ho-so/don-thuoc?maDonThuoc=" + saved.getMaDonThuoc();
     }
 
@@ -211,5 +265,9 @@ public class AdminKhamBenhController {
             return phieuKham.getBacSi();
         }
         return maBacSi == null || maBacSi.isBlank() ? null : bacSiService.getBacSiById(maBacSi).orElse(null);
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.isBlank();
     }
 }

@@ -6,7 +6,7 @@ import lombok.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "KetQuaXetNghiem")
+@Table(name = "KetQuaDichVu")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,8 +19,7 @@ public class KetQuaXetNghiem {
     @JoinColumn(name = "MaPhieuChiDinh")
     private PhieuChiDinh phieuChiDinh;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MaChiTietChiDinh")
+    @Transient
     private ChiTietChiDinh chiTietChiDinh;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -28,14 +27,14 @@ public class KetQuaXetNghiem {
     private BenhNhan benhNhan;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MaBacSi")
+    @JoinColumn(name = "MaBacSiChiDinh")
     private BacSi bacSi;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MaDichVu")
     private DichVu dichVu;
 
-    @Column(name = "NgayKetQua")
+    @Column(name = "NgayThucHien")
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayKetQua = new Date();
 
@@ -45,13 +44,13 @@ public class KetQuaXetNghiem {
     @Column(name = "KetQuaChiTiet", length = 2000)
     private String ketQuaChiTiet;
 
-    @Column(name = "NhanDinh", length = 1000)
+    @Column(name = "NhanDinhDichVu", length = 1000)
     private String nhanDinh;
 
     @Column(name = "KetLuanBacSi", length = 1000)
     private String ketLuanBacSi;
 
-    @Column(name = "FileDinhKem", length = 255)
+    @Column(name = "FileKetQua", length = 255)
     private String fileDinhKem;
 
     @Column(name = "TrangThai", length = 30)

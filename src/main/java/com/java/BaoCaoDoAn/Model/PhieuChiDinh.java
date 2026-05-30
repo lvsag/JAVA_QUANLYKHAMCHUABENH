@@ -26,17 +26,17 @@ public class PhieuChiDinh {
     private BenhNhan benhNhan;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MaBacSi")
+    @JoinColumn(name = "MaBacSiChiDinh")
     private BacSi bacSi;
 
     @Column(name = "NgayChiDinh")
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayChiDinh = new Date();
 
-    @Column(name = "GhiChu", length = 1000)
+    @Column(name = "GhiChuChiDinh", length = 1000)
     private String ghiChu;
 
-    @Column(name = "TongTien")
+    @Column(name = "TongTamTinh")
     private BigDecimal tongTien = BigDecimal.ZERO;
 
     @Column(name = "TrangThai", length = 30)

@@ -64,6 +64,9 @@ public class ChiDinhService {
                 chiTiet.setPhieuChiDinh(phieu);
                 chiTiet.setDichVu(dichVu);
                 chiTiet.setTrangThai("Cho");
+                // Added: persist required schema fields for ordered service rows.
+                chiTiet.setDonGia(dichVu.getGiaGiam() != null ? dichVu.getGiaGiam() : dichVu.getGiaDichVu());
+                chiTiet.setPhongThucHien(dichVu.getPhongThucHien());
                 chiTiets.add(chiTiet);
                 if (dichVu.getGiaDichVu() != null) {
                     tongTien = tongTien.add(dichVu.getGiaGiam() != null ? dichVu.getGiaGiam() : dichVu.getGiaDichVu());

@@ -12,9 +12,11 @@ import java.util.Optional;
 @Service
 public class DonThuocService {
     private final DonThuocRepository donThuocRepository;
+    private final ThuocService thuocService;
 
-    public DonThuocService(DonThuocRepository donThuocRepository) {
+    public DonThuocService(DonThuocRepository donThuocRepository, ThuocService thuocService) {
         this.donThuocRepository = donThuocRepository;
+        this.thuocService = thuocService;
     }
 
     public List<DonThuoc> getAllDonThuoc() {
@@ -48,12 +50,23 @@ public class DonThuocService {
             if (tenThuoc.get(i) == null || tenThuoc.get(i).isBlank()) {
                 continue;
             }
+            Integer maThuoc;
+            try {
+                maThuoc = Integer.valueOf(tenThuoc.get(i));
+            } catch (NumberFormatException ex) {
+                continue;
+            }
+            Thuoc thuoc = thuocService.getThuoc(maThuoc).orElse(null);
+            if (thuoc == null) {
+                continue;
+            }
             ChiTietDonThuoc chiTiet = new ChiTietDonThuoc();
             chiTiet.setDonThuoc(donThuoc);
-            chiTiet.setTenThuoc(tenThuoc.get(i));
+            // Added: selected form value is MaThuoc so the detail row saves the FK to Thuoc.
+            chiTiet.setThuoc(thuoc);
             chiTiet.setLieuDung(getValue(lieuDung, i));
             chiTiet.setSoLanTrongNgay(getValue(soLanTrongNgay, i));
-            chiTiet.setSoLuong(getValue(soLuong, i));
+            chiTiet.setSoLuong(parseInt(getValue(soLuong, i), 1));
             chiTiet.setGhiChu(getValue(ghiChu, i));
             chiTietList.add(chiTiet);
         }
@@ -67,5 +80,13 @@ public class DonThuocService {
 
     private String getValue(List<String> values, int index) {
         return values != null && index < values.size() ? values.get(index) : "";
+    }
+
+    private Integer parseInt(String value, int fallback) {
+        try {
+            return value == null || value.isBlank() ? fallback : Integer.valueOf(value.trim());
+        } catch (NumberFormatException ex) {
+            return fallback;
+        }
     }
 }

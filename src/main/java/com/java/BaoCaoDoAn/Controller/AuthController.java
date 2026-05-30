@@ -49,8 +49,11 @@ public class AuthController {
                 session.setAttribute("role", user.getVaiTro().getTenVaiTro());
                 
                 String role = user.getVaiTro().getTenVaiTro();
-                if ("ADMIN".equalsIgnoreCase(role) || "BAC_SI".equalsIgnoreCase(role) || "Admin".equalsIgnoreCase(role) || "Bác sĩ".equalsIgnoreCase(role)) {
-                    return "redirect:/admin/dashboard"; // Redirect to dashboard
+                // Added/updated: doctors use the separate /bac-si workflow area; admins keep /admin.
+                if ("ADMIN".equalsIgnoreCase(role) || "Admin".equalsIgnoreCase(role)) {
+                    return "redirect:/admin/dashboard";
+                } else if ("BAC_SI".equalsIgnoreCase(role) || "Bác sĩ".equalsIgnoreCase(role)) {
+                    return "redirect:/bac-si/kham-benh";
                 } else {
                     return "redirect:/home";
                 }

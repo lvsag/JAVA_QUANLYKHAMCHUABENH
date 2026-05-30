@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bác sĩ kê đơn thuốc</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>body{font-family:Inter,sans-serif}</style>
+</head>
+<body class="min-h-screen bg-[#ECF0F8] text-[#37474F]">
+<div class="h-8 bg-[#1565C0] flex items-center justify-between px-5 text-xs text-white"><span>🏥 Hệ Thống Quản Lý Khám Chữa Bệnh — Doctor Panel</span><span
+        th:text="${#dates.format(#dates.createNow(),'dd/MM/yyyy HH:mm')}"></span></div>
+<div class="flex min-h-[calc(100vh-76px)]">
+    <aside class="w-[220px] bg-[#1A3A6B] flex flex-col shrink-0">
+        <div class="bg-[#0D47A1] px-5 py-5 flex items-center gap-3">
+            <div class="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">👨‍⚕️</div>
+            <div>
+                <div class="text-white text-xs font-bold">Doctor</div>
+                <div class="text-white/80 text-[11px]">Quản trị viên</div>
+                <div class="mt-1 rounded-full bg-[#FFD740] px-3 py-0.5 text-[9px] font-extrabold text-[#0D47A1]">
+                    ONLINE
+                </div>
+            </div>
+        </div>
+        <nav class="mt-24 flex-1"><a th:href="@{/bac-si/kham-benh}"
+                                     class="flex items-center gap-3 px-6 py-3 text-sm text-[#90B8F8]">🩺 Khám bệnh</a><a
+                th:href="@{/bac-si/chi-dinh(maPhieuKham=${phieuKham != null ? phieuKham.maPhieuKham : ''})}"
+                class="flex items-center gap-3 px-6 py-3 text-sm text-[#90B8F8]">🧪 Chỉ định DV</a><a
+                th:href="@{/bac-si/ke-thuoc(maPhieuKham=${phieuKham != null ? phieuKham.maPhieuKham : ''})}"
+                class="relative flex items-center gap-3 bg-[#1565C0] px-6 py-3 text-sm font-bold text-white"><span
+                class="absolute left-0 h-full w-1 bg-[#FFD740]"></span>💊 Đơn thuốc</a><a th:href="@{/bac-si/ket-qua}"
+                                                                                         class="flex items-center gap-3 px-6 py-3 text-sm text-[#90B8F8]">🔍
+            Xem kết quả DV</a><a th:href="@{/bac-si/bao-cao}"
+                                 class="flex items-center gap-3 px-6 py-3 text-sm text-[#90B8F8]">📈 Xem báo cáo</a>
+        </nav>
+        <a th:href="@{/logout}" class="px-6 py-6 text-sm font-bold text-[#EF9A9A]">🚪 Đăng Xuất</a></aside>
+    <main class="flex-1 overflow-auto">
+        <div class="border-b border-[#CBD5E1] bg-white px-5 py-3"><h1 class="text-xl font-extrabold text-[#1565C0]">Bác
+            sĩ kê đơn thuốc</h1>
+            <p class="mt-1 text-xs text-[#78909C]">Bác sĩ lập đơn thuốc sau khi có chẩn đoán cuối cùng hoặc sau khi nhận
+                kết quả cận lâm sàng.</p></div>
+        <div th:if="${errorMessage}"
+             class="mx-5 mt-5 rounded border border-[#FFB74D] bg-[#FFF3E0] px-4 py-3 text-sm font-bold text-[#E65100]"
+             th:text="${errorMessage}"></div>
+        <div th:if="${successMessage}"
+             class="mx-5 mt-5 rounded border border-green-300 bg-green-50 px-4 py-3 text-sm font-bold text-green-700"
+             th:text="${successMessage}"></div>
+        <form th:action="@{/bac-si/ke-thuoc/luu}" method="post"
+              class="m-5 rounded-lg border border-[#CBD5E1] bg-white p-6"><input type="hidden" name="maPhieuKham"
+                                                                                 th:value="${phieuKham != null ? phieuKham.maPhieuKham : ''}"><input
+                type="hidden" name="maBenhNhan"
+                th:value="${phieuKham != null and phieuKham.benhNhan != null ? phieuKham.benhNhan.maBenhNhan : ''}"><input
+                type="hidden" name="maBacSi"
+                th:value="${phieuKham != null and phieuKham.bacSi != null ? phieuKham.bacSi.maBacSi : ''}">
+            <div class="-m-6 mb-5 rounded-t-lg bg-[#1565C0] px-4 py-2 text-xs font-bold text-white">Thông tin đơn
+                thuốc
+            </div>
+            <div class="grid gap-5 md:grid-cols-5"><label class="text-xs font-bold">Mã đơn thuốc<input
+                    class="mt-1 w-full rounded border border-[#B0BEC5] p-3 font-normal text-[#607D8B]" value="Tự động"
+                    readonly></label><label class="text-xs font-bold">Phiếu khám<select
+                    class="mt-1 w-full rounded border border-[#B0BEC5] p-3 font-normal text-[#607D8B]"
+                    onchange="if(this.value) window.location.href='/bac-si/ke-thuoc?maPhieuKham=' + encodeURIComponent(this.value)">
+                <option value="">-- Chọn phiếu --</option>
+                <option th:each="pk:${phieuKhams}" th:value="${pk.maPhieuKham}"
+                        th:selected="${phieuKham != null and pk.maPhieuKham == phieuKham.maPhieuKham}"
+                        th:text="${pk.maPhieuKham + ' - ' + (pk.benhNhan != null ? pk.benhNhan.hoTen : 'Chưa có bệnh nhân')}"></option>
+            </select></label><label class="text-xs font-bold md:col-span-2">Chẩn đoán<input name="chanDoan"
+                                                                                            class="mt-1 w-full rounded border border-[#B0BEC5] p-3 font-normal text-[#607D8B]"
+                                                                                            th:value="${phieuKham != null ? phieuKham.chanDoanBanDau : ''}"></label><label
+                    class="text-xs font-bold">Bác sĩ<input
+                    class="mt-1 w-full rounded border border-[#B0BEC5] p-3 font-normal text-[#607D8B]"
+                    th:value="${phieuKham != null and phieuKham.bacSi != null ? phieuKham.bacSi.hoTen : ''}"
+                    readonly></label></div>
+            <div class="mt-10 grid gap-8 lg:grid-cols-[1fr_220px]">
+                <div>
+                    <table class="w-full text-xs">
+                        <thead class="bg-[#E8EDF5]">
+                        <tr>
+                            <th class="p-3 text-left">STT</th>
+                            <th class="p-3 text-left">Tên thuốc</th>
+                            <th class="p-3 text-left">Liều dùng</th>
+                            <th class="p-3 text-left">Số lần/ngày</th>
+                            <th class="p-3 text-left">Số lượng</th>
+                            <th class="p-3 text-left">Ghi chú</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="i:${#numbers.sequence(0,2)}" class="border-b border-[#EEF2F7]">
+                            <td class="p-3" th:text="${i+1}">1</td>
+                            <td class="p-3"><select name="tenThuoc" class="w-full rounded border border-[#D6DEE8] p-2">
+                                <option value="">-- Chọn thuốc --</option>
+                                <option th:each="t:${thuocs}" th:value="${t.maThuoc}"
+                                        th:text="${t.tenThuoc + ' - còn ' + (t.tonKho != null ? t.tonKho : 0)}"></option>
+                            </select></td>
+                            <td class="p-3"><input name="lieuDung" class="w-full rounded border border-[#D6DEE8] p-2"
+                                                   placeholder="1 viên/lần"></td>
+                            <td class="p-3"><input name="soLanTrongNgay"
+                                                   class="w-full rounded border border-[#D6DEE8] p-2"
+                                                   placeholder="2 lần"></td>
+                            <td class="p-3"><input name="soLuong" type="number" min="1"
+                                                   class="w-24 rounded border border-[#D6DEE8] p-2" value="1"></td>
+                            <td class="p-3"><input name="ghiChu" class="w-full rounded border border-[#D6DEE8] p-2"
+                                                   placeholder="Trước ăn"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <label class="mt-5 block text-xs font-bold">Lời dặn<textarea name="loiDan"
+                                                                                 class="mt-2 h-24 w-full rounded border border-[#B0BEC5] p-3 font-normal text-[#607D8B]"
+                                                                                 placeholder="Ăn uống nhẹ, tránh cay nóng. Tái khám sau 7 ngày hoặc khi triệu chứng nặng hơn."></textarea></label>
+                    <div class="mt-3 flex gap-4">
+                        <button class="rounded bg-[#1565C0] px-10 py-2 text-xs font-bold text-white">Lưu đơn</button>
+                        <button type="button" onclick="window.print()"
+                                class="rounded bg-[#43A047] px-10 py-2 text-xs font-bold text-white">In đơn thuốc
+                        </button>
+                    </div>
+                </div>
+                <aside class="rounded-lg border border-[#FFB74D] bg-[#FFF3E0] p-5 text-xs"><b
+                        class="mb-5 block text-sm text-[#E65100]">Kiểm tra tồn kho</b>
+                    <div th:each="t:${thuocs}" class="mb-3"><span th:text="${t.tenThuoc}">Omeprazole</span>: Còn <b
+                            th:text="${t.tonKho != null ? t.tonKho : 0}">120</b></div>
+                    <b class="mt-6 block text-[#2E7D32]">Đủ thuốc cấp phát</b></aside>
+            </div>
+        </form>
+    </main>
+</div>
+</body>
+</html>

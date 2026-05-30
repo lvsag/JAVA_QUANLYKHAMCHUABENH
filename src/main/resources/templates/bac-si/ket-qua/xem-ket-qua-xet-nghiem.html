@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bác sĩ xem kết quả dịch vụ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>body{font-family:Inter,sans-serif}</style>
+</head>
+<body class="min-h-screen bg-[#ECF0F8] text-[#37474F]">
+<div class="h-8 bg-[#1565C0] flex items-center justify-between px-5 text-xs text-white"><span>🏥 Hệ Thống Quản Lý Khám Chữa Bệnh — Doctor Panel</span><span th:text="${#dates.format(#dates.createNow(),'dd/MM/yyyy HH:mm')}"></span></div>
+<div class="flex min-h-[calc(100vh-76px)]">
+    <aside class="w-[220px] bg-[#1A3A6B] flex flex-col shrink-0">
+        <div class="bg-[#0D47A1] px-5 py-5 flex items-center gap-3"><div class="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">👨‍⚕️</div><div><div class="text-white text-xs font-bold">Doctor</div><div class="text-white/80 text-[11px]">Quản trị viên</div><div class="mt-1 rounded-full bg-[#FFD740] px-3 py-0.5 text-[9px] font-extrabold text-[#0D47A1]">ONLINE</div></div></div>
+        <nav class="mt-24 flex-1">
+            <a th:href="@{/bac-si/kham-benh}" class="flex items-center gap-3 px-6 py-3 text-sm text-[#90B8F8]">🩺 Khám bệnh</a>
+            <a th:href="@{/bac-si/chi-dinh}" class="flex items-center gap-3 px-6 py-3 text-sm text-[#90B8F8]">🧪 Chỉ định DV</a>
+            <a th:href="@{/bac-si/ke-thuoc}" class="flex items-center gap-3 px-6 py-3 text-sm text-[#90B8F8]">💊 Đơn thuốc</a>
+            <a th:href="@{/bac-si/ket-qua}" class="relative flex items-center gap-3 bg-[#1565C0] px-6 py-3 text-sm font-bold text-white"><span class="absolute left-0 h-full w-1 bg-[#FFD740]"></span>🔍 Xem kết quả DV</a>
+            <a th:href="@{/bac-si/bao-cao}" class="flex items-center gap-3 px-6 py-3 text-sm text-[#90B8F8]">📈 Xem báo cáo</a>
+        </nav>
+        <a th:href="@{/logout}" class="px-7 py-8 text-lg font-bold text-[#FFDAD3]">🚪 Đăng Xuất</a>
+    </aside>
+    <main class="flex-1 overflow-auto p-5">
+        <div class="mb-8"><h1 class="text-3xl font-extrabold text-[#0B62C0]">Bác sĩ xem kết quả dịch vụ</h1><p class="mt-2 text-[#65758F]">Theo dõi kết quả cận lâm sàng, đọc chỉ số và đưa ra kết luận điều trị</p></div>
+        <div th:if="${errorMessage}" class="mb-4 rounded border border-[#FFB74D] bg-[#FFF3E0] px-4 py-3 text-sm font-bold text-[#E65100]" th:text="${errorMessage}"></div>
+        <div th:if="${successMessage}" class="mb-4 rounded border border-green-300 bg-green-50 px-4 py-3 text-sm font-bold text-green-700" th:text="${successMessage}"></div>
+        <div class="grid gap-5 lg:grid-cols-[405px_1fr]">
+            <section class="rounded-lg border border-[#C7D4E4] bg-white">
+                <div class="rounded-t-lg bg-[#0B62C0] px-6 py-3 font-bold text-white">Danh sách bệnh nhân có kết quả</div>
+                <div class="p-4"><table class="w-full text-sm"><thead class="bg-[#E8EDF5]"><tr><th class="p-3 text-left">STT</th><th class="p-3 text-left">Bệnh nhân</th><th class="p-3 text-left">DV</th><th class="p-3 text-left">Giờ</th><th class="p-3 text-left">TT</th></tr></thead><tbody>
+                    <tr th:each="item,iter:${ketQuas}" th:classappend="${ketQua != null and item.maKetQua == ketQua.maKetQua ? 'bg-[#E7F1FF]' : ''}" class="border-b border-[#E1E8F0] hover:bg-blue-50">
+                        <td class="p-3" th:text="${#numbers.formatInteger(iter.index+1,2)}">01</td>
+                        <td class="p-3"><a th:href="@{/bac-si/ket-qua(maKetQua=${item.maKetQua})}" th:text="${item.benhNhan != null ? item.benhNhan.hoTen : 'Chưa có bệnh nhân'}">Nguyễn Văn A</a></td>
+                        <td class="p-3" th:text="${item.dichVu != null ? item.dichVu.tenDichVu : 'DV'}">XN máu</td>
+                        <td class="p-3" th:text="${item.ngayKetQua != null ? #dates.format(item.ngayKetQua,'HH:mm') : '--:--'}">08:00</td>
+                        <td class="p-3 font-bold" th:classappend="${item.trangThai == 'Da xem' or item.trangThai == 'Đã xem' ? 'text-[#2CA24D]' : 'text-[#0B62C0]'}" th:text="${item.trangThai != null ? item.trangThai : 'Mới'}">Mới</td>
+                    </tr>
+                    <tr th:if="${ketQuas == null or #lists.isEmpty(ketQuas)}"><td colspan="5" class="p-8 text-center text-[#65758F]">Chưa có kết quả dịch vụ.</td></tr>
+                </tbody></table></div>
+            </section>
+            <section class="rounded-lg border border-[#C7D4E4] bg-white">
+                <div class="rounded-t-lg bg-[#0B62C0] px-6 py-3 font-bold text-white">Thông tin kết quả khám dịch vụ</div>
+                <div th:if="${ketQua == null}" class="p-10 text-center text-[#65758F]">Chọn kết quả để xem chi tiết.</div>
+                <form th:if="${ketQua != null}" th:action="@{/bac-si/ket-qua/ket-luan}" method="post" class="space-y-6 p-5">
+                    <input type="hidden" name="maKetQua" th:value="${ketQua.maKetQua}">
+                    <div class="grid gap-5 md:grid-cols-4">
+                        <label class="text-sm font-bold">Mã phiếu kết quả<input class="mt-2 w-full rounded-lg border border-[#B8CADF] p-4 text-center font-normal text-[#58708E]" th:value="${ketQua.maKetQua}" readonly></label>
+                        <label class="text-sm font-bold">Bệnh nhân<input class="mt-2 w-full rounded-lg border border-[#B8CADF] p-4 text-center font-normal text-[#58708E]" th:value="${ketQua.benhNhan != null ? ketQua.benhNhan.hoTen : ''}" readonly></label>
+                        <label class="text-sm font-bold">Dịch vụ<input class="mt-2 w-full rounded-lg border border-[#B8CADF] p-4 text-center font-normal text-[#58708E]" th:value="${ketQua.dichVu != null ? ketQua.dichVu.tenDichVu : ''}" readonly></label>
+                        <label class="text-sm font-bold">Bác sĩ<input class="mt-2 w-full rounded-lg border border-[#B8CADF] p-4 text-center font-normal text-[#58708E]" th:value="${ketQua.bacSi != null ? ketQua.bacSi.hoTen : ''}" readonly></label>
+                    </div>
+                    <div class="grid gap-5 md:grid-cols-2">
+                        <label class="text-sm font-bold">Chỉ số chính<textarea class="mt-2 h-32 w-full rounded-lg border border-[#B8CADF] p-4 font-normal text-[#58708E]" readonly th:text="${ketQua.chiSoChinh}"></textarea></label>
+                        <label class="text-sm font-bold">Kết quả chi tiết<textarea class="mt-2 h-32 w-full rounded-lg border border-[#B8CADF] p-4 font-normal text-[#58708E]" readonly th:text="${ketQua.ketQuaChiTiet}"></textarea></label>
+                        <label class="text-sm font-bold md:col-span-2">Nhận định từ dịch vụ<textarea class="mt-2 h-24 w-full rounded-lg border border-[#B8CADF] p-4 font-normal text-[#58708E]" readonly th:text="${ketQua.nhanDinh}"></textarea></label>
+                    </div>
+                    <label class="block text-sm font-bold">Kết luận bác sĩ<textarea name="ketLuanBacSi" class="mt-2 h-24 w-full rounded-lg border border-[#90BFFF] p-4 text-[#244A78]" th:text="${ketQua.ketLuanBacSi}"></textarea></label>
+                    <div class="flex gap-8"><button class="rounded-lg bg-[#2CA24D] px-10 py-4 font-bold text-white">Kết luận</button><a th:href="@{/bac-si/ke-thuoc(maPhieuKham=${ketQua.phieuChiDinh != null and ketQua.phieuChiDinh.phieuKham != null ? ketQua.phieuChiDinh.phieuKham.maPhieuKham : ''})}" class="rounded-lg bg-[#FF7F11] px-10 py-4 font-bold text-white">Kê toa</a><a th:href="@{/admin/lich-hen/them}" class="rounded-lg bg-[#6D28D9] px-10 py-4 font-bold text-white">Hẹn tái khám</a></div>
+                    <div class="rounded-lg border border-[#A8D5A2] bg-[#F0FBF0] p-6 text-[#58708E]"><b class="mb-3 block text-xl text-[#2CA24D]">Lưu ý</b>Bác sĩ chỉ nhập kết luận</div>
+                </form>
+            </section>
+        </div>
+    </main>
+</div>
+</body>
+</html>

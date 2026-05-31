@@ -21,9 +21,27 @@ public class AdminInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        if (!role.equals("ADMIN") && !role.equals("BAC_SI")) {
-            response.sendRedirect("/home");
+        if (role == null) {
+            response.sendRedirect("/login");
             return false;
+        }
+
+        String requestURI = request.getRequestURI();
+        
+        // Kiểm tra quyền truy cập route /admin/**
+        if (requestURI.startsWith(request.getContextPath() + "/admin")) {
+            if (!role.equalsIgnoreCase("ADMIN") && !role.equalsIgnoreCase("Admin")) {
+                response.sendRedirect("/403");
+                return false;
+            }
+        }
+        
+        // Kiểm tra quyền truy cập route /bac-si/**
+        if (requestURI.startsWith(request.getContextPath() + "/bac-si")) {
+            if (!role.equalsIgnoreCase("BAC_SI") && !role.equalsIgnoreCase("Bác sĩ") && !role.equalsIgnoreCase("ADMIN") && !role.equalsIgnoreCase("Admin")) {
+                response.sendRedirect("/403");
+                return false;
+            }
         }
 
         return true;

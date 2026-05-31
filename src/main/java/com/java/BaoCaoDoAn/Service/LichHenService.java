@@ -27,6 +27,10 @@ public class LichHenService {
 
     private final DichVuRepository     dichVuRepository;
     private final ChiTietLichHenRepository chiTietLichHenRepository;
+    private final KhuyenMaiRepository  khuyenMaiRepository;
+    private final HoaDonRepository     hoaDonRepository;
+    private final ChiTietHoaDonRepository chiTietHoaDonRepository;
+    private final KhuyenMaiService     khuyenMaiService;
 
     // ------------------------------------------------------------------
     // HÀM TÍNH TỔNG TIỀN (Ánh xạ cho màn hình Thanh Toán và Bước 1)
@@ -57,20 +61,8 @@ public class LichHenService {
 
         // 3. Áp dụng mã khuyến mãi
         if (voucherCode != null && !voucherCode.trim().isEmpty()) {
-            String code = voucherCode.trim().toUpperCase();
-            
-            // Check in Database strictly
-            KhuyenMai km = khuyenMaiRepository.findByMaCode(code).orElse(null);
-            if (km != null && "Hoạt động".equals(km.getTrangThai())) {
-                java.sql.Date sqlToday = new java.sql.Date(System.currentTimeMillis());
-                if ((km.getNgayBatDau() == null || !sqlToday.before(km.getNgayBatDau())) &&
-                    (km.getNgayKetThuc() == null || !sqlToday.after(km.getNgayKetThuc()))) {
-                    if (km.getSoLuotToiDa() == null || km.getSoLuotDaDung() < km.getSoLuotToiDa()) {
-                        double discountAmount = km.getGiaTriGiam() != null ? km.getGiaTriGiam().doubleValue() : 0.0;
-                        subtotal = Math.max(0.0, subtotal - discountAmount);
-                    }
-                }
-            }
+            double discount = khuyenMaiService.tinhGiamGiaHopLe(voucherCode, subtotal);
+            subtotal = Math.max(0.0, subtotal - discount);
         }
         return subtotal;
     }
@@ -264,19 +256,12 @@ public class LichHenService {
 
             // C. Tăng số lượt đã dùng của mã khuyến mãi (chỉ tăng một lần duy nhất khi tạo hóa đơn thành công)
             if (req.getMaKhuyenMai() != null && !req.getMaKhuyenMai().trim().isEmpty()) {
-                String code = req.getMaKhuyenMai().trim().toUpperCase();
-                KhuyenMai km = khuyenMaiRepository.findByMaCode(code).orElse(null);
-                if (km != null && "Hoạt động".equals(km.getTrangThai())) {
-                    java.sql.Date sqlToday = new java.sql.Date(System.currentTimeMillis());
-                    if ((km.getNgayBatDau() == null || !sqlToday.before(km.getNgayBatDau())) &&
-                        (km.getNgayKetThuc() == null || !sqlToday.after(km.getNgayKetThuc()))) {
-                        if (km.getSoLuotToiDa() == null || km.getSoLuotDaDung() < km.getSoLuotToiDa()) {
-                            int currentUsage = km.getSoLuotDaDung() != null ? km.getSoLuotDaDung() : 0;
-                            km.setSoLuotDaDung(currentUsage + 1);
-                            khuyenMaiRepository.save(km);
-                        }
-                    }
-                }
+                try {
+                    KhuyenMai km = khuyenMaiService.layKhuyenMaiHopLe(req.getMaKhuyenMai());
+                    int currentUsage = km.getSoLuotDaDung() != null ? km.getSoLuotDaDung() : 0;
+                    km.setSoLuotDaDung(currentUsage + 1);
+                    khuyenMaiRepository.save(km);
+                } catch (Exception ignored) {}
             }
         }
 
@@ -370,5 +355,16 @@ public class LichHenService {
 
     public void saveLichHen(LichHen lichHen) {
         lichHenRepository.save(lichHen);
+    }
+
+    private LocalDate toLocalDate(Date date) {
+        if (date == null) return null;
+        if (date instanceof java.sql.Date) {
+            return ((java.sql.Date) date).toLocalDate();
+        }
+        if (date instanceof java.sql.Timestamp) {
+            return ((java.sql.Timestamp) date).toLocalDateTime().toLocalDate();
+        }
+        return date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
     }
 }

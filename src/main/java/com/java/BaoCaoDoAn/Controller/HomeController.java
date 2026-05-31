@@ -45,6 +45,9 @@ public class HomeController {
     @Autowired
     private KhungGioGeneratorService khungGioGeneratorService;
 
+    @Autowired
+    private com.java.BaoCaoDoAn.Service.KhuyenMaiService khuyenMaiService;
+
     @ModelAttribute("datLichSession")
     public DatLichRequestDTO setUpDatLichForm() {
         return new DatLichRequestDTO();
@@ -240,7 +243,17 @@ public class HomeController {
             bacSiRepository.findById(dto.getMaBacSi()).ifPresent(bs -> model.addAttribute("bacSi", bs));
         }
 
-        // 2. Tính Tổng Tiền từ danh sách dịch vụ đẩy lên UI
+        // 2. Kiểm định mã khuyến mãi nếu được nhập
+        if (dto.getMaKhuyenMai() != null && !dto.getMaKhuyenMai().trim().isEmpty()) {
+            try {
+                khuyenMaiService.layKhuyenMaiHopLe(dto.getMaKhuyenMai());
+            } catch (Exception e) {
+                model.addAttribute("error", e.getMessage());
+                dto.setMaKhuyenMai(""); // Xóa mã khuyến mãi không hợp lệ để tránh áp dụng giảm giá
+            }
+        }
+
+        // 3. Tính Tổng Tiền từ danh sách dịch vụ đẩy lên UI
         double rawSubtotal = lichHenService.tinhTongTien(dto.getDanhSachMaDichVu(), null, dto.getMaBacSi());
         double tongTien = lichHenService.tinhTongTien(dto.getDanhSachMaDichVu(), dto.getMaKhuyenMai(), dto.getMaBacSi());
         double giamGia = Math.max(0.0, rawSubtotal - tongTien);

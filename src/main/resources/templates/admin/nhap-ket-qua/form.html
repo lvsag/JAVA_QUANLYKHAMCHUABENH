@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Ghi Nhận Kết Quả Dịch Vụ', 'nhap-ket-qua', ~{::section})}">
+<head>
+    <title>Ghi Nhận Kết Quả Xét Nghiệm/Siêu Âm</title>
+</head>
+<body>
+<section>
+    <!-- Import Bootstrap & FontAwesome inside content area -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+
+    <div class="container-fluid py-4">
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-8">
+            <h3 class="fw-bold text-primary mb-1"><i class="fas fa-edit me-2"></i>Ghi Nhận Kết Quả Dịch Vụ</h3>
+            <p class="text-muted mb-0">Cập nhật các chỉ số xét nghiệm và kết luận dành cho dịch vụ: <strong class="text-dark" th:text="${chiTiet.dichVu != null ? chiTiet.dichVu.tenDichVu : ''}"></strong></p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a th:href="@{/admin/nhap-ket-qua}" class="btn btn-outline-secondary fw-bold">
+                <i class="fas fa-arrow-left me-1"></i> Trở về danh sách
+            </a>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i><span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <!-- Patient Info Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h6 class="mb-0 fw-bold text-dark"><i class="fas fa-user-injured text-primary me-2"></i>Thông tin Bệnh nhân</h6>
+                </div>
+                <div class="card-body bg-light rounded-bottom">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                            <i class="fas fa-user fa-lg"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0" th:text="${chiTiet.phieuChiDinh != null and chiTiet.phieuChiDinh.benhNhan != null ? chiTiet.phieuChiDinh.benhNhan.hoTen : ''}">Nguyễn Văn A</h5>
+                            <small class="text-muted" th:text="'Mã BN: ' + ${chiTiet.phieuChiDinh != null and chiTiet.phieuChiDinh.benhNhan != null ? chiTiet.phieuChiDinh.benhNhan.maBenhNhan : ''}">BN01</small>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="mb-2">
+                        <small class="text-muted d-block">Giới tính</small>
+                        <span class="fw-bold" th:text="${chiTiet.phieuChiDinh != null and chiTiet.phieuChiDinh.benhNhan != null ? chiTiet.phieuChiDinh.benhNhan.gioiTinh : ''}">Nam</span>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted d-block">Tuổi / Năm sinh</small>
+                        <span class="fw-bold" th:text="${chiTiet.phieuChiDinh != null and chiTiet.phieuChiDinh.benhNhan != null ? #dates.format(chiTiet.phieuChiDinh.benhNhan.ngaySinh, 'yyyy') : ''}">1990</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service Info Card -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h6 class="mb-0 fw-bold text-dark"><i class="fas fa-file-medical-alt text-info me-2"></i>Thông tin Phiếu chỉ định</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Mã Phiếu</small>
+                        <span class="fw-bold" th:text="${chiTiet.phieuChiDinh != null ? chiTiet.phieuChiDinh.maPhieuChiDinh : ''}">CD1234</span>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Bác sĩ chỉ định</small>
+                        <span class="fw-bold text-primary" th:text="${chiTiet.phieuChiDinh != null and chiTiet.phieuChiDinh.bacSi != null ? chiTiet.phieuChiDinh.bacSi.hoTen : ''}">Dr. ABC</span>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Ngày giờ chỉ định</small>
+                        <span class="fw-bold" th:text="${chiTiet.phieuChiDinh != null ? #dates.format(chiTiet.phieuChiDinh.ngayChiDinh, 'dd/MM/yyyy HH:mm') : ''}">20/11/2026</span>
+                    </div>
+                    <div class="mb-0">
+                        <small class="text-muted d-block">Ghi chú của bác sĩ</small>
+                        <div class="p-2 bg-light rounded mt-1 border" th:text="${chiTiet.phieuChiDinh != null ? chiTiet.phieuChiDinh.ghiChu : 'Không có ghi chú'}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white py-3">
+                    <h6 class="mb-0 fw-bold"><i class="fas fa-keyboard me-2"></i>Nhập kết quả chuyên môn</h6>
+                </div>
+                <div class="card-body p-4">
+                    <form th:action="@{/admin/nhap-ket-qua/luu}" method="post">
+                        <input type="hidden" name="idChiTiet" th:value="${chiTiet.maChiTietChiDinh}" />
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark">Chỉ số chính <span class="text-danger">*</span></label>
+                            <textarea name="chiSoChinh" class="form-control" rows="3" required placeholder="Nhập các chỉ số chính (Ví dụ: Glucose: 5.5 mmol/L)..." th:text="${ketQua.chiSoChinh}"></textarea>
+                            <div class="form-text">Các chỉ số quan trọng, dễ nhìn thấy nhất.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark">Kết quả chi tiết</label>
+                            <textarea name="ketQuaChiTiet" class="form-control" rows="5" placeholder="Nhập chi tiết các thông số khác, mô tả hình ảnh siêu âm, X-quang..." th:text="${ketQua.ketQuaChiTiet}"></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark">Nhận định (Từ phòng dịch vụ)</label>
+                            <textarea name="nhanDinh" class="form-control" rows="3" placeholder="Ghi chú thêm hoặc nhận định sơ bộ của Kỹ thuật viên..." th:text="${ketQua.nhanDinh}"></textarea>
+                            <div class="form-text text-warning"><i class="fas fa-exclamation-triangle me-1"></i> Lưu ý: Bác sĩ điều trị sẽ là người đưa ra Kết luận cuối cùng dựa trên các nhận định này.</div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-4 pt-3 border-top">
+                            <a th:href="@{/admin/nhap-ket-qua}" class="btn btn-light border px-4 fw-bold me-2">Hủy bỏ</a>
+                            <button type="submit" class="btn btn-primary px-5 fw-bold">
+                                <i class="fas fa-save me-1"></i> Lưu Kết Quả
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

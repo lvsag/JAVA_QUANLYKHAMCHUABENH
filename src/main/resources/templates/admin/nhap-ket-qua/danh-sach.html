@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Nhập Kết Quả Cận Lâm Sàng', 'nhap-ket-qua', ~{::section})}">
+<head>
+    <title>Nhập Kết Quả Cận Lâm Sàng - Admin</title>
+</head>
+<body>
+<section>
+    <!-- Import Bootstrap & FontAwesome inside content area -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+
+    <div class="container-fluid py-4">
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-6">
+            <h3 class="fw-bold text-primary mb-1"><i class="fas fa-microscope me-2"></i>Nhập Kết Quả Dịch Vụ</h3>
+            <p class="text-muted mb-0">Danh sách các dịch vụ bệnh nhân đang chờ thực hiện và trả kết quả.</p>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show border-0 shadow-sm" role="alert">
+        <i class="fas fa-check-circle me-2"></i><span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i><span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3 border-bottom">
+            <h6 class="mb-0 fw-bold text-dark"><i class="fas fa-list me-2"></i>Danh sách chờ thực hiện</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th class="px-4 py-3 text-secondary" style="width: 5%">STT</th>
+                        <th class="px-4 py-3 text-secondary" style="width: 15%">Bệnh Nhân</th>
+                        <th class="px-4 py-3 text-secondary" style="width: 20%">Dịch Vụ</th>
+                        <th class="px-4 py-3 text-secondary" style="width: 15%">Bác Sĩ CĐ</th>
+                        <th class="px-4 py-3 text-secondary" style="width: 15%">Phòng TH</th>
+                        <th class="px-4 py-3 text-secondary" style="width: 15%">Thời Gian</th>
+                        <th class="px-4 py-3 text-secondary text-end" style="width: 15%">Thao Tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="chiTiet, iter : ${danhSachCho}">
+                        <td class="px-4 py-3 fw-bold text-muted" th:text="${iter.index + 1}">1</td>
+                        <td class="px-4 py-3">
+                            <span class="fw-bold text-dark" th:text="${chiTiet.phieuChiDinh != null and chiTiet.phieuChiDinh.benhNhan != null ? chiTiet.phieuChiDinh.benhNhan.hoTen : 'N/A'}">Nguyễn Văn A</span>
+                        </td>
+                        <td class="px-4 py-3">
+                            <span class="badge bg-info text-dark" th:text="${chiTiet.dichVu != null ? chiTiet.dichVu.tenDichVu : 'N/A'}">Siêu âm</span>
+                        </td>
+                        <td class="px-4 py-3 text-muted" th:text="${chiTiet.phieuChiDinh != null and chiTiet.phieuChiDinh.bacSi != null ? chiTiet.phieuChiDinh.bacSi.hoTen : 'N/A'}">BS B</td>
+                        <td class="px-4 py-3 text-muted" th:text="${chiTiet.phongThucHien != null ? chiTiet.phongThucHien : 'Chưa xếp phòng'}">Phòng 101</td>
+                        <td class="px-4 py-3 text-muted" th:text="${chiTiet.phieuChiDinh != null ? #dates.format(chiTiet.phieuChiDinh.ngayChiDinh, 'dd/MM/yyyy HH:mm') : ''}">20/11/2026</td>
+                        <td class="px-4 py-3 text-end">
+                            <a th:href="@{/admin/nhap-ket-qua/{id}(id=${chiTiet.maChiTietChiDinh})}" class="btn btn-sm btn-primary fw-bold px-3">
+                                <i class="fas fa-keyboard me-1"></i> Nhập Kết Quả
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(danhSachCho)}">
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="fas fa-inbox fa-3x mb-3 text-light"></i>
+                            <p class="mb-0">Hiện không có dịch vụ nào đang chờ nhập kết quả.</p>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

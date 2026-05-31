@@ -23,10 +23,24 @@ public class AdminLichHenController {
     @Autowired
     private com.java.BaoCaoDoAn.Service.BacSiService bacSiService;
 
+    @Autowired
+    private com.java.BaoCaoDoAn.Repository.KhungGioKhamRepository khungGioKhamRepository;
+
     @GetMapping
     public String danhSachLichHen(Model model) {
-        model.addAttribute("danhSach", lichHenService.getAllLichHen());
+        // Lấy tất cả lịch hẹn nhưng LỌC BỎ những lịch bị hủy bởi Bệnh nhân (có nhập Lý do hủy)
+        java.util.List<LichHen> danhSachHoatDong = lichHenService.getAllLichHen().stream()
+                .filter(lh -> lh.getLyDoHuy() == null || lh.getLyDoHuy().trim().isEmpty())
+                .collect(java.util.stream.Collectors.toList());
+                
+        model.addAttribute("danhSach", danhSachHoatDong);
         return "admin/lich-hen/danh-sach";
+    }
+
+    @GetMapping("/debug")
+    @ResponseBody
+    public java.util.List<LichHen> debugLichHen() {
+        return lichHenService.getAllLichHen();
     }
 
     @GetMapping("/duyet/{id}")
@@ -46,6 +60,14 @@ public class AdminLichHenController {
         lichHenService.getLichHenById(id).ifPresent(lh -> {
             lh.setTrangThai("Đã hủy");
             lichHenService.saveLichHen(lh);
+            
+            // Giải phóng khung giờ khám
+            if (lh.getMaKhungGio() != null) {
+                khungGioKhamRepository.findById(lh.getMaKhungGio()).ifPresent(slot -> {
+                    slot.setTrangThai("Còn chỗ");
+                    khungGioKhamRepository.save(slot);
+                });
+            }
         });
         return "redirect:/admin/lich-hen";
     }

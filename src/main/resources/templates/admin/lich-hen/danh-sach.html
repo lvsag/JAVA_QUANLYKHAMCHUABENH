@@ -10,8 +10,8 @@
             <p style="color: #78909C; font-size: 14px; margin-top: 5px;">Kiểm duyệt và sắp xếp lịch khám bệnh</p>
         </div>
         
-        <div style="background: white; border: 1px solid #E3EDFF; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div style="background: white; border: 1px solid #E3EDFF; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); overflow-x: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; min-width: 800px;">
                 <h2 style="font-size: 16px; margin: 0; color: #455A64;">📅 Danh Sách Lịch Hẹn</h2>
                 <div>
                     <a th:href="@{/admin/lich-hen/them}" style="background: #1565C0; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-size: 14px; cursor: pointer; text-decoration: none;">+ Đặt lịch hộ</a>
@@ -19,7 +19,7 @@
                 </div>
             </div>
             
-            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+            <table style="width: 100%; min-width: 800px; border-collapse: collapse; text-align: left; font-size: 13px;">
                 <thead>
                     <tr style="background: #F0F4FF; color: #1565C0; border-bottom: 2px solid #BBCEF0;">
                         <th style="padding: 12px;">Mã LH</th>
@@ -28,30 +28,105 @@
                         <th style="padding: 12px;">Ngày khám</th>
                         <th style="padding: 12px;">Giờ khám</th>
                         <th style="padding: 12px;">Trạng thái</th>
-                        <th style="padding: 12px;">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="lh : ${danhSach}" style="border-bottom: 1px solid #E3EDFF; color: #455A64;">
+                    <tr th:each="lh : ${danhSach}" 
+                        style="border-bottom: 1px solid #E3EDFF; color: #455A64; cursor: pointer; transition: background 0.2s;"
+                        onmouseover="this.style.background='#F8FAFC'" 
+                        onmouseout="this.style.background='white'"
+                        th:data-id="${lh.maLichHen}"
+                        th:data-benhnhan="${lh.benhNhan != null ? lh.benhNhan.hoTen : 'Vãng lai'}"
+                        th:data-bacsi="${lh.bacSi != null ? lh.bacSi.hoTen : 'Chưa chọn'}"
+                        th:data-ngay="${lh.ngayHen != null ? #dates.format(lh.ngayHen, 'dd/MM/yyyy') : ''}"
+                        th:data-gio="${lh.gioHen}"
+                        th:data-trangthai="${lh.trangThai}"
+                        onclick="openActionModal(this)">
+                        
                         <td style="padding: 12px; font-weight: bold;" th:text="${lh.maLichHen}">LH001</td>
                         <td style="padding: 12px;" th:text="${lh.benhNhan != null ? lh.benhNhan.hoTen : 'Vãng lai'}">Nguyễn Văn A</td>
                         <td style="padding: 12px;" th:text="${lh.bacSi != null ? lh.bacSi.hoTen : 'Chưa chọn'}">BS. Minh</td>
                         <td style="padding: 12px;" th:text="${lh.ngayHen != null ? #dates.format(lh.ngayHen, 'dd/MM/yyyy') : ''}">17/05/2025</td>
                         <td style="padding: 12px;" th:text="${lh.gioHen}">08:00</td>
-                        <td style="padding: 12px;">
-                            <span th:style="${lh.trangThai == 'Chờ xác nhận'} ? 'background: #FFF3E0; color: #E65100; padding: 4px 8px; border-radius: 12px; font-size: 11px;' : (${lh.trangThai == 'Đã xác nhận'} ? 'background: #E3F2FD; color: #1565C0; padding: 4px 8px; border-radius: 12px; font-size: 11px;' : 'background: #E8F5E9; color: #2E7D32; padding: 4px 8px; border-radius: 12px; font-size: 11px;')}" th:text="${lh.trangThai}">Chờ xác nhận</span>
-                        </td>
-                        <td style="padding: 12px; display: flex; gap: 8px;">
-                            <a th:if="${lh.trangThai == 'Chờ xác nhận'}" th:href="@{/admin/lich-hen/duyet/{id}(id=${lh.maLichHen})}" style="color: #059669; text-decoration: none; font-weight: 500;" title="Xác nhận">✅ Duyệt</a>
-                            <a th:if="${lh.trangThai == 'Đã xác nhận'}" th:href="@{/admin/lich-hen/hoan-thanh/{id}(id=${lh.maLichHen})}" style="color: #2563EB; text-decoration: none; font-weight: 500;" title="Hoàn thành">✔️ Xong</a>
-                            <a th:if="${lh.trangThai == 'Chờ xác nhận' or lh.trangThai == 'Đã xác nhận'}" th:href="@{/admin/lich-hen/huy/{id}(id=${lh.maLichHen})}" onclick="return confirm('Xác nhận hủy lịch hẹn này?')" style="color: #DC2626; text-decoration: none; font-weight: 500;" title="Hủy lịch">❌ Hủy</a>
-                            
-                            <a th:href="@{/admin/lich-hen/sua/{id}(id=${lh.maLichHen})}" style="color: #475569; text-decoration: none; font-weight: 500; margin-left: 8px;" title="Sửa">✏️ Sửa</a>
+                        <td style="padding: 12px; font-weight: bold;">
+                            <span th:text="${lh.trangThai ?: 'Đang tải...'}"></span>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
+
+        <!-- Modal Thao Tác -->
+        <div id="actionModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+            <div style="background: white; width: 400px; border-radius: 12px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #E2E8F0; padding-bottom: 12px;">
+                    <h3 style="margin: 0; color: #1E293B; font-size: 18px;">Thao tác Lịch hẹn</h3>
+                    <button onclick="closeActionModal()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: #64748B;">&times;</button>
+                </div>
+                
+                <div style="margin-bottom: 24px; font-size: 14px; color: #475569; line-height: 1.6;">
+                    <p style="margin: 4px 0;"><strong>Mã LH:</strong> <span id="modalMaLH" style="color: #0F172A; font-weight: 500;"></span></p>
+                    <p style="margin: 4px 0;"><strong>Bệnh nhân:</strong> <span id="modalBenhNhan"></span></p>
+                    <p style="margin: 4px 0;"><strong>Bác sĩ:</strong> <span id="modalBacSi"></span></p>
+                    <p style="margin: 4px 0;"><strong>Thời gian:</strong> <span id="modalThoiGian"></span></p>
+                    <p style="margin: 4px 0;"><strong>Trạng thái:</strong> <span id="modalTrangThai" style="padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; background: #E2E8F0; color: #334155; margin-left: 5px;"></span></p>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 10px;" id="modalActionButtons">
+                    <!-- Các nút sẽ được JS chèn vào đây dựa trên trạng thái -->
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function openActionModal(rowElement) {
+                const maLH = rowElement.getAttribute('data-id');
+                const benhNhan = rowElement.getAttribute('data-benhnhan');
+                const bacSi = rowElement.getAttribute('data-bacsi');
+                const ngay = rowElement.getAttribute('data-ngay');
+                const gio = rowElement.getAttribute('data-gio');
+                const trangThai = rowElement.getAttribute('data-trangthai');
+                
+                // Gán dữ liệu vào modal
+                document.getElementById('modalMaLH').innerText = maLH;
+                document.getElementById('modalBenhNhan').innerText = benhNhan;
+                document.getElementById('modalBacSi').innerText = bacSi;
+                document.getElementById('modalThoiGian').innerText = gio + ' - ' + ngay;
+                document.getElementById('modalTrangThai').innerText = (trangThai && trangThai.trim() !== '') ? trangThai : 'Chờ xác nhận';
+                
+                // Logic hiển thị nút
+                const btnContainer = document.getElementById('modalActionButtons');
+                btnContainer.innerHTML = ''; // Xóa các nút cũ
+                
+                const tt = (trangThai || '').toLowerCase();
+                
+                if (tt.includes('chờ') || tt.includes('cho') || tt === '') {
+                    btnContainer.innerHTML += `<a href="/admin/lich-hen/duyet/${maLH}" style="background: #059669; color: white; padding: 10px; border-radius: 8px; text-align: center; text-decoration: none; font-weight: 500;">✅ Duyệt lịch hẹn</a>`;
+                    btnContainer.innerHTML += `<a href="/admin/lich-hen/huy/${maLH}" onclick="return confirm('Bạn có chắc chắn muốn hủy?')" style="background: #DC2626; color: white; padding: 10px; border-radius: 8px; text-align: center; text-decoration: none; font-weight: 500;">❌ Hủy lịch hẹn</a>`;
+                } else if (tt.includes('đã xác nhận') || tt.includes('da xac nhan') || tt.includes('xác nhận')) {
+                    btnContainer.innerHTML += `<a href="/admin/lich-hen/hoan-thanh/${maLH}" style="background: #2563EB; color: white; padding: 10px; border-radius: 8px; text-align: center; text-decoration: none; font-weight: 500;">✔️ Đánh dấu Hoàn thành</a>`;
+                    btnContainer.innerHTML += `<a href="/admin/lich-hen/huy/${maLH}" onclick="return confirm('Bạn có chắc chắn muốn hủy?')" style="background: #DC2626; color: white; padding: 10px; border-radius: 8px; text-align: center; text-decoration: none; font-weight: 500;">❌ Hủy lịch hẹn</a>`;
+                }
+                
+                // Nút sửa lúc nào cũng hiện
+                btnContainer.innerHTML += `<a href="/admin/lich-hen/sua/${maLH}" style="background: #F1F5F9; color: #475569; padding: 10px; border-radius: 8px; text-align: center; text-decoration: none; font-weight: 500; border: 1px solid #CBD5E1;">✏️ Sửa thông tin</a>`;
+                
+                // Hiển thị modal
+                document.getElementById('actionModal').style.display = 'flex';
+            }
+
+            function closeActionModal() {
+                document.getElementById('actionModal').style.display = 'none';
+            }
+            
+            // Đóng modal khi click ra ngoài
+            window.onclick = function(event) {
+                const modal = document.getElementById('actionModal');
+                if (event.target == modal) {
+                    closeActionModal();
+                }
+            }
+        </script>
     </section>
 </body>
 </html>

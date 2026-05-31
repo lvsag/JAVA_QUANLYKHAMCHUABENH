@@ -171,14 +171,18 @@ public class AdminKhamBenhController {
     }
 
     @GetMapping("/ket-qua")
-    public String xemKetQua(@RequestParam(value = "maKetQua", required = false) String maKetQua, Model model) {
-        // Added to connect xem-ket-qua-xet-nghiem.html with results entered by technicians/admin.
-        List<KetQuaXetNghiem> ketQuas = ketQuaXetNghiemService.getAllKetQua();
+    public String xemKetQua(@RequestParam(value = "maKetQua", required = false) String maKetQua,
+                            @RequestParam(value = "ngayLoc", required = false) String ngayLoc,
+                            @RequestParam(value = "trangThaiLoc", required = false) String trangThaiLoc,
+                            Model model) {
+        List<KetQuaXetNghiem> ketQuas = ketQuaXetNghiemService.filterKetQua(trangThaiLoc, ngayLoc);
         KetQuaXetNghiem selected = maKetQua != null
                 ? ketQuaXetNghiemService.getKetQua(maKetQua).orElse(null)
                 : (ketQuas.isEmpty() ? null : ketQuas.get(0));
         model.addAttribute("ketQuas", ketQuas);
         model.addAttribute("ketQua", selected);
+        model.addAttribute("ngayLoc", ngayLoc);
+        model.addAttribute("trangThaiLoc", trangThaiLoc);
         // Added: results are loaded from KetQuaDichVu via KetQuaXetNghiem mapping.
         return "bac-si/ket-qua/xem-ket-qua-xet-nghiem";
     }

@@ -19,6 +19,10 @@ public class KetQuaXetNghiemService {
         return ketQuaXetNghiemRepository.findAll();
     }
 
+    public List<KetQuaXetNghiem> filterKetQua(String trangThai, String ngay) {
+        return ketQuaXetNghiemRepository.filterKetQua(trangThai, ngay);
+    }
+
     public List<KetQuaXetNghiem> getKetQuaMoi() {
         return ketQuaXetNghiemRepository.findByTrangThaiOrderByNgayKetQuaDesc("Moi");
     }

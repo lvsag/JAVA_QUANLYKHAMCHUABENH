@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Quản Lý Khuyến Mãi', 'khuyen-mai', ~{::section})}">
+<head>
+    <title>Quản Lý Khuyến Mãi</title>
+</head>
+<body>
+    <section>
+        <!-- Import Bootstrap & FontAwesome inside content area -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+
+        <div class="container-fluid py-4">
+            <!-- Page Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="h4 mb-1 text-primary fw-bold">🎁 Quản Lý Chương Trình Khuyến Mãi / Ưu Đãi</h2>
+                    <p class="text-muted small mb-0">Thiết lập, cập nhật và theo dõi các chương trình giảm giá viện phí.</p>
+                </div>
+                <div>
+                    <a th:href="@{/admin/khuyen-mai/them}" class="btn btn-primary px-4 py-2 shadow-sm fw-bold">
+                        <i class="fas fa-plus me-1"></i> Tạo khuyến mãi mới
+                    </a>
+                </div>
+            </div>
+
+            <!-- Messages alert feedback -->
+            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+                <i class="fas fa-check-circle me-2"></i> <span th:text="${successMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i> <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- List Table -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold text-muted"><i class="fas fa-list me-2"></i> Danh sách tất cả mã khuyến mãi</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light text-muted small text-uppercase">
+                                <tr>
+                                    <th class="ps-4">ID</th>
+                                    <th>Mã Code</th>
+                                    <th>Tên Chương Trình</th>
+                                    <th class="text-end">Giá Trị Giảm</th>
+                                    <th class="text-center">Số Lượt Tối Đa</th>
+                                    <th class="text-center">Đã Sử Dụng</th>
+                                    <th>Ngày Bắt Đầu</th>
+                                    <th>Ngày Kết Thúc</th>
+                                    <th class="text-center">Trạng Thái</th>
+                                    <th class="text-end pe-4">Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="km : ${danhSachKhuyenMai}">
+                                    <td class="ps-4 text-muted fw-bold" th:text="${km.maKhuyenMai}"></td>
+                                    <td>
+                                        <span class="badge bg-primary-subtle text-primary border border-primary px-3 py-2 fw-bold font-monospace fs-7" th:text="${km.maCode}"></span>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-dark" th:text="${km.tenKhuyenMai}"></div>
+                                    </td>
+                                    <td class="text-end fw-bold text-success" th:text="${#numbers.formatInteger(km.giaTriGiam, 0, 'POINT') + ' đ'}"></td>
+                                    <td class="text-center" th:text="${km.soLuotToiDa != null ? km.soLuotToiDa : 'Không giới hạn'}"></td>
+                                    <td class="text-center fw-bold text-secondary" th:text="${km.soLuotDaDung != null ? km.soLuotDaDung : 0}"></td>
+                                    <td th:text="${#dates.format(km.ngayBatDau, 'dd/MM/yyyy')}"></td>
+                                    <td th:text="${#dates.format(km.ngayKetThuc, 'dd/MM/yyyy')}"></td>
+                                    <td class="text-center">
+                                        <span class="badge rounded-pill px-3 py-2 fw-bold"
+                                              th:classappend="${km.trangThai == 'Hoạt động' ? 'bg-success text-white' : 'bg-secondary text-white'}"
+                                              th:text="${km.trangThai}"></span>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <div class="btn-group btn-group-sm">
+                                            <a th:href="@{/admin/khuyen-mai/sua/{id}(id=${km.maKhuyenMai})}" class="btn btn-outline-primary" title="Sửa khuyến mãi">
+                                                <i class="fas fa-edit"></i> Sửa
+                                            </a>
+                                            <a th:href="@{/admin/khuyen-mai/xoa/{id}(id=${km.maKhuyenMai})}" class="btn btn-outline-danger" title="Xóa khuyến mãi"
+                                               onclick="return confirm('Bạn có chắc chắn muốn xóa mã khuyến mãi này không?')">
+                                                <i class="fas fa-trash-alt"></i> Xóa
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(danhSachKhuyenMai)}">
+                                    <td colspan="10" class="text-center py-5 text-muted">
+                                        <i class="fas fa-ticket-alt fa-3x mb-3 opacity-30"></i>
+                                        <p class="mb-0 fw-bold">Chưa có mã khuyến mãi nào được tạo</p>
+                                        <p class="small text-muted">Bấm "Tạo khuyến mãi mới" ở góc trên bên phải để bắt đầu thiết lập mã giảm giá.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

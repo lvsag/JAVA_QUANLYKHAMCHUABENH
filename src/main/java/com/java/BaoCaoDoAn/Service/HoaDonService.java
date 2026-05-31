@@ -3,6 +3,7 @@ package com.java.BaoCaoDoAn.Service;
 import com.java.BaoCaoDoAn.Model.*;
 import com.java.BaoCaoDoAn.Repository.HoaDonRepository;
 import com.java.BaoCaoDoAn.Repository.ChiTietHoaDonRepository;
+import com.java.BaoCaoDoAn.Repository.KhuyenMaiRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,9 @@ public class HoaDonService {
 
     @Autowired
     private ChiTietHoaDonRepository chiTietHoaDonRepository;
+
+    @Autowired
+    private KhuyenMaiRepository khuyenMaiRepository;
 
     @Autowired
     private NhapVienNoiTruService nhapVienNoiTruService;
@@ -107,11 +111,13 @@ public class HoaDonService {
         BigDecimal tienGiuong = giaGiuong.multiply(new BigDecimal(days));
         ChiTietHoaDon ctGiuong = new ChiTietHoaDon();
         ctGiuong.setHoaDon(hd);
-        ctGiuong.setKhoanMuc("Tiền giường bệnh (" + (phong != null ? phong.getMaPhong() : "N/A") + " - " + days + " ngày)");
+        ctGiuong.setKhoanMuc(
+                "Tiền giường bệnh (" + (phong != null ? phong.getMaPhong() : "N/A") + " - " + days + " ngày)");
         ctGiuong.setSoLuong((int) days);
         ctGiuong.setDonGia(giaGiuong);
         ctGiuong.setThanhTien(tienGiuong);
-        ctGiuong.setGhiChu("Phòng " + (phong != null ? phong.getLoaiPhong() : "thường") + ", giường " + (giuong != null ? giuong.getSoGiuong() : ""));
+        ctGiuong.setGhiChu("Phòng " + (phong != null ? phong.getLoaiPhong() : "thường") + ", giường "
+                + (giuong != null ? giuong.getSoGiuong() : ""));
         details.add(ctGiuong);
 
         // Phí khám & bác sĩ điều trị
@@ -122,7 +128,8 @@ public class HoaDonService {
         }
         ChiTietHoaDon ctKham = new ChiTietHoaDon();
         ctKham.setHoaDon(hd);
-        ctKham.setKhoanMuc("Phí khám & bác sĩ điều trị (" + (bacSi != null ? bacSi.getHoTen() : "Bác sĩ điều trị") + ")");
+        ctKham.setKhoanMuc(
+                "Phí khám & bác sĩ điều trị (" + (bacSi != null ? bacSi.getHoTen() : "Bác sĩ điều trị") + ")");
         ctKham.setSoLuong(1);
         ctKham.setDonGia(phiKham);
         ctKham.setThanhTien(phiKham);
@@ -181,5 +188,69 @@ public class HoaDonService {
         } else {
             throw new IllegalArgumentException("Không tìm thấy hóa đơn có mã: " + maHoaDon);
         }
+    }
+
+    public void apDungKhuyenMai(String maHoaDon, String maCode) throws Exception {
+        HoaDon hd = hoaDonRepository.findById(maHoaDon)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy hóa đơn có mã: " + maHoaDon));
+
+        if ("Đã thanh toán".equals(hd.getTrangThai())) {
+            throw new IllegalStateException("Hóa đơn đã được thanh toán, không thể áp dụng khuyến mãi.");
+        }
+
+        if (maCode == null || maCode.trim().isEmpty()) {
+            throw new IllegalArgumentException("Mã khuyến mãi không được để trống.");
+        }
+
+        String code = maCode.trim().toUpperCase();
+        KhuyenMai km = khuyenMaiRepository.findByMaCode(code)
+                .orElseThrow(() -> new IllegalArgumentException("Mã khuyến mãi không tồn tại."));
+
+        if (!"Hoạt động".equals(km.getTrangThai())) {
+            throw new IllegalStateException("Mã khuyến mãi này hiện đang bị khóa hoặc ngưng hoạt động.");
+        }
+
+        // Validate dates
+        Date now = new Date();
+        if (km.getNgayBatDau() != null && now.before(km.getNgayBatDau())) {
+            throw new IllegalStateException("Mã khuyến mãi chưa đến thời gian áp dụng.");
+        }
+
+        java.sql.Date sqlToday = new java.sql.Date(System.currentTimeMillis());
+        if (km.getNgayKetThuc() != null && sqlToday.after(km.getNgayKetThuc())) {
+            throw new IllegalStateException("Mã khuyến mãi đã hết hạn sử dụng.");
+        }
+
+        // Validate usage
+        if (km.getSoLuotToiDa() != null && km.getSoLuotDaDung() != null && km.getSoLuotDaDung() >= km.getSoLuotToiDa()) {
+            throw new IllegalStateException("Mã khuyến mãi đã đạt số lượt sử dụng tối đa.");
+        }
+
+        // Apply discount
+        BigDecimal discount = km.getGiaTriGiam();
+        if (discount == null) {
+            discount = BigDecimal.ZERO;
+        }
+
+        if (discount.compareTo(hd.getTongTien()) > 0) {
+            discount = hd.getTongTien();
+        }
+
+        hd.setGiamUuDai(discount);
+
+        BigDecimal giamBHYT = hd.getGiamBHYT() != null ? hd.getGiamBHYT() : BigDecimal.ZERO;
+        BigDecimal tempTotal = hd.getTongTien().subtract(giamBHYT).subtract(discount);
+        if (tempTotal.compareTo(BigDecimal.ZERO) < 0) {
+            tempTotal = BigDecimal.ZERO;
+        }
+        hd.setTongCanThanhToan(tempTotal);
+
+        // Update usage count
+        int currentUsage = km.getSoLuotDaDung() != null ? km.getSoLuotDaDung() : 0;
+        km.setSoLuotDaDung(currentUsage + 1);
+
+        // Save
+        hoaDonRepository.save(hd);
+        khuyenMaiRepository.save(km);
     }
 }

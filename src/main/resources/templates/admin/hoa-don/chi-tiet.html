@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Chi Tiết Hóa Đơn', 'hoa-don', ~{::section})}">
+<html xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{fragments/admin-layout :: layout('Chi Tiết Hóa Đơn', 'hoa-don', ~{::section})}">
+
 <head>
     <title>Chi Tiết Hóa Đơn</title>
 </head>
+
 <body>
     <section>
         <!-- Import Bootstrap & FontAwesome inside content area -->
@@ -14,7 +17,8 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h2 class="h4 mb-1 text-primary fw-bold">🧾 Chi Tiết Hóa Đơn Viện Phí</h2>
-                    <p class="text-muted small mb-0">Mã hóa đơn: <span class="fw-bold text-dark" th:text="${hoaDon.maHoaDon}"></span></p>
+                    <p class="text-muted small mb-0">Mã hóa đơn: <span class="fw-bold text-dark"
+                            th:text="${hoaDon.maHoaDon}"></span></p>
                 </div>
                 <div>
                     <a th:href="@{/admin/hoa-don}" class="btn btn-outline-secondary btn-sm px-3 me-2 shadow-sm">
@@ -27,11 +31,13 @@
             </div>
 
             <!-- Messages alert feedback -->
-            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+            <div th:if="${successMessage}"
+                class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
                 <i class="fas fa-check-circle me-2"></i> <span th:text="${successMessage}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4"
+                role="alert">
                 <i class="fas fa-exclamation-circle me-2"></i> <span th:text="${errorMessage}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
@@ -42,36 +48,44 @@
                     <!-- Patient & Invoice Meta Information Card -->
                     <div class="card border-0 shadow-sm mb-4">
                         <div class="card-header bg-primary text-white py-3">
-                            <h5 class="card-title mb-0 h6"><i class="fas fa-user-injured me-2"></i> Thông Tin Đối Tượng &amp; Giao Dịch</h5>
+                            <h5 class="card-title mb-0 h6"><i class="fas fa-user-injured me-2"></i> Thông Tin Đối Tượng
+                                &amp; Giao Dịch</h5>
                         </div>
                         <div class="card-body p-4">
                             <div class="row g-3">
                                 <div class="col-md-6 col-lg-4">
                                     <div class="text-muted small">Mã bệnh nhân:</div>
-                                    <div class="fw-bold text-dark" th:text="${hoaDon.benhNhan != null ? hoaDon.benhNhan.maBenhNhan : 'N/A'}"></div>
+                                    <div class="fw-bold text-dark"
+                                        th:text="${hoaDon.benhNhan != null ? hoaDon.benhNhan.maBenhNhan : 'N/A'}"></div>
                                 </div>
                                 <div class="col-md-6 col-lg-4">
                                     <div class="text-muted small">Họ tên bệnh nhân:</div>
-                                    <div class="fw-bold text-dark" th:text="${hoaDon.benhNhan != null ? hoaDon.benhNhan.hoTen : 'N/A'}"></div>
+                                    <div class="fw-bold text-dark"
+                                        th:text="${hoaDon.benhNhan != null ? hoaDon.benhNhan.hoTen : 'N/A'}"></div>
                                 </div>
                                 <div class="col-md-6 col-lg-4">
                                     <div class="text-muted small">Mã nhập viện nội trú:</div>
-                                    <div class="fw-bold text-primary" th:text="${hoaDon.nhapVienNoiTru != null ? hoaDon.nhapVienNoiTru.maNoiTru : 'N/A'}"></div>
+                                    <div class="fw-bold text-primary"
+                                        th:text="${hoaDon.nhapVienNoiTru != null ? hoaDon.nhapVienNoiTru.maNoiTru : 'N/A'}">
+                                    </div>
                                 </div>
                                 <div class="col-md-6 col-lg-4">
                                     <div class="text-muted small">Ngày lập hóa đơn:</div>
-                                    <div class="fw-bold text-dark" th:text="${#dates.format(hoaDon.ngayTao != null ? hoaDon.ngayTao : hoaDon.ngayThanhToan, 'dd/MM/yyyy HH:mm')}"></div>
+                                    <div class="fw-bold text-dark"
+                                        th:text="${#dates.format(hoaDon.ngayTao != null ? hoaDon.ngayTao : hoaDon.ngayThanhToan, 'dd/MM/yyyy HH:mm')}">
+                                    </div>
                                 </div>
                                 <div class="col-md-6 col-lg-4">
                                     <div class="text-muted small">Người thu viện phí:</div>
-                                    <div class="fw-bold text-dark" th:text="${hoaDon.nguoiThu != null ? hoaDon.nguoiThu : '-'}"></div>
+                                    <div class="fw-bold text-dark"
+                                        th:text="${hoaDon.nguoiThu != null ? hoaDon.nguoiThu : '-'}"></div>
                                 </div>
                                 <div class="col-md-6 col-lg-4">
                                     <div class="text-muted small">Trạng thái:</div>
                                     <div>
                                         <span class="badge rounded-pill px-3 py-1 fw-bold fs-7"
-                                              th:classappend="${hoaDon.trangThai == 'Đã thanh toán' ? 'bg-success text-white' : 'bg-warning text-dark'}"
-                                              th:text="${hoaDon.trangThai}"></span>
+                                            th:classappend="${hoaDon.trangThai == 'Đã thanh toán' ? 'bg-success text-white' : 'bg-warning text-dark'}"
+                                            th:text="${hoaDon.trangThai}"></span>
                                     </div>
                                 </div>
                             </div>
@@ -81,7 +95,8 @@
                     <!-- Invoice Detailed Items Card Table -->
                     <div class="card border-0 shadow-sm mb-4">
                         <div class="card-header bg-white py-3 border-bottom">
-                            <h6 class="mb-0 fw-bold text-muted"><i class="fas fa-receipt me-2"></i> Bảng Kê Chi Tiết Hóa Đơn Viện Phí</h6>
+                            <h6 class="mb-0 fw-bold text-muted"><i class="fas fa-receipt me-2"></i> Bảng Kê Chi Tiết Hóa
+                                Đơn Viện Phí</h6>
                         </div>
                         <div class="card-body p-0">
                             <div class="table-responsive">
@@ -101,12 +116,16 @@
                                             <td class="ps-4 text-muted fw-bold" th:text="${iter.count}">1</td>
                                             <td class="fw-bold text-dark" th:text="${ct.khoanMuc}"></td>
                                             <td class="text-center" th:text="${ct.soLuong}">1</td>
-                                            <td class="text-end" th:text="${#numbers.formatInteger(ct.donGia, 0, 'POINT') + ' đ'}"></td>
-                                            <td class="text-end fw-bold text-dark" th:text="${#numbers.formatInteger(ct.thanhTien, 0, 'POINT') + ' đ'}"></td>
+                                            <td class="text-end"
+                                                th:text="${#numbers.formatInteger(ct.donGia, 0, 'POINT') + ' đ'}"></td>
+                                            <td class="text-end fw-bold text-dark"
+                                                th:text="${#numbers.formatInteger(ct.thanhTien, 0, 'POINT') + ' đ'}">
+                                            </td>
                                             <td class="small text-muted pe-4" th:text="${ct.ghiChu}"></td>
                                         </tr>
                                         <tr th:if="${#lists.isEmpty(chiTietHoaDon)}">
-                                            <td colspan="6" class="text-center py-4 text-muted small">Không có khoản mục nào trong hóa đơn này.</td>
+                                            <td colspan="6" class="text-center py-4 text-muted small">Không có khoản mục
+                                                nào trong hóa đơn này.</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -126,39 +145,73 @@
                             <!-- Pricing rows -->
                             <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
                                 <span class="text-muted">Tổng cộng chi phí:</span>
-                                <span class="fw-bold text-dark text-end" th:text="${#numbers.formatInteger(hoaDon.tongTien, 0, 'POINT') + ' đ'}">0 đ</span>
+                                <span class="fw-bold text-dark text-end"
+                                    th:text="${#numbers.formatInteger(hoaDon.tongTien, 0, 'POINT') + ' đ'}">0 đ</span>
                             </div>
                             <div class="d-flex justify-content-between mb-3 border-bottom pb-2 text-danger">
                                 <span>Giảm trừ BHYT:</span>
-                                <span class="fw-bold text-end" th:text="${'- ' + #numbers.formatInteger(hoaDon.giamBHYT != null ? hoaDon.giamBHYT : 0, 0, 'POINT') + ' đ'}">- 0 đ</span>
+                                <span class="fw-bold text-end"
+                                    th:text="${'- ' + #numbers.formatInteger(hoaDon.giamBHYT != null ? hoaDon.giamBHYT : 0, 0, 'POINT') + ' đ'}">-
+                                    0 đ</span>
                             </div>
                             <div class="d-flex justify-content-between mb-3 border-bottom pb-2 text-danger">
                                 <span>Giảm trừ ưu đãi:</span>
-                                <span class="fw-bold text-end" th:text="${'- ' + #numbers.formatInteger(hoaDon.giamUuDai != null ? hoaDon.giamUuDai : 0, 0, 'POINT') + ' đ'}">- 0 đ</span>
+                                <span class="fw-bold text-end"
+                                    th:text="${'- ' + #numbers.formatInteger(hoaDon.giamUuDai != null ? hoaDon.giamUuDai : 0, 0, 'POINT') + ' đ'}">-
+                                    0 đ</span>
                             </div>
                             <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
                                 <span class="text-muted fw-bold">Tổng cần thanh toán:</span>
-                                <span class="fw-bold text-primary text-end fs-5" th:text="${#numbers.formatInteger(hoaDon.tongCanThanhToan, 0, 'POINT') + ' đ'}">0 đ</span>
+                                <span class="fw-bold text-primary text-end fs-5"
+                                    th:text="${#numbers.formatInteger(hoaDon.tongCanThanhToan, 0, 'POINT') + ' đ'}">0
+                                    đ</span>
                             </div>
                             <div class="d-flex justify-content-between mb-3">
                                 <span class="text-success fw-bold">Số tiền đã trả:</span>
-                                <span class="fw-bold text-success text-end fs-5" th:text="${#numbers.formatInteger(hoaDon.soTienDaThanhToan, 0, 'POINT') + ' đ'}">0 đ</span>
+                                <span class="fw-bold text-success text-end fs-5"
+                                    th:text="${#numbers.formatInteger(hoaDon.soTienDaThanhToan, 0, 'POINT') + ' đ'}">0
+                                    đ</span>
                             </div>
 
                             <!-- Payment details if paid -->
-                            <div th:if="${hoaDon.trangThai == 'Đã thanh toán'}" class="mt-4 p-3 bg-success-subtle rounded border border-success text-success small">
-                                <h6 class="fw-bold mb-2"><i class="fas fa-check-circle me-1"></i> Đã Thanh Toán Viện Phí</h6>
-                                <div class="mb-1"><strong>Phương thức:</strong> <span th:text="${hoaDon.phuongThucThanhToan}">Tiền mặt</span></div>
-                                <div class="mb-1"><strong>Ngày thanh toán:</strong> <span th:text="${#dates.format(hoaDon.ngayThanhToan, 'dd/MM/yyyy HH:mm')}">N/A</span></div>
-                                <div th:if="${hoaDon.ghiChu != null && !hoaDon.ghiChu.isEmpty()}"><strong>Ghi chú:</strong> <span th:text="${hoaDon.ghiChu}">-</span></div>
+                            <div th:if="${hoaDon.trangThai == 'Đã thanh toán'}"
+                                class="mt-4 p-3 bg-success-subtle rounded border border-success text-success small">
+                                <h6 class="fw-bold mb-2"><i class="fas fa-check-circle me-1"></i> Đã Thanh Toán Viện Phí
+                                </h6>
+                                <div class="mb-1"><strong>Phương thức:</strong> <span
+                                        th:text="${hoaDon.phuongThucThanhToan}">Tiền mặt</span></div>
+                                <div class="mb-1"><strong>Ngày thanh toán:</strong> <span
+                                        th:text="${#dates.format(hoaDon.ngayThanhToan, 'dd/MM/yyyy HH:mm')}">N/A</span>
+                                </div>
+                                <div th:if="${hoaDon.ghiChu != null && !hoaDon.ghiChu.isEmpty()}"><strong>Ghi
+                                        chú:</strong> <span th:text="${hoaDon.ghiChu}">-</span></div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Promotion Form (only if unpaid) -->
+                    <div th:if="${hoaDon.trangThai == 'Chờ thanh toán'}" class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-warning text-dark py-3">
+                            <h5 class="card-title mb-0 h6"><i class="fas fa-tag me-2"></i> Áp dụng mã khuyến mãi hỗ trợ</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form th:action="@{/admin/hoa-don/ap-dung-khuyen-mai/{id}(id=${hoaDon.maHoaDon})}" method="post">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold text-muted small">Nhập Mã Khuyến Mãi</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control border shadow-sm" name="maCode" placeholder="Ví dụ: KM10K" required>
+                                        <button type="submit" class="btn btn-warning fw-bold">Áp dụng</button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
 
                     <!-- Interactive Checkout Action Form (only if unpaid) -->
                     <div th:if="${hoaDon.trangThai == 'Chờ thanh toán'}" class="card border-0 shadow-sm">
                         <div class="card-header bg-success text-white py-3">
-                            <h5 class="card-title mb-0 h6"><i class="fas fa-credit-card me-2"></i> Xác Nhận Thanh Toán</h5>
+                            <h5 class="card-title mb-0 h6"><i class="fas fa-credit-card me-2"></i> Xác Nhận Thanh Toán
+                            </h5>
                         </div>
                         <div class="card-body p-4">
                             <form th:action="@{/admin/hoa-don/thanh-toan/{id}(id=${hoaDon.maHoaDon})}" method="post">
@@ -171,8 +224,10 @@
                                     </select>
                                 </div>
                                 <div class="mb-4">
-                                    <label class="form-label fw-bold text-muted small">Ghi Chú Giao Dịch (Tùy chọn)</label>
-                                    <textarea class="form-control border shadow-sm" name="ghiChu" rows="2" placeholder="Nhập ghi chú thanh toán, mã tham chiếu ngân hàng..."></textarea>
+                                    <label class="form-label fw-bold text-muted small">Ghi Chú Giao Dịch (Tùy
+                                        chọn)</label>
+                                    <textarea class="form-control border shadow-sm" name="ghiChu" rows="2"
+                                        placeholder="Nhập ghi chú thanh toán, mã tham chiếu ngân hàng..."></textarea>
                                 </div>
                                 <div class="d-grid gap-2">
                                     <button type="submit" class="btn btn-success py-2 shadow-sm fw-bold">
@@ -187,4 +242,5 @@
         </div>
     </section>
 </body>
+
 </html>

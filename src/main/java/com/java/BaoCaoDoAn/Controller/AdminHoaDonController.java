@@ -43,7 +43,7 @@ public class AdminHoaDonController {
         }
         HoaDon hd = hdOpt.get();
         List<ChiTietHoaDon> details = chiTietHoaDonService.findByMaHoaDon(maHoaDon);
-        
+
         model.addAttribute("hoaDon", hd);
         model.addAttribute("chiTietHoaDon", details);
         model.addAttribute("activeMenu", "hoa-don");
@@ -57,7 +57,7 @@ public class AdminHoaDonController {
             ra.addFlashAttribute("errorMessage", "Không tìm thấy hồ sơ nội trú.");
             return "redirect:/admin/noi-tru";
         }
-        
+
         NhapVienNoiTru nt = ntOpt.get();
         if (!"Đã xuất viện".equals(nt.getTrangThai())) {
             ra.addFlashAttribute("errorMessage", "Bệnh nhân cần làm thủ tục xuất viện trước khi thanh toán.");
@@ -83,9 +83,9 @@ public class AdminHoaDonController {
 
     @PostMapping("/thanh-toan/{maHoaDon}")
     public String thanhToan(@PathVariable("maHoaDon") String maHoaDon,
-                            @RequestParam(value = "phuongThucThanhToan", defaultValue = "Tiền mặt") String phuongThucThanhToan,
-                            @RequestParam(value = "ghiChu", required = false) String ghiChu,
-                            RedirectAttributes ra) {
+            @RequestParam(value = "phuongThucThanhToan", defaultValue = "Tiền mặt") String phuongThucThanhToan,
+            @RequestParam(value = "ghiChu", required = false) String ghiChu,
+            RedirectAttributes ra) {
         Optional<HoaDon> hdOpt = hoaDonService.findById(maHoaDon);
         if (!hdOpt.isPresent()) {
             ra.addFlashAttribute("errorMessage", "Không tìm thấy hóa đơn.");
@@ -108,12 +108,25 @@ public class AdminHoaDonController {
                 hd.setGhiChu(ghiChu);
             }
             hoaDonService.save(hd);
-            
+
             ra.addFlashAttribute("successMessage", "Xác nhận thanh toán hóa đơn " + maHoaDon + " thành công.");
         } catch (Exception e) {
             ra.addFlashAttribute("errorMessage", "Lỗi khi thanh toán: " + e.getMessage());
         }
 
+        return "redirect:/admin/hoa-don/chi-tiet/" + maHoaDon;
+    }
+
+    @PostMapping("/ap-dung-khuyen-mai/{maHoaDon}")
+    public String apDungKhuyenMai(@PathVariable("maHoaDon") String maHoaDon,
+                                   @RequestParam("maCode") String maCode,
+                                   RedirectAttributes ra) {
+        try {
+            hoaDonService.apDungKhuyenMai(maHoaDon, maCode);
+            ra.addFlashAttribute("successMessage", "Áp dụng mã khuyến mãi '" + maCode.trim().toUpperCase() + "' thành công!");
+        } catch (Exception e) {
+            ra.addFlashAttribute("errorMessage", "Không thể áp dụng khuyến mãi: " + e.getMessage());
+        }
         return "redirect:/admin/hoa-don/chi-tiet/" + maHoaDon;
     }
 

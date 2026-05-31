@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      th:replace="~{fragments/admin-layout :: layout('Quản Lý Dịch Vụ / Thuốc / Vật Tư', 'vat-tu', ~{::section})}">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <section>
+        <style>
+            .stats-container {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+                margin-bottom: 24px;
+            }
+            .stat-card {
+                background: white;
+                padding: 20px;
+                border-radius: 8px;
+                border: 1px solid var(--border-color);
+                display: flex;
+                align-items: center;
+                gap: 16px;
+            }
+            .stat-icon {
+                width: 48px;
+                height: 48px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+            }
+            .stat-info h3 { font-size: 24px; font-weight: 700; color: var(--text-main); }
+            .stat-info p { font-size: 14px; color: var(--text-light); }
+            
+            .inventory-container {
+                display: grid;
+                grid-template-columns: 1fr 2fr;
+                gap: 20px;
+            }
+            .panel {
+                background: white;
+                border-radius: 8px;
+                border: 1px solid var(--border-color);
+                display: flex;
+                flex-direction: column;
+            }
+            .panel-header {
+                padding: 16px 20px;
+                border-bottom: 1px solid var(--border-color);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .panel-header h2 { font-size: 16px; font-weight: 600; }
+            .panel-content { padding: 20px; overflow-x: auto; }
+            
+            table { width: 100%; border-collapse: collapse; font-size: 14px; }
+            th { text-align: left; padding: 12px; background: #F8FAFC; color: var(--text-light); font-weight: 600; border-bottom: 1px solid var(--border-color); }
+            td { padding: 12px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+            
+            .badge { 
+                padding: 4px 12px; 
+                border-radius: 4px; 
+                font-size: 12px; 
+                font-weight: 500;
+                white-space: nowrap;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 85px;
+            }
+            .badge-warning { background: #FEF3C7; color: #92400E; }
+            .badge-success { background: #DCFCE7; color: #166534; }
+            
+            .btn-sm { padding: 6px 10px; border-radius: 4px; font-size: 12px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: 0.2s; }
+            .btn-add { background: var(--accent-blue); color: white; }
+            .btn-edit { background: #F1F5F9; color: var(--text-main); }
+            .btn-delete { background: #FEF2F2; color: #EF4444; }
+            
+            .alert-inventory { color: #EF4444; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+        </style>
+
+        <!-- Thống kê nhanh -->
+        <div class="stats-container">
+            <div th:if="${message}" style="grid-column: span 3; padding: 12px; background: #DCFCE7; color: #166534; border-radius: 6px; margin-bottom: 10px; font-size: 14px;">
+                ✅ <span th:text="${message}">Thông báo thành công</span>
+            </div>
+            <div th:if="${error}" style="grid-column: span 3; padding: 12px; background: #FEF2F2; color: #EF4444; border-radius: 6px; margin-bottom: 10px; font-size: 14px;">
+                ❌ <span th:text="${error}">Thông báo lỗi</span>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #DBEAFE; color: #2563EB;">📋</div>
+                <div class="stat-info">
+                    <h3 th:text="${soDichVuDangDung}">0</h3>
+                    <p>Xét nghiệm đang dùng</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #DCFCE7; color: #166534;">📦</div>
+                <div class="stat-info">
+                    <h3 th:text="${soMatHang}">0</h3>
+                    <p>Mặt hàng thuốc/vật tư</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #FEF2F2; color: #EF4444;">⚠️</div>
+                <div class="stat-info">
+                    <h3 th:text="${soSapHetHang}">0</h3>
+                    <p>Sắp hết hàng</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="inventory-container">
+            <!-- Panel Xét Nghiệm -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>🧪 Danh Sách Xét Nghiệm</h2>
+                    <a th:href="@{/admin/xet-nghiem/them}" class="btn-sm btn-add">+ Thêm XN</a>
+                </div>
+                <div class="panel-content">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã XN</th>
+                                <th>Tên xét nghiệm</th>
+                                <th>Chuyên khoa</th>
+                                <th>Giá</th>
+                                <th>Trạng thái</th>
+                                <th style="width: 50px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="dv : ${danhSachDichVu}">
+                                <td th:text="${dv.maDichVu}">DV001</td>
+                                <td th:text="${dv.tenDichVu}" style="font-weight: 500;">Tên DV</td>
+                                <td th:text="${dv.chuyenKhoa != null ? dv.chuyenKhoa.tenChuyenKhoa : 'Chưa rõ'}">Khoa</td>
+                                <td th:text="${#numbers.formatDecimal(dv.giaDichVu, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
+                                <td>
+                                    <span class="badge badge-success" th:text="${dv.trangThai}">Đang dùng</span>
+                                </td>
+                                <td>
+                                    <a th:href="@{/admin/xet-nghiem/sua/{id}(id=${dv.maDichVu})}" class="btn-sm btn-edit">Sửa</a>
+                                </td>
+                            </tr>
+                            <tr th:if="${danhSachDichVu.empty}">
+                                <td colspan="6" style="text-align: center; color: var(--text-light); padding: 20px;">Trống</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Panel Kho Thuốc & Vật Tư -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>💊 Kho Thuốc và Vật Dụng Y Tế</h2>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <form th:action="@{/admin/vat-tu}" method="get" style="display: flex; gap: 5px;">
+                            <input type="text" name="keywordKho" th:value="${keywordKho}" placeholder="Tìm thuốc/vật tư..." 
+                                   style="padding: 5px 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 13px;">
+                            <input type="hidden" name="keywordDichVu" th:value="${keywordDichVu}">
+                            <button type="submit" class="btn-sm btn-edit">🔍</button>
+                        </form>
+                        <a th:href="@{/admin/vat-tu/thuoc/them}" class="btn-sm btn-add">+ Thêm thuốc</a>
+                        <a th:href="@{/admin/vat-tu/vattu/them}" class="btn-sm btn-add">+ Thêm vật tư</a>
+                    </div>
+                </div>
+                <div class="panel-content">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tên mặt hàng</th>
+                                <th>Loại</th>
+                                <th>ĐVT</th>
+                                <th>Giá bán</th>
+                                <th>Tồn kho</th>
+                                <th>Trạng thái</th>
+                                <th style="width: 80px;">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Thuốc -->
+                            <tr th:each="t : ${danhSachThuoc}">
+                                <td>
+                                    <div style="font-weight: 600;" th:text="${t.tenThuoc}">Tên thuốc</div>
+                                    <small style="color: var(--text-light);" th:text="${t.hoatChat}">Hoạt chất</small>
+                                </td>
+                                <td><span class="badge" style="background: #E0E7FF; color: #3730A3;">Thuốc</span></td>
+                                <td th:text="${t.donViTinh}">Viên</td>
+                                <td th:text="${#numbers.formatDecimal(t.giaBan, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
+                                <td>
+                                    <span th:text="${t.tonKho}" th:style="${t.tonKho <= t.nguongCanhBao ? 'color: #EF4444; font-weight: bold;' : ''}">0</span>
+                                </td>
+                                <td>
+                                    <span th:class="${t.tonKho > 0 ? 'badge badge-success' : 'badge badge-warning'}"
+                                          th:text="${t.trangThai}">Còn hàng</span>
+                                </td>
+                                <td>
+                                    <div style="display: flex; gap: 6px;">
+                                        <a th:href="@{/admin/vat-tu/thuoc/sua/{id}(id=${t.maThuoc})}" class="btn-sm btn-edit" title="Sửa">✏️</a>
+                                        <a th:href="@{/admin/vat-tu/thuoc/xoa/{id}(id=${t.maThuoc})}" 
+                                           class="btn-sm btn-delete" 
+                                           onclick="return confirm('Xác nhận xóa thuốc này?')" title="Xóa">🗑️</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- Vật tư -->
+                            <tr th:each="v : ${danhSachVatTu}">
+                                <td>
+                                    <div style="font-weight: 600;" th:text="${v.tenVatTu}">Tên vật tư</div>
+                                    <small style="color: var(--text-light);">Vật tư y tế</small>
+                                </td>
+                                <td><span class="badge" style="background: #F3E8FF; color: #6B21A8;">Vật tư</span></td>
+                                <td th:text="${v.donViTinh}">Cái</td>
+                                <td th:text="${#numbers.formatDecimal(v.giaBan, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
+                                <td>
+                                    <span th:text="${v.tonKho}" th:style="${v.tonKho <= v.nguongCanhBao ? 'color: #EF4444; font-weight: bold;' : ''}">0</span>
+                                </td>
+                                <td>
+                                    <span th:class="${v.tonKho > 0 ? 'badge badge-success' : 'badge badge-warning'}"
+                                          th:text="${v.trangThai}">Còn hàng</span>
+                                </td>
+                                <td>
+                                    <div style="display: flex; gap: 6px;">
+                                        <a th:href="@{/admin/vat-tu/vattu/sua/{id}(id=${v.maVatTu})}" class="btn-sm btn-edit" title="Sửa">✏️</a>
+                                        <a th:href="@{/admin/vat-tu/vattu/xoa/{id}(id=${v.maVatTu})}" 
+                                           class="btn-sm btn-delete" 
+                                           onclick="return confirm('Xác nhận xóa vật tư này?')" title="Xóa">🗑️</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(danhSachThuoc) && #lists.isEmpty(danhSachVatTu)}">
+                                <td colspan="7" style="text-align: center; color: var(--text-light); padding: 40px 0;">
+                                    Chưa có dữ liệu thuốc và vật tư.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

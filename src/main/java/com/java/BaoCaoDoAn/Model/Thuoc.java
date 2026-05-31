@@ -2,9 +2,8 @@ package com.java.BaoCaoDoAn.Model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.math.BigDecimal;
 import java.util.Date;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "Thuoc")
@@ -31,6 +30,12 @@ public class Thuoc {
 
     @Column(name = "HamLuong", length = 50)
     private String hamLuong;
+
+    @Column(name = "NhaSanXuat", length = 200)
+    private String nhaSanXuat;
+
+    @Column(name = "GiaNhap")
+    private BigDecimal giaNhap;
 
     @Column(name = "GiaBan")
     private BigDecimal giaBan;

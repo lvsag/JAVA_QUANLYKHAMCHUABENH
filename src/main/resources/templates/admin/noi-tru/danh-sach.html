@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Danh Sách Bệnh Nhân Nội Trú', 'noi-tru', ~{::section})}">
+<head>
+    <title>Danh Sách Nội Trú</title>
+</head>
+<body>
+    <section>
+        <!-- Import Bootstrap and FontAwesome for premium styling inside the main content -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+
+        <div class="container-fluid py-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="h4 mb-0 text-primary fw-bold">📋 Danh Sách Bệnh Nhân Nội Trú</h2>
+                <a th:href="@{/admin/benh-nhan}" class="btn btn-primary btn-sm px-3 shadow-sm">
+                    <i class="fas fa-plus-circle me-1"></i> Nhập Viện Mới
+                </a>
+            </div>
+
+            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i> <span th:text="${successMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i> <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- Bảng danh sách -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h6 class="mb-0 fw-bold text-muted">Hồ sơ đang điều trị</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light text-muted small text-uppercase">
+                                <tr>
+                                    <th class="ps-4">Mã NT</th>
+                                    <th>Bệnh Nhân</th>
+                                    <th>Phòng/Giường</th>
+                                    <th>Khoa/Bác Sĩ</th>
+                                    <th>Ngày Nhập</th>
+                                    <th>Trạng Thái</th>
+                                    <th class="text-end pe-4">Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="nt : ${danhSachNoiTru}">
+                                    <td class="ps-4 fw-bold text-primary" th:text="${nt.maNoiTru}"></td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-light rounded-circle p-2 me-3">
+                                                <i class="fas fa-user text-primary"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold" th:text="${nt.benhNhan.hoTen}"></div>
+                                                <div class="small text-muted" th:text="${nt.benhNhan.maBenhNhan}"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-dark" th:text="${'Phòng: ' + nt.phongBenh.maPhong}"></div>
+                                        <div class="small text-muted" th:text="${'Giường: ' + nt.giuongBenh.soGiuong}"></div>
+                                    </td>
+                                    <td>
+                                        <div th:text="${nt.chuyenKhoa != null ? nt.chuyenKhoa.tenChuyenKhoa : '-'}"></div>
+                                        <div class="small text-muted" th:text="${nt.bacSiDieuTri != null ? nt.bacSiDieuTri.hoTen : 'Chưa phân công'}"></div>
+                                    </td>
+                                    <td>
+                                        <div th:text="${#dates.format(nt.ngayNhapVien, 'dd/MM/yyyy')}"></div>
+                                        <div class="small text-muted" th:text="${'Dự kiến: ' + (nt.duKienDieuTri != null ? nt.duKienDieuTri : 'N/A')}"></div>
+                                    </td>
+                                    <td>
+                                        <span class="badge rounded-pill px-3 py-2" 
+                                              th:classappend="${nt.trangThai == 'Đang điều trị' ? 'bg-success' : 'bg-secondary'}"
+                                              th:text="${nt.trangThai}"></span>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="#" class="btn btn-outline-primary" title="Xem bệnh án">
+                                                <i class="fas fa-file-alt"></i>
+                                            </a>
+                                            <a href="#" class="btn btn-outline-info" title="Đơn thuốc">
+                                                <i class="fas fa-pills"></i>
+                                            </a>
+                                            <a th:if="${nt.trangThai == 'Đang điều trị'}" th:href="@{/admin/noi-tru/xuat-vien/{id}(id=${nt.maNoiTru})}" class="btn btn-outline-danger" title="Lập phiếu xuất viện">
+                                                <i class="fas fa-sign-out-alt"></i> Xuất viện
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(danhSachNoiTru)}">
+                                    <td colspan="7" class="text-center py-5">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/4076/4076432.png" width="80" class="mb-3 opacity-25">
+                                        <p class="text-muted">Chưa có bệnh nhân nào nhập viện nội trú</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      th:replace="~{fragments/admin-layout :: layout('Thông Tin Dịch Vụ', 'vat-tu', ~{::section})}">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <section>
+        <style>
+            .form-panel {
+                background: white;
+                border-radius: 8px;
+                border: 1px solid var(--border-color);
+                max-width: 800px;
+                margin: 0 auto;
+            }
+            .form-header {
+                padding: 16px 24px;
+                border-bottom: 1px solid var(--border-color);
+            }
+            .form-header h2 { font-size: 18px; font-weight: 600; color: var(--text-main); }
+            .form-content { padding: 24px; }
+            
+            .form-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+            .form-group { margin-bottom: 20px; }
+            .form-group.full-width { grid-column: span 2; }
+            
+            label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: var(--text-main); }
+            input, select, textarea {
+                width: 100%;
+                padding: 10px 12px;
+                border: 1px solid var(--border-color);
+                border-radius: 6px;
+                font-size: 14px;
+                outline: none;
+                transition: 0.2s;
+            }
+            input:focus, select:focus, textarea:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+            
+            .form-actions {
+                padding: 16px 24px;
+                background: #F8FAFC;
+                border-top: 1px solid var(--border-color);
+                display: flex;
+                justify-content: flex-end;
+                gap: 12px;
+                border-radius: 0 0 8px 8px;
+            }
+            .btn { padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; text-decoration: none; border: none; }
+            .btn-secondary { background: #E2E8F0; color: var(--text-main); }
+            .btn-primary { background: var(--accent-blue); color: white; }
+        </style>
+
+        <div class="form-panel">
+            <div th:if="${error}" style="padding: 12px 24px; background: #FEF2F2; color: #EF4444; border-bottom: 1px solid var(--border-color); font-size: 14px;">
+                ❌ <span th:text="${error}">Lỗi</span>
+            </div>
+            <div class="form-header">
+                <h2 th:text="${dichVu.maDichVu == null ? 'Thêm Dịch Vụ Mới' : 'Cập Nhật Dịch Vụ'}">Thông Tin Dịch Vụ</h2>
+            </div>
+            <form th:action="@{/admin/vat-tu/dich-vu/luu}" th:object="${dichVu}" method="post">
+                <input type="hidden" th:field="*{maDichVu}" />
+                
+                <div class="form-content">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label for="tenDichVu">Tên dịch vụ <span style="color: red;">*</span></label>
+                            <input type="text" id="tenDichVu" th:field="*{tenDichVu}" required placeholder="Ví dụ: Khám tổng quát, Xét nghiệm máu" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="maChuyenKhoa">Chuyên khoa <span style="color: red;">*</span></label>
+                            <select id="maChuyenKhoa" name="maChuyenKhoa" required>
+                                <option value="">-- Chọn chuyên khoa --</option>
+                                <option th:each="ck : ${chuyenKhoas}" 
+                                        th:value="${ck.maChuyenKhoa}" 
+                                        th:text="${ck.tenChuyenKhoa}"
+                                        th:selected="${dichVu.chuyenKhoa != null && ck.maChuyenKhoa == dichVu.chuyenKhoa.maChuyenKhoa}"></option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="loaiDichVu">Loại dịch vụ</label>
+                            <input type="text" id="loaiDichVu" th:field="*{loaiDichVu}" placeholder="VD: Khám bệnh, Chẩn đoán hình ảnh" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="giaDichVu">Giá dịch vụ (VNĐ) <span style="color: red;">*</span></label>
+                            <input type="number" id="giaDichVu" th:field="*{giaDichVu}" required min="0" step="1000" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="trangThai">Trạng thái</label>
+                            <select id="trangThai" th:field="*{trangThai}">
+                                <option value="Đang dùng">Đang dùng</option>
+                                <option value="Ngừng cung cấp">Ngừng cung cấp</option>
+                                <option value="Ngừng dùng">Ngừng dùng</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="moTa">Mô tả dịch vụ</label>
+                            <textarea id="moTa" th:field="*{moTa}" rows="4" placeholder="Nhập mô tả chi tiết về dịch vụ..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <a th:href="@{/admin/vat-tu}" class="btn btn-secondary">Hủy bỏ</a>
+                    <button type="submit" class="btn btn-primary">Lưu thông tin</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</body>
+</html>

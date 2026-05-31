@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface ThuocRepository extends JpaRepository<Thuoc, Integer> {
     List<Thuoc> findByTrangThaiNotOrderByTenThuocAsc(String trangThai);
+    List<Thuoc> findByTenThuocContainingIgnoreCase(String keyword);
 }

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -48,7 +48,15 @@
 <body>
 
 <header>
-    <div th:replace="~{fragments/public-header :: publicHeader('dat-lich')}"></div>
+    <nav class="navbar">
+        <div class="logo"><a href="/home">🏥 ĐA KHOA CENTRAL</a></div>
+        <ul class="nav-links">
+            <li><a href="/home">Trang chủ</a></li>
+            <li><a href="/bac-si">Đội ngũ bác sĩ</a></li>
+            <li><a th:href="@{/dat-lich/tao-moi}">Đặt lịch ngay</a></li>
+            <li><a href="/lich-su-dat-lich">Lịch sử khám</a></li>
+        </ul>
+    </nav>
 </header>
 
 <main class="main-container">

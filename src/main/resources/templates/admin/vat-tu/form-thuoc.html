@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      th:replace="~{fragments/admin-layout :: layout('Thông Tin Thuốc', 'vat-tu', ~{::section})}">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <section>
+        <style>
+            .form-panel {
+                background: white;
+                border-radius: 8px;
+                border: 1px solid var(--border-color);
+                max-width: 800px;
+                margin: 0 auto;
+            }
+            .form-header {
+                padding: 16px 24px;
+                border-bottom: 1px solid var(--border-color);
+            }
+            .form-header h2 { font-size: 18px; font-weight: 600; color: var(--text-main); }
+            .form-content { padding: 24px; }
+            
+            .form-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+            .form-group { margin-bottom: 20px; }
+            .form-group.full-width { grid-column: span 2; }
+            
+            label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: var(--text-main); }
+            input, select, textarea {
+                width: 100%;
+                padding: 10px 12px;
+                border: 1px solid var(--border-color);
+                border-radius: 6px;
+                font-size: 14px;
+                outline: none;
+                transition: 0.2s;
+            }
+            input:focus, select:focus, textarea:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+            
+            .form-actions {
+                padding: 16px 24px;
+                background: #F8FAFC;
+                border-top: 1px solid var(--border-color);
+                display: flex;
+                justify-content: flex-end;
+                gap: 12px;
+                border-radius: 0 0 8px 8px;
+            }
+            .btn { padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; text-decoration: none; border: none; }
+            .btn-secondary { background: #E2E8F0; color: var(--text-main); }
+            .btn-primary { background: var(--accent-blue); color: white; }
+        </style>
+
+        <div class="form-panel">
+            <div th:if="${error}" style="padding: 12px 24px; background: #FEF2F2; color: #EF4444; border-bottom: 1px solid var(--border-color); font-size: 14px;">
+                ❌ <span th:text="${error}">Lỗi</span>
+            </div>
+            <div class="form-header">
+                <h2 th:text="${thuoc.maThuoc == null ? 'Thêm Thuốc Mới' : 'Cập Nhật Thông Tin Thuốc'}">Thông Tin Thuốc</h2>
+            </div>
+            <form th:action="@{/admin/vat-tu/thuoc/luu}" th:object="${thuoc}" method="post">
+                <input type="hidden" th:field="*{maThuoc}" />
+                
+                <div class="form-content">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label for="tenThuoc">Tên thuốc <span style="color: red;">*</span></label>
+                            <input type="text" id="tenThuoc" th:field="*{tenThuoc}" required placeholder="Ví dụ: Paracetamol 500mg" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="hoatChat">Hoạt chất</label>
+                            <input type="text" id="hoatChat" th:field="*{hoatChat}" placeholder="Ví dụ: Paracetamol" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="dangBaoChe">Dạng bào chế</label>
+                            <select id="dangBaoChe" th:field="*{dangBaoChe}">
+                                <option value="Viên nén">Viên nén</option>
+                                <option value="Viên nang">Viên nang</option>
+                                <option value="Siro">Siro</option>
+                                <option value="Thuốc tiêm">Thuốc tiêm</option>
+                                <option value="Bột pha hỗn dịch">Bột pha hỗn dịch</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="donViTinh">Đơn vị tính</label>
+                            <input type="text" id="donViTinh" th:field="*{donViTinh}" placeholder="Ví dụ: Viên, Chai, Ống" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="hamLuong">Hàm lượng</label>
+                            <input type="text" id="hamLuong" th:field="*{hamLuong}" placeholder="Ví dụ: 500mg, 10ml" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="giaNhap">Giá nhập (VNĐ)</label>
+                            <input type="number" id="giaNhap" th:field="*{giaNhap}" step="1000" min="0" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="giaBan">Giá bán (VNĐ)</label>
+                            <input type="number" id="giaBan" th:field="*{giaBan}" step="1000" min="0" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="tonKho">Số lượng tồn kho</label>
+                            <input type="number" id="tonKho" th:field="*{tonKho}" min="0" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="nguongCanhBao">Ngưỡng cảnh báo hết hàng</label>
+                            <input type="number" id="nguongCanhBao" th:field="*{nguongCanhBao}" min="0" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="nhaSanXuat">Nhà sản xuất</label>
+                            <input type="text" id="nhaSanXuat" th:field="*{nhaSanXuat}" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="trangThai">Trạng thái</label>
+                            <select id="trangThai" th:field="*{trangThai}">
+                                <option value="Còn hàng">Còn hàng</option>
+                                <option value="Hết hàng">Hết hàng</option>
+                                <option value="Ngừng kinh doanh">Ngừng kinh doanh</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <a th:href="@{/admin/vat-tu}" class="btn btn-secondary">Hủy bỏ</a>
+                    <button type="submit" class="btn btn-primary">Lưu thông tin</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</body>
+</html>

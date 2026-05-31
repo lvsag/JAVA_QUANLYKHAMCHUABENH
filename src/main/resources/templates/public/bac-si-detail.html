@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -471,7 +471,38 @@
 
 <!-- TOP BANNER -->
 <div class="top-banner">MAN HINH 04 -- USER: CHI TIET BAC SI &amp; DAT LICH</div>
-    <div th:replace="~{fragments/public-header :: publicHeader('bac-si')}"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-brand">
+    <span class="icon">🏥</span>
+    <span>Phong Kham Da Khoa</span>
+  </div>
+  <div class="navbar-nav">
+    <a href="/home" class="nav-link">Trang Chu</a>
+    <a href="/danh-sach-dich-vu" class="nav-link">Dich Vu</a>
+    <a href="/bac-si" class="nav-link active">Đội ngũ Bác Sĩ</a>
+    <a th:href="@{/dat-lich/tao-moi}" class="nav-link">Đặt Lịch Hẹn</a>
+    <a href="/home" class="nav-link">Lien He</a>
+
+  </div>
+  <div class="navbar-search">
+    <div class="search-box">
+      <span>🔍</span>
+      <input type="text" placeholder="Tim kiem bac si, dich vu..."/>
+    </div>
+    <button class="notif-btn" style="position:relative;">
+      🔔
+      <span class="notif-badge">!</span>
+    </button>
+    <div class="navbar-search" th:if="${session.loggedInUser != null}">
+      <div class="user-menu">
+        <div class="avatar">👤</div>
+        <span class="user-name" th:text="${session.loggedInUser.hoTen}"></span>
+      </div>
+    </div>
+  </div>
+</nav>
 
 <!-- BREADCRUMB -->
 <div class="breadcrumb">

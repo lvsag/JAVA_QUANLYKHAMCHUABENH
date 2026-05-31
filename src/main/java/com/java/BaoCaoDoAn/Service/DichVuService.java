@@ -5,7 +5,9 @@ import com.java.BaoCaoDoAn.Repository.DichVuRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class DichVuService {
@@ -15,6 +17,38 @@ public class DichVuService {
 
     public List<DichVu> getAllDichVu() {
         return dichVuRepository.findAll();
+    }
+
+    public List<DichVu> getAllXetNghiem() {
+        return dichVuRepository.findAll().stream()
+                .filter(this::isXetNghiem)
+                .sorted(Comparator.comparing(DichVu::getMaDichVu, Comparator.nullsLast(String::compareToIgnoreCase)))
+                .toList();
+    }
+
+    public List<DichVu> searchXetNghiem(String keyword, String trangThai) {
+        String normalizedKeyword = normalize(keyword);
+        String normalizedTrangThai = normalize(trangThai);
+
+        return getAllXetNghiem().stream()
+                .filter(dv -> normalizedKeyword.isBlank()
+                        || normalize(dv.getMaDichVu()).contains(normalizedKeyword)
+                        || normalize(dv.getTenDichVu()).contains(normalizedKeyword)
+                        || normalize(dv.getPhongThucHien()).contains(normalizedKeyword))
+                .filter(dv -> normalizedTrangThai.isBlank()
+                        || normalize(dv.getTrangThai()).equals(normalizedTrangThai))
+                .toList();
+    }
+
+    private boolean isXetNghiem(DichVu dichVu) {
+        String loai = normalize(dichVu.getLoaiDichVu());
+        String ten = normalize(dichVu.getTenDichVu());
+        return loai.contains("xét nghiệm") || loai.contains("xet nghiem")
+                || ten.contains("xét nghiệm") || ten.contains("xet nghiem");
+    }
+
+    private String normalize(String value) {
+        return value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
     }
 
     // Added for service catalog screens: reusable search without hard-coding data in HTML.
@@ -69,5 +103,12 @@ public class DichVuService {
 
     public void deleteDichVu(String maDichVu) {
         dichVuRepository.deleteById(maDichVu);
+    }
+
+    public List<DichVu> searchDichVu(String keyword) {
+        if (keyword == null || keyword.isEmpty()) {
+            return getAllDichVu();
+        }
+        return dichVuRepository.findByTenDichVuContainingIgnoreCaseOrMaDichVuContainingIgnoreCase(keyword, keyword);
     }
 }

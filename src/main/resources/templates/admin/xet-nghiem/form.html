@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Thêm/Sửa Xét Nghiệm', 'xet-nghiem', ~{::section})}">
+<head>
+    <title>Thêm/Sửa Xét Nghiệm</title>
+</head>
+<body>
+<section style="padding: 20px; font-family: Inter;">
+    <div style="margin-bottom: 20px;">
+        <h1 style="color: #1565C0; font-size: 24px; font-weight: bold; margin: 0;" th:text="${dichVu.maDichVu == null ? 'Thêm Xét Nghiệm Mới' : 'Cập Nhật Xét Nghiệm'}">Form Xét Nghiệm</h1>
+        <p style="color: #78909C; font-size: 14px; margin-top: 5px;">Quản lý tên xét nghiệm, giá, phòng thực hiện và trạng thái cung cấp.</p>
+    </div>
+
+    <div style="background: white; border: 1px solid #E3EDFF; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); max-width: 860px;">
+        <form th:action="${dichVu.maDichVu == null ? '/admin/xet-nghiem/them' : '/admin/xet-nghiem/sua/' + dichVu.maDichVu}" th:object="${dichVu}" method="post" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <input type="hidden" th:field="*{loaiDichVu}">
+
+            <div style="grid-column: 1 / -1;">
+                <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Tên xét nghiệm <span style="color:red">*</span></label>
+                <input type="text" th:field="*{tenDichVu}" required style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Chuyên khoa</label>
+                <select name="chuyenKhoa.maChuyenKhoa" style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                    <option value="">-- Chọn chuyên khoa --</option>
+                    <option th:each="ck : ${chuyenKhoas}" th:value="${ck.maChuyenKhoa}" th:text="${ck.tenChuyenKhoa}"
+                            th:selected="${dichVu.chuyenKhoa != null && dichVu.chuyenKhoa.maChuyenKhoa == ck.maChuyenKhoa}"></option>
+                </select>
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Phòng thực hiện</label>
+                <input type="text" th:field="*{phongThucHien}" placeholder="VD: P.201" style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Giá xét nghiệm (VNĐ) <span style="color:red">*</span></label>
+                <input type="number" th:field="*{giaDichVu}" min="0" step="1000" required style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Giá giảm (VNĐ)</label>
+                <input type="number" th:field="*{giaGiam}" min="0" step="1000" style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Thời gian thực hiện (phút)</label>
+                <input type="number" th:field="*{thoiGianThucHien}" min="0" style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Trạng thái</label>
+                <select th:field="*{trangThai}" required style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+                    <option value="Đang dùng">Đang dùng</option>
+                    <option value="Ngừng cung cấp">Ngừng cung cấp</option>
+                </select>
+            </div>
+
+            <div style="grid-column: 1 / -1;">
+                <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Hình ảnh / file mô tả</label>
+                <input type="text" th:field="*{hinhAnh}" placeholder="Đường dẫn ảnh hoặc file" style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
+            </div>
+
+            <div style="grid-column: 1 / -1;">
+                <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Mô tả xét nghiệm</label>
+                <textarea th:field="*{moTa}" rows="4" style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box; resize: vertical;"></textarea>
+            </div>
+
+            <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                <a th:href="@{/admin/xet-nghiem}" style="background: #F5F8FF; border: 1px solid #90B8F8; color: #1565C0; padding: 10px 20px; border-radius: 4px; text-decoration: none; font-size: 14px;">Hủy bỏ</a>
+                <button type="submit" style="background: #1565C0; border: none; color: white; padding: 10px 20px; border-radius: 4px; font-size: 14px; cursor: pointer; font-family: Inter;">Lưu xét nghiệm</button>
+            </div>
+        </form>
+    </div>
+</section>
+</body>
+</html>

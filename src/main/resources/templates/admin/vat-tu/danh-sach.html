@@ -95,7 +95,7 @@
                 <div class="stat-icon" style="background: #DBEAFE; color: #2563EB;">📋</div>
                 <div class="stat-info">
                     <h3 th:text="${soDichVuDangDung}">0</h3>
-                    <p>Dịch vụ đang dùng</p>
+                    <p>Xét nghiệm đang dùng</p>
                 </div>
             </div>
             <div class="stat-card">
@@ -115,26 +115,18 @@
         </div>
 
         <div class="inventory-container">
-            <!-- Panel Dịch Vụ -->
+            <!-- Panel Xét Nghiệm -->
             <div class="panel">
                 <div class="panel-header">
-                    <h2>📋 Danh Sách Dịch Vụ</h2>
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <form th:action="@{/admin/vat-tu}" method="get" style="display: flex; gap: 5px;">
-                            <input type="text" name="keywordDichVu" th:value="${keywordDichVu}" placeholder="Tìm dịch vụ..." 
-                                   style="padding: 5px 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 13px;">
-                            <input type="hidden" name="keywordKho" th:value="${keywordKho}">
-                            <button type="submit" class="btn-sm btn-edit">🔍</button>
-                        </form>
-                        <a th:href="@{/admin/vat-tu/dich-vu/them}" class="btn-sm btn-add">+ Thêm DV</a>
-                    </div>
+                    <h2>🧪 Danh Sách Xét Nghiệm</h2>
+                    <a th:href="@{/admin/xet-nghiem/them}" class="btn-sm btn-add">+ Thêm XN</a>
                 </div>
                 <div class="panel-content">
                     <table>
                         <thead>
                             <tr>
-                                <th>Mã DV</th>
-                                <th>Tên dịch vụ</th>
+                                <th>Mã XN</th>
+                                <th>Tên xét nghiệm</th>
                                 <th>Chuyên khoa</th>
                                 <th>Giá</th>
                                 <th>Trạng thái</th>
@@ -151,12 +143,7 @@
                                     <span class="badge badge-success" th:text="${dv.trangThai}">Đang dùng</span>
                                 </td>
                                 <td>
-                                    <div style="display: flex; gap: 6px;">
-                                        <a th:href="@{/admin/vat-tu/dich-vu/sua/{id}(id=${dv.maDichVu})}" class="btn-sm btn-edit" title="Sửa">✏️</a>
-                                        <a th:href="@{/admin/vat-tu/dich-vu/xoa/{id}(id=${dv.maDichVu})}" 
-                                           class="btn-sm btn-delete" 
-                                           onclick="return confirm('Xác nhận xóa dịch vụ này?')" title="Xóa">🗑️</a>
-                                    </div>
+                                    <a th:href="@{/admin/xet-nghiem/sua/{id}(id=${dv.maDichVu})}" class="btn-sm btn-edit">Sửa</a>
                                 </td>
                             </tr>
                             <tr th:if="${danhSachDichVu.empty}">

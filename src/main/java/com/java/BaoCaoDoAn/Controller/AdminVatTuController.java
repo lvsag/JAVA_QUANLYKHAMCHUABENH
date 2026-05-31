@@ -36,14 +36,10 @@ public class AdminVatTuController {
 
     // Hiển thị danh sách dịch vụ, thuốc và vật tư y tế (MH21)
     @GetMapping
-    public String danhSachVatTu(
-            @RequestParam(value = "keywordDichVu", required = false) String keywordDichVu,
-            @RequestParam(value = "keywordKho", required = false) String keywordKho,
-            Model model) {
-        
-        List<DichVu> dsDichVu = dichVuService.searchDichVu(keywordDichVu);
-        List<Thuoc> dsThuoc = thuocService.searchThuoc(keywordKho);
-        List<VatTuYTe> dsVatTu = vatTuYTeService.searchVatTu(keywordKho);
+    public String danhSachVatTu(Model model) {
+        var dsThuoc = thuocService.findAll();
+        var dsVatTu = vatTuYTeService.findAll();
+        var dsDichVu = dichVuService.getAllXetNghiem();
 
         model.addAttribute("danhSachThuoc", dsThuoc);
         model.addAttribute("danhSachVatTu", dsVatTu);

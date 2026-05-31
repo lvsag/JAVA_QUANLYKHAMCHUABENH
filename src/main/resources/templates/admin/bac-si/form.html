@@ -1,66 +1,106 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Thêm/Sửa Bác Sĩ', 'bac-si', ~{::section})}">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/admin-layout :: layout('Thêm/Sửa Bác Sĩ', 'bac-si', ~{::section})}">
 <head>
-    <title>Thêm/Sửa Bác Sĩ</title>
+    <title>Thêm/Sửa Bác Sĩ - Admin</title>
 </head>
 <body>
-    <section style="padding: 20px; font-family: Inter;">
-        <div style="margin-bottom: 20px;">
-            <h1 style="color: #1565C0; font-size: 24px; font-weight: bold; margin: 0;" th:text="${bacSi.maBacSi == null ? 'Thêm Bác Sĩ Mới' : 'Cập Nhật Bác Sĩ'}">Form</h1>
-            <p style="color: #78909C; font-size: 14px; margin-top: 5px;">Quản lý thông tin hồ sơ và chuyên môn của bác sĩ</p>
-        </div>
-        
-        <div style="background: white; border: 1px solid #E3EDFF; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); max-width: 800px;">
-            <form th:action="${bacSi.maBacSi == null ? '/admin/bac-si/them' : '/admin/bac-si/sua/' + bacSi.maBacSi}" th:object="${bacSi}" method="post" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                
-                <div style="grid-column: 1 / -1; margin-bottom: 10px;">
-                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Họ Tên Bác Sĩ <span style="color:red">*</span></label>
-                    <input type="text" th:field="*{hoTen}" required style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
-                </div>
-                
-                <div>
-                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Chuyên Khoa <span style="color:red">*</span></label>
-                    <select th:field="*{chuyenKhoa.maChuyenKhoa}" required style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
-                        <option th:each="ck : ${chuyenKhoas}" th:value="${ck.maChuyenKhoa}" th:text="${ck.tenChuyenKhoa}"></option>
-                    </select>
-                </div>
+<section style="padding: 20px; font-family: Inter;">
+    <div style="margin-bottom: 20px;">
+        <h1 style="color: #1565C0; font-size: 24px; font-weight: 800; margin: 0;" th:text="${bacSi.maBacSi == null ? 'Thêm Bác Sĩ Mới' : 'Cập Nhật Bác Sĩ'}">Form Bác Sĩ</h1>
+        <p style="color: #78909C; font-size: 14px; margin-top: 5px;">Cập nhật hồ sơ, chuyên khoa, tài khoản và thông tin khám bệnh.</p>
+    </div>
 
+    <div style="background: white; border: 1px solid #E2E8F0; border-radius: 8px; padding: 20px; max-width: 940px;">
+        <form th:action="${bacSi.maBacSi == null ? '/admin/bac-si/them' : '/admin/bac-si/sua/' + bacSi.maBacSi}" th:object="${bacSi}" method="post" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div>
+                <label style="display: block; font-size: 13px; font-weight: 800; color: #455A64; margin-bottom: 5px;">Họ tên <span style="color:red">*</span></label>
+                <input type="text" th:field="*{hoTen}" required style="width: 100%; padding: 10px; border: 1.5px solid #CBD5E1; border-radius: 4px; background: #F8FAFC;">
+            </div>
 
-                
-                <div>
-                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Học Vị</label>
-                    <input type="text" th:field="*{hocVi}" placeholder="VD: TS.BS, ThS.BS..." style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
-                </div>
-                
-                <div>
-                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Số Điện Thoại</label>
-                    <input type="text" th:field="*{soDienThoai}" style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
-                </div>
+            <div>
+                <label style="display: block; font-size: 13px; font-weight: 800; color: #455A64; margin-bottom: 5px;">Chuyên khoa <span style="color:red">*</span></label>
+                <select name="chuyenKhoa.maChuyenKhoa" required style="width: 100%; padding: 10px; border: 1.5px solid #CBD5E1; border-radius: 4px; background: #F8FAFC;">
+                    <option value="">-- Chọn chuyên khoa --</option>
+                    <option th:each="ck : ${chuyenKhoas}" th:value="${ck.maChuyenKhoa}" th:text="${ck.tenChuyenKhoa}"
+                            th:selected="${bacSi.chuyenKhoa != null && bacSi.chuyenKhoa.maChuyenKhoa == ck.maChuyenKhoa}"></option>
+                </select>
+            </div>
 
-                <div>
-                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Phí Khám (VNĐ)</label>
-                    <input type="number" th:field="*{phiKham}" style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
-                </div>
-                
-                <div>
-                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Trạng Thái</label>
-                    <select th:field="*{trangThai}" required style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box;">
-                        <option value="Đang làm việc">Đang làm việc</option>
-                        <option value="Nghỉ phép">Nghỉ phép</option>
-                    </select>
-                </div>
+            <div>
+                <label style="display: block; font-size: 13px; font-weight: 800; color: #455A64; margin-bottom: 5px;">Tài khoản</label>
+                <select name="taiKhoan.maTaiKhoan" style="width: 100%; padding: 10px; border: 1.5px solid #CBD5E1; border-radius: 4px; background: #F8FAFC;">
+                    <option value="">-- Không gắn tài khoản --</option>
+                    <option th:each="tk : ${taiKhoans}" th:value="${tk.maTaiKhoan}" th:text="${tk.hoTen + ' - ' + tk.email}"
+                            th:selected="${bacSi.taiKhoan != null && bacSi.taiKhoan.maTaiKhoan == tk.maTaiKhoan}"></option>
+                </select>
+            </div>
 
-                <div style="grid-column: 1 / -1; margin-bottom: 10px;">
-                    <label style="display: block; font-size: 13px; font-weight: bold; color: #455A64; margin-bottom: 5px;">Giới Thiệu Chuyên Môn</label>
-                    <textarea th:field="*{gioiThieu}" rows="4" style="width: 100%; padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter; box-sizing: border-box; resize: vertical;"></textarea>
-                </div>
-                
-                <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
-                    <a th:href="@{/admin/bac-si}" style="background: #F5F8FF; border: 1px solid #90B8F8; color: #1565C0; padding: 10px 20px; border-radius: 4px; text-decoration: none; font-size: 14px;">Hủy Bỏ</a>
-                    <button type="submit" style="background: #1565C0; border: none; color: white; padding: 10px 20px; border-radius: 4px; font-size: 14px; cursor: pointer; font-family: Inter;">Lưu Bác Sĩ</button>
-                </div>
-            </form>
-        </div>
-    </section>
+            <div>
+                <label style="display: block; font-size: 13px; font-weight: 800; color: #455A64; margin-bottom: 5px;">Học vị</label>
+                <input type="text" th:field="*{hocVi}" placeholder="VD: ThS.BS, BS.CKII" style="width: 100%; padding: 10px; border: 1.5px solid #CBD5E1; border-radius: 4px; background: #F8FAFC;">
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 13px; font-weight: 800; color: #455A64; margin-bottom: 5px;">Email</label>
+                <input type="email" th:field="*{email}" style="width: 100%; padding: 10px; border: 1.5px solid #CBD5E1; border-radius: 4px; background: #F8FAFC;">
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 13px; font-weight: 800; color: #455A64; margin-bottom: 5px;">Số điện thoại</label>
+                <input type="text" th:field="*{soDienThoai}" style="width: 100%; padding: 10px; border: 1.5px solid #CBD5E1; border-radius: 4px; background: #F8FAFC;">
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 13px; font-weight: 800; color: #455A64; margin-bottom: 5px;">Số năm kinh nghiệm</label>
+                <input type="number" th:field="*{soNamKinhNghiem}" min="0" style="width: 100%; padding: 10px; border: 1.5px solid #CBD5E1; border-radius: 4px; background: #F8FAFC;">
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 13px; font-weight: 800; color: #455A64; margin-bottom: 5px;">Phí khám</label>
+                <input type="number" th:field="*{phiKham}" min="0" step="1000" style="width: 100%; padding: 10px; border: 1.5px solid #CBD5E1; border-radius: 4px; background: #F8FAFC;">
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 13px; font-weight: 800; color: #455A64; margin-bottom: 5px;">Phòng khám</label>
+                <input type="text" th:field="*{phongKham}" style="width: 100%; padding: 10px; border: 1.5px solid #CBD5E1; border-radius: 4px; background: #F8FAFC;">
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 13px; font-weight: 800; color: #455A64; margin-bottom: 5px;">Trạng thái</label>
+                <select th:field="*{trangThai}" style="width: 100%; padding: 10px; border: 1.5px solid #CBD5E1; border-radius: 4px; background: #F8FAFC;">
+                    <option value="Đang làm việc">Đang làm việc</option>
+                    <option value="Tạm nghỉ">Tạm nghỉ</option>
+                    <option value="Đã nghỉ việc">Đã nghỉ việc</option>
+                </select>
+            </div>
+
+            <div style="grid-column: 1 / -1;">
+                <label style="display: block; font-size: 13px; font-weight: 800; color: #455A64; margin-bottom: 5px;">Hình đại diện</label>
+                <input type="text" th:field="*{hinhDaiDien}" placeholder="Đường dẫn ảnh" style="width: 100%; padding: 10px; border: 1.5px solid #CBD5E1; border-radius: 4px; background: #F8FAFC;">
+            </div>
+
+            <div style="grid-column: 1 / -1;">
+                <label style="display: block; font-size: 13px; font-weight: 800; color: #455A64; margin-bottom: 5px;">Bằng cấp</label>
+                <textarea th:field="*{bangCap}" rows="2" style="width: 100%; padding: 10px; border: 1.5px solid #CBD5E1; border-radius: 4px; background: #F8FAFC;"></textarea>
+            </div>
+
+            <div style="grid-column: 1 / -1;">
+                <label style="display: block; font-size: 13px; font-weight: 800; color: #455A64; margin-bottom: 5px;">Chứng chỉ hành nghề</label>
+                <input type="text" th:field="*{chungChiHanhNghe}" style="width: 100%; padding: 10px; border: 1.5px solid #CBD5E1; border-radius: 4px; background: #F8FAFC;">
+            </div>
+
+            <div style="grid-column: 1 / -1;">
+                <label style="display: block; font-size: 13px; font-weight: 800; color: #455A64; margin-bottom: 5px;">Giới thiệu</label>
+                <textarea th:field="*{gioiThieu}" rows="4" style="width: 100%; padding: 10px; border: 1.5px solid #CBD5E1; border-radius: 4px; background: #F8FAFC;"></textarea>
+            </div>
+
+            <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 10px; margin-top: 12px;">
+                <a th:href="@{/admin/bac-si}" style="background: #F1F5F9; color: #334155; padding: 10px 20px; border-radius: 4px; text-decoration: none; font-size: 14px; font-weight: 700;">Hủy bỏ</a>
+                <button type="submit" style="background: #1565C0; color: white; border: 0; padding: 10px 20px; border-radius: 4px; font-size: 14px; font-weight: 700; cursor: pointer;">Lưu bác sĩ</button>
+            </div>
+        </form>
+    </div>
+</section>
 </body>
 </html>

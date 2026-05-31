@@ -1,195 +1,133 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Quản Lý Bác Sĩ', 'bac-si', ~{::section})}">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/admin-layout :: layout('Quản Lý Bác Sĩ', 'bac-si', ~{::section})}">
 <head>
     <title>Quản lý Bác Sĩ - Admin</title>
 </head>
 <body>
-    <section>
-        <style>
-            .page-header { margin-bottom: 24px; }
-            .page-title { color: #1E293B; font-size: 20px; font-weight: 700; margin: 0; }
-            .page-desc { color: #64748B; font-size: 13px; margin-top: 4px; }
-            
-            .split-layout { display: grid; grid-template-columns: 2.5fr 1fr; gap: 24px; align-items: start; }
-            
-            .card { background: white; border: 1px solid #E2E8F0; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 20px; }
-            .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-            .card-title { font-size: 16px; font-weight: 600; color: #1E293B; margin: 0; }
-            
-            .btn { padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; text-decoration: none; display: inline-block; cursor: pointer; border: none; }
-            .btn-primary { background: #2563EB; color: white; }
-            .btn-primary:hover { background: #1D4ED8; }
-            .btn-outline { background: #F8FAFC; border: 1px solid #CBD5E1; color: #475569; }
-            .btn-outline:hover { background: #F1F5F9; }
-            
-            table { width: 100%; border-collapse: collapse; font-size: 13px; }
-            th { text-align: left; padding: 12px; color: #64748B; font-weight: 600; border-bottom: 1px solid #E2E8F0; }
-            td { padding: 12px; border-bottom: 1px solid #E2E8F0; color: #334155; }
-            tr.row-link { cursor: pointer; transition: background 0.2s; }
-            tr.row-link:hover { background: #F8FAFC; }
-            tr.row-selected { background: #EFF6FF !important; }
-            
-            .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; }
-            .badge-success { background: #DCFCE7; color: #16A34A; }
-            .badge-danger { background: #FEE2E2; color: #DC2626; }
-            .badge-gray { background: #F1F5F9; color: #64748B; }
+<section>
+    <style>
+        .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
+        .page-title { color: #1565C0; font-size: 24px; font-weight: 800; margin: 0; }
+        .page-desc { color: #78909C; font-size: 14px; margin-top: 5px; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 4px; padding: 9px 14px; font-size: 13px; font-weight: 700; text-decoration: none; border: 0; cursor: pointer; }
+        .btn-primary { background: #1565C0; color: white; }
+        .btn-soft { background: #F1F5F9; color: #334155; }
+        .btn-danger { background: #FEF2F2; color: #DC2626; }
+        .grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(360px, 0.85fr); gap: 20px; }
+        .panel { background: white; border: 1px solid #E2E8F0; border-radius: 8px; overflow: hidden; }
+        .panel-header { padding: 16px 18px; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .panel-title { font-size: 16px; font-weight: 800; color: #334155; margin: 0; }
+        .panel-body { padding: 18px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { text-align: left; padding: 11px 10px; background: #F8FAFC; color: #64748B; font-weight: 800; border-bottom: 1px solid #E2E8F0; }
+        td { padding: 11px 10px; border-bottom: 1px solid #E2E8F0; color: #334155; vertical-align: middle; }
+        tr.active-row td { background: #EFF6FF; }
+        .badge { display: inline-flex; align-items: center; justify-content: center; min-width: 92px; padding: 4px 9px; border-radius: 999px; font-size: 11px; font-weight: 800; }
+        .badge-ok { background: #DCFCE7; color: #166534; }
+        .badge-off { background: #FEF2F2; color: #B91C1C; }
+        .schedule-row { display: grid; grid-template-columns: 82px minmax(100px, 1fr) 112px 112px 92px; gap: 8px; align-items: center; margin-bottom: 10px; }
+        .input, .select { width: 100%; padding: 9px; border: 1.5px solid #CBD5E1; border-radius: 4px; background: #F8FAFC; font-family: Inter, sans-serif; font-size: 13px; }
+        .muted { color: #94A3B8; font-size: 13px; text-align: center; padding: 24px 8px; }
+        @media (max-width: 1100px) { .grid { grid-template-columns: 1fr; } .schedule-row { grid-template-columns: 1fr 1fr; } }
+    </style>
 
-            /* Form Phân Lịch */
-            .schedule-form { display: flex; flex-direction: column; gap: 12px; }
-            .schedule-row { display: grid; grid-template-columns: 60px 1fr 1fr 1fr 60px; gap: 8px; align-items: center; padding: 8px 0; border-bottom: 1px dashed #E2E8F0; }
-            .schedule-row:last-child { border-bottom: none; }
-            .day-label { font-weight: 600; color: #475569; font-size: 13px; }
-            .form-input { padding: 6px 8px; border: 1px solid #CBD5E1; border-radius: 4px; font-size: 12px; width: 100%; }
-            select.form-input { padding-right: 4px; }
-        </style>
-
-        <div class="page-header">
-            <h1 class="page-title">Danh Sách Bác Sĩ & Phân Lịch Làm Việc</h1>
-            <p class="page-desc">Quản lý hồ sơ bác sĩ, chuyên khoa và ca làm việc</p>
+    <div class="page-head">
+        <div>
+            <h1 class="page-title">Quản Lý Bác Sĩ</h1>
+            <p class="page-desc">Quản lý hồ sơ bác sĩ và phân lịch làm việc trong tuần.</p>
         </div>
-        
-        <div class="split-layout">
-            <!-- Cột Trái: Danh Sách Bác Sĩ -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">👨‍⚕️ Danh Sách Bác Sĩ</h2>
-                    <div>
-                        <a th:href="@{/admin/bac-si/them}" class="btn btn-primary">+ Thêm BS</a>
-                        <button class="btn btn-outline" style="margin-left: 8px;">🔍 Lọc</button>
-                    </div>
-                </div>
-                
+        <a th:href="@{/admin/bac-si/them}" class="btn btn-primary">+ Thêm bác sĩ</a>
+    </div>
+
+    <div class="grid">
+        <div class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Danh Sách Bác Sĩ</h2>
+            </div>
+            <div class="panel-body" style="overflow-x: auto;">
                 <table>
                     <thead>
-                        <tr>
-                            <th>Mã BS</th>
-                            <th>Họ tên</th>
-                            <th>Chuyên khoa</th>
-                            <th>Hôm nay</th>
-                            <th>Slot</th>
-                            <th>Trạng thái</th>
-                        </tr>
+                    <tr>
+                        <th>Mã BS</th>
+                        <th>Họ tên</th>
+                        <th>Chuyên khoa</th>
+                        <th>Ca hôm nay</th>
+                        <th>Trạng thái</th>
+                        <th style="width: 150px;">Thao tác</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="bs : ${danhSach}" 
-                            class="row-link" 
-                            th:classappend="${bs.maBacSi == selectedMaBacSi or bs.MaBacSi == selectedMaBacSi} ? 'row-selected' : ''"
-                            th:data-ma-bac-si="${bs.maBacSi != null ? bs.maBacSi : bs.MaBacSi}"
-                            onclick="window.location.href='/admin/bac-si?selectedMaBacSi=' + this.getAttribute('data-ma-bac-si');">
-                            
-                            <td style="font-weight: 600; color: #2563EB;" th:text="${bs.maBacSi != null ? bs.maBacSi : (bs.MaBacSi != null ? bs.MaBacSi : 'Chưa rõ')}">BS001</td>
-                            <td style="font-weight: 500;" th:text="${bs.hoTen != null ? bs.hoTen : (bs.HoTen != null ? bs.HoTen : 'Chưa rõ')}">Nguyễn Văn Minh</td>
-                            <td th:text="${bs.tenChuyenKhoa != null ? bs.tenChuyenKhoa : (bs.TenChuyenKhoa != null ? bs.TenChuyenKhoa : 'Chưa rõ')}">Tim mạch</td>
-                            <td th:text="${bs.caHomNay != null ? bs.caHomNay : (bs.CaHomNay != null ? bs.CaHomNay : 'Nghỉ')}">Ca sáng</td>
-                            <td th:text="${bs.slotHomNay != null ? bs.slotHomNay + ' slot' : (bs.SlotHomNay != null ? bs.SlotHomNay + ' slot' : '--')}">3 slot</td>
-                            <td>
-                                <span class="badge" th:classappend="${(bs.trangThai != null ? bs.trangThai : bs.TrangThai) == 'Đang làm việc' ? 'badge-success' : 'badge-danger'}" 
-                                      th:text="${bs.trangThai != null ? bs.trangThai : (bs.TrangThai != null ? bs.TrangThai : 'Đang làm việc')}">Làm việc</span>
-                            </td>
-                        </tr>
+                    <tr th:each="bs : ${danhSach}" th:classappend="${bs.MaBacSi == selectedMaBacSi ? 'active-row' : ''}">
+                        <td th:text="${bs.MaBacSi}" style="font-weight: 800;">BS001</td>
+                        <td>
+                            <a th:href="@{/admin/bac-si(selectedMaBacSi=${bs.MaBacSi})}" th:text="${bs.HoTen}" style="color: #1565C0; font-weight: 700; text-decoration: none;">Bác sĩ</a>
+                        </td>
+                        <td th:text="${bs.TenChuyenKhoa ?: 'Chưa phân khoa'}">Nội khoa</td>
+                        <td>
+                            <span th:text="${bs.CaHomNay ?: 'Nghỉ'}">Sáng</span>
+                            <span th:if="${bs.SlotHomNay != null}" th:text="${' (' + bs.SlotHomNay + ' slot)'}"></span>
+                        </td>
+                        <td>
+                            <span class="badge" th:classappend="${bs.TrangThai == 'Đang làm việc' ? 'badge-ok' : 'badge-off'}" th:text="${bs.TrangThai}">Đang làm việc</span>
+                        </td>
+                        <td style="white-space: nowrap;">
+                            <a th:href="@{/admin/bac-si/sua/{id}(id=${bs.MaBacSi})}" class="btn btn-soft">Sửa</a>
+                            <a th:href="@{/admin/bac-si/xoa/{id}(id=${bs.MaBacSi})}" class="btn btn-danger" onclick="return confirm('Cập nhật bác sĩ này sang trạng thái nghỉ việc?')">Nghỉ</a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(danhSach)}">
+                        <td colspan="6" class="muted">Chưa có bác sĩ.</td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
+        </div>
 
-            <!-- Cột Phải: Phân Lịch Làm Việc -->
-            <div class="card" style="padding: 0; overflow: hidden;">
-                <div style="background: #1565C0; color: white; padding: 12px 20px; font-weight: 600; font-size: 16px; display: flex; align-items: center; gap: 8px;">
-                    <span>📅</span> Phân Lịch Làm Việc
-                </div>
-                
-                <div th:if="${selectedMaBacSi == null}" style="text-align: center; padding: 40px 0; color: #94A3B8;">
-                    <div style="font-size: 32px; margin-bottom: 12px;">👈</div>
-                    <p style="font-size: 13px;">Vui lòng chọn bác sĩ từ danh sách<br>để tiến hành phân lịch làm việc</p>
-                </div>
-
-                <div th:if="${selectedMaBacSi != null}" style="padding: 20px;">
-                    
-                    <!-- Khung View Lịch (Dạng Grid Card) -->
-                    <div id="schedule-view">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
-                            <!-- Generate cards for Thu 2 -> Thu 7 -->
-                            <div th:each="ngay : ${#numbers.sequence(2, 7)}" 
-                                 th:with="lich=${lichTuan[ngay - 2]}"
-                                 style="border: 1px solid #E2E8F0; padding: 12px 16px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                                
-                                <div style="color: #1565C0; font-weight: 600; font-size: 15px; margin-bottom: 8px;" th:text="'Thứ ' + ${ngay}">Thứ 2</div>
-                                
-                                <div th:if="${lich.caLamViec != 'Nghỉ'}" style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
-                                    <span style="color: #64748B;" th:text="${(lich.gioBatDau != null ? #dates.format(lich.gioBatDau, 'HH:mm') : '07:30') + ' - ' + (lich.gioKetThuc != null ? #dates.format(lich.gioKetThuc, 'HH:mm') : '11:30')}">07:30 - 11:30</span>
-                                    <span style="color: #16A34A; font-weight: 600;" th:text="${lich.soSlotToiDa} + ' slot'">4 slot</span>
-                                </div>
-                                <div th:if="${lich.caLamViec == 'Nghỉ'}" style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
-                                    <span style="color: #94A3B8; font-style: italic;">Nghỉ</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div style="display: flex; gap: 12px;">
-                            <button type="button" class="btn btn-primary" onclick="document.getElementById('schedule-view').style.display='none'; document.getElementById('schedule-edit').style.display='block';">+ Phân công</button>
-                            <button type="button" class="btn btn-outline" style="border-radius: 4px; padding: 8px 24px; color: #1565C0; border-color: #1565C0;">Lưu lịch</button>
-                        </div>
+        <div class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Lịch Làm Việc Tuần</h2>
+            </div>
+            <div class="panel-body">
+                <div th:if="${selectedMaBacSi == null}" class="muted">Chọn một bác sĩ để phân lịch.</div>
+                <form th:if="${selectedMaBacSi != null}" th:action="@{/admin/bac-si/phan-lich}" method="post">
+                    <input type="hidden" name="maBacSi" th:value="${selectedMaBacSi}">
+                    <div class="schedule-row" style="font-weight: 800; color: #64748B; font-size: 12px;">
+                        <div>Ngày</div>
+                        <div>Ca</div>
+                        <div>Bắt đầu</div>
+                        <div>Kết thúc</div>
+                        <div>Slot</div>
                     </div>
-
-                    <!-- Khung Edit Lịch (Form) -->
-                    <div id="schedule-edit" style="display: none;">
-                        <div style="margin-bottom: 16px; padding: 12px; background: #F8FAFC; border-radius: 8px; border: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <span style="font-size: 12px; color: #64748B;">Đang phân lịch cho:</span>
-                                <strong style="color: #2563EB; font-size: 14px;" th:text="${selectedMaBacSi}">BS001</strong>
-                            </div>
-                            <button type="button" class="btn btn-outline" onclick="document.getElementById('schedule-edit').style.display='none'; document.getElementById('schedule-view').style.display='block';">Quay lại</button>
+                    <div th:each="lich : ${lichTuan}" class="schedule-row">
+                        <input type="hidden" name="ngayTrongTuan" th:value="${lich.ngayTrongTuan}">
+                        <div th:switch="${lich.ngayTrongTuan}" style="font-weight: 800;">
+                            <span th:case="2">Thứ 2</span>
+                            <span th:case="3">Thứ 3</span>
+                            <span th:case="4">Thứ 4</span>
+                            <span th:case="5">Thứ 5</span>
+                            <span th:case="6">Thứ 6</span>
+                            <span th:case="7">Thứ 7</span>
+                            <span th:case="8">Chủ nhật</span>
                         </div>
-
-                        <form th:action="@{/admin/bac-si/phan-lich}" method="post" class="schedule-form">
-                            <input type="hidden" name="maBacSi" th:value="${selectedMaBacSi}" />
-                            
-                            <!-- Header Form -->
-                            <div style="display: grid; grid-template-columns: 60px 1fr 1fr 1fr 60px; gap: 8px; font-size: 11px; color: #64748B; font-weight: 600; padding-bottom: 4px;">
-                                <div>Thứ</div>
-                                <div>Ca làm</div>
-                                <div>Bắt đầu</div>
-                                <div>Kết thúc</div>
-                                <div>Slot</div>
-                            </div>
-
-                            <!-- Rows for Monday to Sunday -->
-                            <div th:each="ngay : ${#numbers.sequence(2, 8)}" class="schedule-row">
-                                <th:block th:with="lich=${lichTuan[ngay - 2]}">
-                                    <input type="hidden" name="ngayTrongTuan" th:value="${ngay}" />
-                                    
-                                    <div class="day-label" th:text="${ngay == 8 ? 'CN' : 'Thứ ' + ngay}">Thứ 2</div>
-                                    
-                                    <div>
-                                        <select name="caLamViec" class="form-input">
-                                            <option value="Nghỉ" th:selected="${lich.caLamViec == 'Nghỉ'}">Nghỉ</option>
-                                            <option value="Ca sáng" th:selected="${lich.caLamViec == 'Ca sáng'}">Sáng</option>
-                                            <option value="Ca chiều" th:selected="${lich.caLamViec == 'Ca chiều'}">Chiều</option>
-                                            <option value="Cả ngày" th:selected="${lich.caLamViec == 'Cả ngày'}">Cả ngày</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div>
-                                        <input type="time" name="gioBatDau" class="form-input" th:value="${lich.gioBatDau != null ? #dates.format(lich.gioBatDau, 'HH:mm') : '07:30'}" />
-                                    </div>
-                                    
-                                    <div>
-                                        <input type="time" name="gioKetThuc" class="form-input" th:value="${lich.gioKetThuc != null ? #dates.format(lich.gioKetThuc, 'HH:mm') : '11:30'}" />
-                                    </div>
-                                    
-                                    <div>
-                                        <input type="number" name="soSlotToiDa" class="form-input" min="0" max="20" th:value="${lich.soSlotToiDa != null ? lich.soSlotToiDa : 0}" />
-                                    </div>
-                                </th:block>
-                            </div>
-
-                            <div style="margin-top: 20px; text-align: right;">
-                                <button type="submit" class="btn btn-primary" style="width: 100%;">Lưu Lịch</button>
-                            </div>
-                        </form>
+                        <select name="caLamViec" class="select">
+                            <option value="Nghỉ" th:selected="${lich.caLamViec == 'Nghỉ'}">Nghỉ</option>
+                            <option value="Sáng" th:selected="${lich.caLamViec == 'Sáng'}">Sáng</option>
+                            <option value="Chiều" th:selected="${lich.caLamViec == 'Chiều'}">Chiều</option>
+                            <option value="Tối" th:selected="${lich.caLamViec == 'Tối'}">Tối</option>
+                            <option value="Cả ngày" th:selected="${lich.caLamViec == 'Cả ngày'}">Cả ngày</option>
+                        </select>
+                        <input type="time" name="gioBatDau" class="input" th:value="${lich.gioBatDau != null ? #strings.substring(lich.gioBatDau.toString(), 0, 5) : '07:30'}">
+                        <input type="time" name="gioKetThuc" class="input" th:value="${lich.gioKetThuc != null ? #strings.substring(lich.gioKetThuc.toString(), 0, 5) : '11:30'}">
+                        <input type="number" name="soSlotToiDa" class="input" min="0" th:value="${lich.soSlotToiDa != null ? lich.soSlotToiDa : 0}">
                     </div>
-                </div>
+                    <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
+                        <button type="submit" class="btn btn-primary">Lưu lịch</button>
+                    </div>
+                </form>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 </body>
 </html>

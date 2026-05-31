@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Quản Lý Xét Nghiệm', 'xet-nghiem', ~{::section})}">
+<head>
+    <title>Quản lý Xét Nghiệm - Admin</title>
+</head>
+<body>
+<section style="padding: 20px; font-family: Inter;">
+    <div style="margin-bottom: 20px;">
+        <h1 style="color: #1565C0; font-size: 24px; font-weight: bold; margin: 0;">Quản Lý Xét Nghiệm</h1>
+        <p style="color: #78909C; font-size: 14px; margin-top: 5px;">Danh mục xét nghiệm lấy trực tiếp từ dữ liệu dịch vụ.</p>
+    </div>
+
+    <div th:if="${success}" th:text="${success}" style="margin-bottom: 12px; padding: 10px 12px; background: #E8F5E9; color: #166534; border-radius: 6px; font-size: 13px;"></div>
+    <div th:if="${error}" th:text="${error}" style="margin-bottom: 12px; padding: 10px 12px; background: #FEF2F2; color: #B91C1C; border-radius: 6px; font-size: 13px;"></div>
+
+    <div style="background: white; border: 1px solid #E3EDFF; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 18px; flex-wrap: wrap;">
+            <h2 style="font-size: 16px; margin: 0; color: #455A64;">🧪 Danh Sách Xét Nghiệm</h2>
+            <a th:href="@{/admin/xet-nghiem/them}" style="background: #1565C0; color: white; border: none; padding: 9px 16px; border-radius: 4px; font-size: 14px; cursor: pointer; text-decoration: none;">+ Thêm xét nghiệm</a>
+        </div>
+
+        <form th:action="@{/admin/xet-nghiem}" method="get" style="display: grid; grid-template-columns: minmax(220px, 1fr) 190px auto; gap: 10px; margin-bottom: 18px;">
+            <input type="text" name="keyword" th:value="${keyword}" placeholder="Tìm mã, tên, phòng thực hiện" style="padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter;">
+            <select name="trangThai" style="padding: 10px; border: 1.5px solid #90B8F8; border-radius: 4px; background: #F5F8FF; font-family: Inter;">
+                <option value="">Tất cả trạng thái</option>
+                <option value="Đang dùng" th:selected="${trangThai == 'Đang dùng'}">Đang dùng</option>
+                <option value="Ngừng cung cấp" th:selected="${trangThai == 'Ngừng cung cấp'}">Ngừng cung cấp</option>
+            </select>
+            <button type="submit" style="background: #F5F8FF; border: 1px solid #90B8F8; color: #1565C0; padding: 10px 16px; border-radius: 4px; cursor: pointer;">Lọc</button>
+        </form>
+
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                <thead>
+                <tr style="background: #F0F4FF; color: #1565C0; border-bottom: 2px solid #BBCEF0;">
+                    <th style="padding: 12px;">Mã XN</th>
+                    <th style="padding: 12px;">Tên xét nghiệm</th>
+                    <th style="padding: 12px;">Chuyên khoa</th>
+                    <th style="padding: 12px;">Phòng</th>
+                    <th style="padding: 12px;">Thời gian</th>
+                    <th style="padding: 12px;">Giá (VNĐ)</th>
+                    <th style="padding: 12px;">Trạng thái</th>
+                    <th style="padding: 12px;">Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="dv : ${danhSach}" style="border-bottom: 1px solid #E3EDFF; color: #455A64;">
+                    <td style="padding: 12px; font-weight: bold;" th:text="${dv.maDichVu}">XN00000001</td>
+                    <td style="padding: 12px;" th:text="${dv.tenDichVu}">Xét nghiệm máu</td>
+                    <td style="padding: 12px;" th:text="${dv.chuyenKhoa != null ? dv.chuyenKhoa.tenChuyenKhoa : 'Chung'}">Cận lâm sàng</td>
+                    <td style="padding: 12px;" th:text="${dv.phongThucHien ?: 'Chưa đặt'}">P.201</td>
+                    <td style="padding: 12px;" th:text="${dv.thoiGianThucHien != null ? dv.thoiGianThucHien + ' phút' : 'Chưa đặt'}">30 phút</td>
+                    <td style="padding: 12px;" th:text="${#numbers.formatDecimal(dv.giaDichVu, 0, 'COMMA', 0, 'POINT')} + ' đ'">100,000 đ</td>
+                    <td style="padding: 12px;">
+                        <span th:style="${dv.trangThai == 'Đang dùng' ? 'background: #E8F5E9; color: #2E7D32; padding: 4px 8px; border-radius: 12px; font-size: 11px;' : 'background: #FFEBEE; color: #C62828; padding: 4px 8px; border-radius: 12px; font-size: 11px;'}"
+                              th:text="${dv.trangThai}">Đang dùng</span>
+                    </td>
+                    <td style="padding: 12px; white-space: nowrap;">
+                        <a th:href="@{/admin/xet-nghiem/sua/{id}(id=${dv.maDichVu})}" style="color: #2563EB; text-decoration: none; margin-right: 8px;">Sửa</a>
+                        <a th:href="@{/admin/xet-nghiem/xoa/{id}(id=${dv.maDichVu})}" onclick="return confirm('Ngừng cung cấp xét nghiệm này?')" style="color: #DC2626; text-decoration: none;">Xóa</a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(danhSach)}">
+                    <td colspan="8" style="padding: 20px; color: #78909C; text-align: center;">Chưa có xét nghiệm phù hợp.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</body>
+</html>

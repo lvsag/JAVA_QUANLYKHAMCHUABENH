@@ -66,15 +66,18 @@
 
         /* Suggestions */
         .suggestions { margin-bottom: 30px; }
-        .suggest-title { font-size: 14px; font-weight: 700; color: #1565c0; margin-bottom: 12px; }
-        .suggest-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-        .suggest-card { border: 1px dashed #ccc; border-radius: 8px; padding: 12px; display: flex; gap: 12px; align-items: center; background: #fafafa; }
+        .suggest-title { font-size: 14px; font-weight: 700; color: #1565c0; margin-bottom: 12px; display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+        .suggest-title span { color: #666; font-size: 12px; font-weight: 500; }
+        .suggest-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; max-height: 360px; overflow-y: auto; padding-right: 4px; }
+        .suggest-card { border: 1px solid #d7dee8; border-radius: 8px; padding: 12px; display: flex; gap: 12px; align-items: center; background: #fafafa; cursor: pointer; transition: 0.2s; }
         .suggest-card:hover { border-color: #1565c0; background: #f0f4f8; }
+        .suggest-card.selected { border-color: #1565c0; background: #eef6ff; box-shadow: 0 2px 8px rgba(21,101,192,0.12); }
+        .suggest-check { width: 18px; height: 18px; accent-color: #1565c0; flex-shrink: 0; }
         .sc-icon { font-size: 24px; }
         .sc-info { flex: 1; }
         .sc-name { font-size: 13px; font-weight: 700; color: #333; }
         .sc-price { font-size: 13px; font-weight: 700; color: #1565c0; }
-        .btn-add { background: #fff; border: 1px solid #1565c0; color: #1565c0; border-radius: 14px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; margin-top: 6px; }
+        .sc-meta { color: #777; font-size: 11px; margin-top: 2px; }
 
         /* Summary */
         .summary-box { background: #f8fbff; border: 1px solid #d0e1f9; border-radius: 8px; padding: 16px; margin-bottom: 24px; }
@@ -143,7 +146,10 @@
                 </div>
 
                 <div class="suggestions">
-                    <div class="suggest-title">Có thể bạn quan tâm:</div>
+                    <div class="suggest-title">
+                        Danh sách dịch vụ / xét nghiệm
+                        <span>Chọn tự do nhiều dịch vụ theo nhu cầu</span>
+                    </div>
                     <div class="suggest-grid" id="suggestList">
                         <!-- Dynamic rendering via JS -->
                     </div>
@@ -185,11 +191,6 @@
         selectedServices.push(cb.value);
     });
     
-    if(selectedServices.length === 0 && allServices.length > 0) {
-        selectedServices.push(allServices[0].maDichVu);
-        document.getElementById('hidden_dv_' + allServices[0].maDichVu).checked = true;
-    }
-
     function renderCart() {
         const cartList = document.getElementById('cartItemsList');
         const suggestList = document.getElementById('suggestList');
@@ -231,21 +232,20 @@
                         </div>
                     </div>
                 `;
-            } else {
-                if(suggestList.children.length < 2) {
-                    const icon = dv.tenDichVu.toLowerCase().includes('x-quang') ? '🩻' : '🩺';
-                    suggestList.innerHTML += `
-                        <div class="suggest-card">
-                            <div class="sc-icon">${icon}</div>
-                            <div class="sc-info">
-                                <div class="sc-name">${dv.tenDichVu}</div>
-                                <div class="sc-price">${dv.giaDichVu.toLocaleString('vi-VN')}đ</div>
-                                <button type="button" class="btn-add" onclick="toggleService('${dv.maDichVu}', true)">+ Thêm vào</button>
-                            </div>
-                        </div>
-                    `;
-                }
             }
+
+            const listIcon = dv.tenDichVu.toLowerCase().includes('x-quang') ? '🩻' : (dv.tenDichVu.toLowerCase().includes('xét nghiệm') ? '🔬' : '🩺');
+            suggestList.innerHTML += `
+                <label class="suggest-card ${isSelected ? 'selected' : ''}">
+                    <input type="checkbox" class="suggest-check" ${isSelected ? 'checked' : ''} onchange="toggleService('${dv.maDichVu}', this.checked)">
+                    <div class="sc-icon">${listIcon}</div>
+                    <div class="sc-info">
+                        <div class="sc-name">${dv.tenDichVu}</div>
+                        <div class="sc-meta">${dv.chuyenKhoa && dv.chuyenKhoa.tenChuyenKhoa ? dv.chuyenKhoa.tenChuyenKhoa : 'Dịch vụ chung'}</div>
+                        <div class="sc-price">${dv.giaDichVu.toLocaleString('vi-VN')}đ</div>
+                    </div>
+                </label>
+            `;
         });
 
         if (selectedCount === 0) {
@@ -258,12 +258,13 @@
     }
 
     function toggleService(maDichVu, isAdd) {
+        const hiddenInput = document.getElementById('hidden_dv_' + maDichVu);
         if (isAdd && !selectedServices.includes(maDichVu)) {
             selectedServices.push(maDichVu);
-            document.getElementById('hidden_dv_' + maDichVu).checked = true;
+            if (hiddenInput) hiddenInput.checked = true;
         } else if (!isAdd) {
             selectedServices = selectedServices.filter(id => id !== maDichVu);
-            document.getElementById('hidden_dv_' + maDichVu).checked = false;
+            if (hiddenInput) hiddenInput.checked = false;
         }
         renderCart();
     }
@@ -275,6 +276,13 @@
     }
 
     document.addEventListener('DOMContentLoaded', renderCart);
+
+    document.getElementById('cartForm').addEventListener('submit', function(event) {
+        if (selectedServices.length === 0) {
+            event.preventDefault();
+            alert('Vui lòng chọn ít nhất một dịch vụ hoặc xét nghiệm.');
+        }
+    });
 </script>
 
 </body>

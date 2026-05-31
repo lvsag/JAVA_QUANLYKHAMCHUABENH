@@ -58,6 +58,11 @@ public class HomeController {
         return "redirect:/home";
     }
 
+    @GetMapping("/403")
+    public String accessDenied() {
+        return "public/403";
+    }
+
     @GetMapping("/home")
     public String home(Model model) {
         model.addAttribute("totalPatients", benhNhanRepository.count());
@@ -197,10 +202,24 @@ public class HomeController {
                 // Nếu có hồ sơ bệnh nhân thì lấy data từ bệnh nhân
                 dto.setHoTenNguoiKham(bn.getHoTen());
                 dto.setSoBHYT(bn.getSoBHYT());
+                dto.setSdtNguoiKham(bn.getSoDienThoai());
+                dto.setEmailXacNhan(bn.getEmail());
+                
+                if (bn.getNgaySinh() != null) {
+                    dto.setNgaySinhNguoiKham(new java.text.SimpleDateFormat("yyyy-MM-dd").format(bn.getNgaySinh()));
+                }
+                
+                dto.setHoTenNguoiThanLH(bn.getHoTenNguoiThan());
+                dto.setSdtNguoiThanLH(bn.getSdtNguoiThan());
+                
+                model.addAttribute("hasProfile", true);
             } else {
                 // Nếu chưa có hồ sơ, lấy tạm Tên từ Tài khoản
                 dto.setHoTenNguoiKham(tk.getHoTen());
+                model.addAttribute("hasProfile", false);
             }
+        } else {
+            model.addAttribute("hasProfile", bn != null);
         }
 
         return "public/dat-lich";
@@ -342,11 +361,5 @@ public class HomeController {
     }
 
     // ===================================================================
-    // BÁC SÍ: TẠO LỊCH HẸN TÁI KHÁM
     // ===================================================================
-    @GetMapping("/bac-si/hen-tai-kham")
-    public String taoLichHenTaiKham(HttpSession session, Model model) {
-        // Trả về UI Hẹn tái khám (Screen 39)
-        return "bac-si/kham-benh/hen-tai-kham";
-    }
 }

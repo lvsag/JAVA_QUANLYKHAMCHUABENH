@@ -58,10 +58,11 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="bs : ${danhSach}" th:classappend="${bs.MaBacSi == selectedMaBacSi ? 'active-row' : ''}">
+                    <tr th:each="bs : ${danhSach}" th:classappend="${bs.MaBacSi == selectedMaBacSi ? 'active-row' : ''}"
+                        style="cursor: pointer;" th:onclick="|window.location.href='@{/admin/bac-si(selectedMaBacSi=${bs.MaBacSi})}'|">
                         <td th:text="${bs.MaBacSi}" style="font-weight: 800;">BS001</td>
                         <td>
-                            <a th:href="@{/admin/bac-si(selectedMaBacSi=${bs.MaBacSi})}" th:text="${bs.HoTen}" style="color: #1565C0; font-weight: 700; text-decoration: none;">Bác sĩ</a>
+                            <span th:text="${bs.HoTen}" style="color: #1565C0; font-weight: 700;">Bác sĩ</span>
                         </td>
                         <td th:text="${bs.TenChuyenKhoa ?: 'Chưa phân khoa'}">Nội khoa</td>
                         <td>
@@ -71,7 +72,7 @@
                         <td>
                             <span class="badge" th:classappend="${bs.TrangThai == 'Đang làm việc' ? 'badge-ok' : 'badge-off'}" th:text="${bs.TrangThai}">Đang làm việc</span>
                         </td>
-                        <td style="white-space: nowrap;">
+                        <td style="white-space: nowrap;" onclick="event.stopPropagation();">
                             <a th:href="@{/admin/bac-si/sua/{id}(id=${bs.MaBacSi})}" class="btn btn-soft">Sửa</a>
                             <a th:href="@{/admin/bac-si/xoa/{id}(id=${bs.MaBacSi})}" class="btn btn-danger" onclick="return confirm('Cập nhật bác sĩ này sang trạng thái nghỉ việc?')">Nghỉ</a>
                         </td>

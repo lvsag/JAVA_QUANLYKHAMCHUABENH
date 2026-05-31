@@ -39,8 +39,8 @@ public class AuthController {
         if (userOpt.isPresent()) {
             TaiKhoan user = userOpt.get();
             if (BCrypt.checkpw(password, user.getMatKhau())) {
-                if ("Khóa".equals(user.getTrangThai())) {
-                    model.addAttribute("error", "Tài khoản đã bị khóa!");
+                if (!"Hoạt động".equalsIgnoreCase(user.getTrangThai())) {
+                    model.addAttribute("error", "Tài khoản của bạn đã bị khóa hoặc ngừng hoạt động!");
                     return "public/login";
                 }
                 
@@ -192,8 +192,8 @@ public class AuthController {
                                         HttpSession session,
                                         Model model) {
         try {
-            java.util.Date dob = new java.text.SimpleDateFormat("yyyy-MM-dd").parse(ngaySinh);
-            Optional<com.java.BaoCaoDoAn.Model.BenhNhan> bnOpt = benhNhanRepository.findBySoDienThoaiAndNgaySinhAndSoCCCD(soDienThoai, dob, soCCCD);
+            java.sql.Date dob = java.sql.Date.valueOf(ngaySinh.trim());
+            Optional<com.java.BaoCaoDoAn.Model.BenhNhan> bnOpt = benhNhanRepository.findBySoDienThoaiAndNgaySinhAndSoCCCD(soDienThoai.trim(), dob, soCCCD.trim());
             
             if (bnOpt.isPresent() && bnOpt.get().getTaiKhoan() != null) {
                 // Save account ID to session for reset step
@@ -204,6 +204,7 @@ public class AuthController {
                 return "public/forgot-password";
             }
         } catch (Exception e) {
+            e.printStackTrace();
             model.addAttribute("error", "Dữ liệu không hợp lệ.");
             return "public/forgot-password";
         }

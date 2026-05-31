@@ -26,9 +26,7 @@ public class LichHenService {
     private final KhungGioKhamRepository khungGioKhamRepository;
 
     private final DichVuRepository     dichVuRepository;
-    private final KhuyenMaiRepository  khuyenMaiRepository;
-    private final HoaDonRepository     hoaDonRepository;
-    private final ChiTietHoaDonRepository chiTietHoaDonRepository;
+    private final ChiTietLichHenRepository chiTietLichHenRepository;
 
     // ------------------------------------------------------------------
     // HÀM TÍNH TỔNG TIỀN (Ánh xạ cho màn hình Thanh Toán và Bước 1)
@@ -110,33 +108,42 @@ public class LichHenService {
 
         // === Parse ngày/giờ an toàn ===
         Date ngayHen;
-        Time gioHen;
+        Time gioHen = Time.valueOf("08:00:00");
         try {
             ngayHen = new SimpleDateFormat("yyyy-MM-dd").parse(req.getNgayHen());
-
-            // XỬ LÝ LỖI: Dịch maKhungGio (Integer) thành chuỗi giờ chuẩn (HH:mm)
-            String gioStr = "08:00"; // Giờ mặc định
-            if (req.getMaKhungGio() != null) {
-                switch(req.getMaKhungGio()) {
-                    case 1 -> gioStr = "08:00";
-                    case 2 -> gioStr = "08:30";
-                    case 3 -> gioStr = "09:00";
-                    case 4 -> gioStr = "09:30";
-                    case 5 -> gioStr = "13:30";
-                    case 6 -> gioStr = "14:00";
-                }
-            }
-            gioHen  = Time.valueOf(gioStr + ":00");
-
         } catch (Exception e) {
             throw new Exception("Định dạng ngày/giờ không hợp lệ. Hãy kiểm tra lại form.");
+        }
+
+        // === KIỂM TRA TRÙNG LỊCH BẰNG PESSIMISTIC LOCKING ===
+        if (req.getMaKhungGio() != null) {
+            KhungGioKham slot = khungGioKhamRepository.findByIdWithLock(req.getMaKhungGio())
+                    .orElseThrow(() -> new Exception("Không tìm thấy Khung giờ."));
+            if (!"Còn chỗ".equals(slot.getTrangThai())) {
+                throw new Exception("Rất tiếc, khung giờ này vừa có người đặt. Vui lòng chọn khung giờ khác.");
+            }
+            
+            // Gán giờ thực tế từ Database
+            if (slot.getGioBatDau() != null) {
+                gioHen = java.sql.Time.valueOf(slot.getGioBatDau());
+            }
+
+            // Đánh dấu là đã đặt
+            slot.setTrangThai("Đã đặt");
+            khungGioKhamRepository.save(slot);
         }
 
         Date ngaySinh = null;
         if (req.getNgaySinhNguoiKham() != null && !req.getNgaySinhNguoiKham().isEmpty()) {
             try {
-                ngaySinh = new SimpleDateFormat("dd/MM/yyyy").parse(req.getNgaySinhNguoiKham());
-            } catch (Exception ignored) {}
+                // Sửa thành yyyy-MM-dd vì HTML <input type="date"> gửi định dạng này
+                ngaySinh = new SimpleDateFormat("yyyy-MM-dd").parse(req.getNgaySinhNguoiKham());
+            } catch (Exception ignored) {
+                // Thử lại định dạng cũ phòng trường hợp có form nào đó dùng dd/MM/yyyy
+                try {
+                    ngaySinh = new SimpleDateFormat("dd/MM/yyyy").parse(req.getNgaySinhNguoiKham());
+                } catch (Exception ignored2) {}
+            }
         }
 
         // === TÍNH TOÁN TIỀN LƯU VÀO DATABASE ===
@@ -151,7 +158,7 @@ public class LichHenService {
         lichHen.setChuyenKhoa(chuyenKhoa);
         lichHen.setNgayHen(ngayHen);
         lichHen.setGioHen(gioHen);
-        lichHen.setMaKhungGio(null); // Bypass Foreign Key constraint tạm thời
+        lichHen.setMaKhungGio(req.getMaKhungGio());
         lichHen.setHoTenNguoiKham(req.getHoTenNguoiKham());
         lichHen.setSdtNguoiKham(req.getSdtNguoiKham());
         lichHen.setNgaySinhNguoiKham(ngaySinh);
@@ -168,6 +175,19 @@ public class LichHenService {
         lichHen.setPhiDuKien(BigDecimal.valueOf(tongTien));
 
         LichHen saved = lichHenRepository.save(lichHen);
+
+        if (req.getDanhSachMaDichVu() != null && !req.getDanhSachMaDichVu().isEmpty()) {
+            List<DichVu> dichVus = dichVuRepository.findAllById(req.getDanhSachMaDichVu());
+            for (DichVu dv : dichVus) {
+                ChiTietLichHen ctlh = new ChiTietLichHen();
+                ctlh.setLichHen(saved);
+                ctlh.setDichVu(dv);
+                ctlh.setSoLuong(1);
+                ctlh.setDonGia(dv.getGiaDichVu());
+                ctlh.setThanhTien(dv.getGiaDichVu());
+                chiTietLichHenRepository.save(ctlh);
+            }
+        }
 
         if (req.getMaKhungGio() != null) {
             khungGioKhamRepository.findById(req.getMaKhungGio()).ifPresent(slot -> {

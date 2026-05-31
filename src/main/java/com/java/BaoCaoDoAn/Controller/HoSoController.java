@@ -74,7 +74,7 @@ public class HoSoController {
             // Added to connect public/don-thuoc.html with prescriptions created by doctors.
             BenhNhan bn = bnOpt.get();
             model.addAttribute("benhNhan", bn);
-            model.addAttribute("donThuocs", donThuocService.getDonThuocByBenhNhan(bn.getMaBenhNhan()));
+            model.addAttribute("donThuocs", donThuocService.getPaidDonThuocByBenhNhan(bn.getMaBenhNhan()));
         }
         return "public/don-thuoc";
     }
@@ -91,7 +91,7 @@ public class HoSoController {
             // Added to keep the old /ho-so/xet-nghiem route backed by saved test results.
             BenhNhan bn = bnOpt.get();
             model.addAttribute("benhNhan", bn);
-            model.addAttribute("ketQuas", ketQuaXetNghiemService.getKetQuaByBenhNhan(bn.getMaBenhNhan()));
+            model.addAttribute("ketQuas", ketQuaXetNghiemService.getPaidKetQuaByBenhNhan(bn.getMaBenhNhan()));
         }
         return "public/xet-nghiem";
     }
@@ -108,7 +108,7 @@ public class HoSoController {
             // Added to connect public/ket-qua-xet-nghiem.html with saved test results.
             BenhNhan bn = bnOpt.get();
             model.addAttribute("benhNhan", bn);
-            model.addAttribute("ketQuas", ketQuaXetNghiemService.getKetQuaByBenhNhan(bn.getMaBenhNhan()));
+            model.addAttribute("ketQuas", ketQuaXetNghiemService.getPaidKetQuaByBenhNhan(bn.getMaBenhNhan()));
         }
         return "public/ket-qua-xet-nghiem";
     }

@@ -107,11 +107,17 @@ public class AdminKhamBenhController {
     }
 
     @GetMapping("/chi-dinh")
-    public String lapPhieuChiDinh(@RequestParam(value = "maPhieuKham", required = false) String maPhieuKham, Model model) {
+    public String lapPhieuChiDinh(@RequestParam(value = "maPhieuKham", required = false) String maPhieuKham, 
+                                  HttpSession session,
+                                  Model model) {
         // Added to connect phieu-chi-dinh.html with real examination and service data.
         PhieuKham phieuKham = maPhieuKham != null ? khamBenhService.getPhieuKham(maPhieuKham).orElse(null) : null;
         // Added: combobox source for selecting an examination if the page is opened directly.
-        model.addAttribute("phieuKhams", khamBenhService.getAllPhieuKham());
+        BacSi currentBacSi = resolveLoggedInBacSi(session);
+        List<PhieuKham> phieuKhams = currentBacSi != null 
+                ? khamBenhService.getPhieuKhamByBacSi(currentBacSi.getMaBacSi())
+                : khamBenhService.getAllPhieuKham();
+        model.addAttribute("phieuKhams", phieuKhams);
         model.addAttribute("phieuKham", phieuKham);
         model.addAttribute("dichVus", dichVuService.getAllDichVu());
         model.addAttribute("phieuChiDinh", new PhieuChiDinh());
@@ -171,14 +177,21 @@ public class AdminKhamBenhController {
     }
 
     @GetMapping("/ket-qua")
-    public String xemKetQua(@RequestParam(value = "maKetQua", required = false) String maKetQua, Model model) {
-        // Added to connect xem-ket-qua-xet-nghiem.html with results entered by technicians/admin.
-        List<KetQuaXetNghiem> ketQuas = ketQuaXetNghiemService.getAllKetQua();
+    public String xemKetQua(@RequestParam(value = "maKetQua", required = false) String maKetQua,
+                            @RequestParam(value = "ngayLoc", required = false) String ngayLoc,
+                            @RequestParam(value = "trangThaiLoc", required = false) String trangThaiLoc,
+                            HttpSession session,
+                            Model model) {
+        BacSi currentBacSi = resolveLoggedInBacSi(session);
+        String currentMaBacSi = currentBacSi != null ? currentBacSi.getMaBacSi() : null;
+        List<KetQuaXetNghiem> ketQuas = ketQuaXetNghiemService.filterKetQua(trangThaiLoc, ngayLoc, currentMaBacSi);
         KetQuaXetNghiem selected = maKetQua != null
                 ? ketQuaXetNghiemService.getKetQua(maKetQua).orElse(null)
                 : (ketQuas.isEmpty() ? null : ketQuas.get(0));
         model.addAttribute("ketQuas", ketQuas);
         model.addAttribute("ketQua", selected);
+        model.addAttribute("ngayLoc", ngayLoc);
+        model.addAttribute("trangThaiLoc", trangThaiLoc);
         // Added: results are loaded from KetQuaDichVu via KetQuaXetNghiem mapping.
         return "bac-si/ket-qua/xem-ket-qua-xet-nghiem";
     }
@@ -209,11 +222,17 @@ public class AdminKhamBenhController {
     }
 
     @GetMapping("/ke-thuoc")
-    public String keThuoc(@RequestParam(value = "maPhieuKham", required = false) String maPhieuKham, Model model) {
+    public String keThuoc(@RequestParam(value = "maPhieuKham", required = false) String maPhieuKham, 
+                          HttpSession session,
+                          Model model) {
         // Added to connect ke-thuoc.html with selected examination data.
         PhieuKham phieuKham = maPhieuKham != null ? khamBenhService.getPhieuKham(maPhieuKham).orElse(null) : null;
         // Added: combobox source for choosing the examination when entering prescription directly.
-        model.addAttribute("phieuKhams", khamBenhService.getAllPhieuKham());
+        BacSi currentBacSi = resolveLoggedInBacSi(session);
+        List<PhieuKham> phieuKhams = currentBacSi != null 
+                ? khamBenhService.getPhieuKhamByBacSi(currentBacSi.getMaBacSi())
+                : khamBenhService.getAllPhieuKham();
+        model.addAttribute("phieuKhams", phieuKhams);
         model.addAttribute("phieuKham", phieuKham);
         model.addAttribute("donThuoc", new DonThuoc());
         // Added: dynamic medicine catalog and stock data for prescription rows.
@@ -265,9 +284,9 @@ public class AdminKhamBenhController {
             redirectAttributes.addFlashAttribute("errorMessage", "Cần chọn ít nhất một thuốc trong đơn.");
             return "redirect:/bac-si/ke-thuoc?maPhieuKham=" + phieuKham.getMaPhieuKham();
         }
-        DonThuoc saved = donThuocService.taoDonThuoc(phieuKham, benhNhan, bacSi, chanDoan, loiDan, tenThuoc, lieuDung, soLanTrongNgay, soLuong, ghiChu);
+        donThuocService.taoDonThuoc(phieuKham, benhNhan, bacSi, chanDoan, loiDan, tenThuoc, lieuDung, soLanTrongNgay, soLuong, ghiChu);
         redirectAttributes.addFlashAttribute("successMessage", "Đã lưu đơn thuốc.");
-        return "redirect:/ho-so/don-thuoc?maDonThuoc=" + saved.getMaDonThuoc();
+        return "redirect:/bac-si/ke-thuoc?maPhieuKham=" + phieuKham.getMaPhieuKham();
     }
 
     private BenhNhan resolveBenhNhan(PhieuKham phieuKham, String maBenhNhan) {

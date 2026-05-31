@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
@@ -51,15 +51,7 @@
   </style>
 </head>
 <body>
-
-<nav class="navbar">
-  <div style="font-weight: 700; font-size: 18px;">🏥 Phòng Khám Đa Khoa</div>
-  <div>
-    <a href="/home">Trang Chủ</a>
-    <a href="/bac-si">Bác Sĩ</a>
-    <a href="/dat-lich/tao-moi" class="active">Đặt Lịch Hẹn</a>
-  </div>
-</nav>
+    <div th:replace="~{fragments/public-header :: publicHeader('dat-lich')}"></div>
 
 <div class="container">
   <div class="page-header">

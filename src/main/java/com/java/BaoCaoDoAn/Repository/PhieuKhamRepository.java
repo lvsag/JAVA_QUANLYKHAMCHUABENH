@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PhieuKhamRepository extends JpaRepository<PhieuKham, String> {
@@ -13,4 +14,6 @@ public interface PhieuKhamRepository extends JpaRepository<PhieuKham, String> {
     List<PhieuKham> findByBacSi_MaBacSiOrderByNgayKhamDesc(String maBacSi);
 
     List<PhieuKham> findByTrangThaiOrderByNgayKhamAsc(String trangThai);
+
+    Optional<PhieuKham> findByLichHen_MaLichHen(String maLichHen);
 }

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -94,28 +94,7 @@
     </style>
 </head>
 <body>
-
-<header class="navbar">
-    <div class="logo"><a href="/home">🏥 Phòng Khám Đa Khoa</a></div>
-    <ul class="nav-links">
-        <li><a th:href="@{/home}">Trang Chủ</a></li>
-        <li><a th:href="@{/danh-sach-dich-vu}">Dịch Vụ</a></li>
-        <li><a th:href="@{/bac-si}">Bác Sĩ</a></li>
-        <li><a th:href="@{/dat-lich/tao-moi}" class="active">Đặt Lịch Hẹn</a></li>
-        <li><a href="#">Liên Hệ</a></li>
-    </ul>
-    <div class="nav-actions">
-        <div class="search-box">
-            <span>🔍</span>
-            <input type="text" placeholder="Tìm kiếm dịch vụ, bác sĩ...">
-        </div>
-        <span style="font-size: 20px; cursor: pointer;">🔔</span>
-        <div style="display: flex; align-items: center; gap: 6px; font-weight: 600; cursor: pointer;" th:if="${session.loggedInUser != null}">
-            <div style="width: 28px; height: 28px; border-radius: 50%; background: #fff; color: #1565c0; display: flex; align-items: center; justify-content: center;">👤</div>
-            <span th:text="${session.loggedInUser.hoTen}">Tên user</span>
-        </div>
-    </div>
-</header>
+<div th:replace="~{fragments/public-header :: publicHeader('dat-lich')}"></div>
 
 <div class="stepper-container">
     <div class="stepper">

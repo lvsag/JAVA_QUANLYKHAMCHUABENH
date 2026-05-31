@@ -63,6 +63,8 @@ public class KhamBenhService {
         return phieuKhamRepository.save(phieuKham);
     }
 
+    public List<PhieuKham> getPhieuKhamByBenhNhan(String maBenhNhan) {
+        return phieuKhamRepository.findByBenhNhan_MaBenhNhanOrderByNgayKhamDesc(maBenhNhan);
     private Date toNgayKham(LichHen lichHen) {
         if (lichHen.getNgayHen() == null) {
             return new Date();

@@ -35,13 +35,19 @@ public class HoSoController {
     private com.java.BaoCaoDoAn.Service.KetQuaXetNghiemService ketQuaXetNghiemService;
 
     @GetMapping("/lich-su-kham")
-    public String showHistory(HttpSession session, Model model) {
+    public String showHistory(@org.springframework.web.bind.annotation.RequestParam(value = "maBenhNhan", required = false) String maBenhNhan, HttpSession session, Model model) {
         TaiKhoan user = (TaiKhoan) session.getAttribute("loggedInUser");
         if (user == null) {
             return "redirect:/login";
         }
 
-        Optional<BenhNhan> bnOpt = benhNhanRepository.findByTaiKhoan_MaTaiKhoan(user.getMaTaiKhoan());
+        Optional<BenhNhan> bnOpt;
+        if (maBenhNhan != null && !maBenhNhan.trim().isEmpty()) {
+            bnOpt = benhNhanRepository.findById(maBenhNhan);
+        } else {
+            bnOpt = benhNhanRepository.findByTaiKhoan_MaTaiKhoan(user.getMaTaiKhoan());
+        }
+
         if (bnOpt.isPresent()) {
             BenhNhan bn = bnOpt.get();
             model.addAttribute("benhNhan", bn);
@@ -51,13 +57,19 @@ public class HoSoController {
     }
 
     @GetMapping("/don-thuoc")
-    public String showPrescriptions(HttpSession session, Model model) {
+    public String showPrescriptions(@org.springframework.web.bind.annotation.RequestParam(value = "maBenhNhan", required = false) String maBenhNhan, HttpSession session, Model model) {
         TaiKhoan user = (TaiKhoan) session.getAttribute("loggedInUser");
         if (user == null) {
             return "redirect:/login";
         }
 
-        Optional<BenhNhan> bnOpt = benhNhanRepository.findByTaiKhoan_MaTaiKhoan(user.getMaTaiKhoan());
+        Optional<BenhNhan> bnOpt;
+        if (maBenhNhan != null && !maBenhNhan.trim().isEmpty()) {
+            bnOpt = benhNhanRepository.findById(maBenhNhan);
+        } else {
+            bnOpt = benhNhanRepository.findByTaiKhoan_MaTaiKhoan(user.getMaTaiKhoan());
+        }
+
         if (bnOpt.isPresent()) {
             // Added to connect public/don-thuoc.html with prescriptions created by doctors.
             BenhNhan bn = bnOpt.get();

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Danh Sách Hóa Đơn', 'hoa-don', ~{::section})}">
+<head>
+    <title>Danh Sách Hóa Đơn</title>
+</head>
+<body>
+    <section>
+        <!-- Import Bootstrap & FontAwesome inside content area -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+
+        <div class="container-fluid py-4">
+            <!-- Page Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="h4 mb-1 text-primary fw-bold">💰 Quản Lý Thanh Toán &amp; Hóa Đơn</h2>
+                    <p class="text-muted small mb-0">Tra cứu, in ấn và phê duyệt hóa đơn thanh toán viện phí của bệnh nhân.</p>
+                </div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Admin</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Hóa đơn</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <!-- Messages alert feedback -->
+            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+                <i class="fas fa-check-circle me-2"></i> <span th:text="${successMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i> <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- Invoices Card Table -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold text-muted"><i class="fas fa-list me-2"></i> Danh sách tất cả hóa đơn</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light text-muted small text-uppercase">
+                                <tr>
+                                    <th class="ps-4">Mã Hóa Đơn</th>
+                                    <th>Bệnh Nhân</th>
+                                    <th>Mã Nội Trú</th>
+                                    <th>Ngày Tạo</th>
+                                    <th class="text-end">Tổng Cần Thanh Toán</th>
+                                    <th class="text-end">Đã Thanh Toán</th>
+                                    <th class="text-center">Trạng Thế / Trạng Thái</th>
+                                    <th class="text-end pe-4">Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="hd : ${danhSachHoaDon}">
+                                    <td class="ps-4 fw-bold text-primary" th:text="${hd.maHoaDon}"></td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-light rounded-circle p-2 me-3">
+                                                <i class="fas fa-user-injured text-primary"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold text-dark" th:text="${hd.benhNhan != null ? hd.benhNhan.hoTen : 'N/A'}"></div>
+                                                <div class="small text-muted" th:text="${hd.benhNhan != null ? hd.benhNhan.maBenhNhan : 'N/A'}"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-secondary border px-2 py-1 fw-bold" th:text="${hd.nhapVienNoiTru != null ? hd.nhapVienNoiTru.maNoiTru : 'N/A'}"></span>
+                                    </td>
+                                    <td>
+                                        <div th:text="${#dates.format(hd.ngayTao != null ? hd.ngayTao : hd.ngayThanhToan, 'dd/MM/yyyy HH:mm')}"></div>
+                                    </td>
+                                    <td class="text-end fw-bold text-dark">
+                                        <span th:text="${#numbers.formatInteger(hd.tongCanThanhToan, 0, 'POINT') + ' đ'}"></span>
+                                    </td>
+                                    <td class="text-end fw-bold text-success">
+                                        <span th:text="${#numbers.formatInteger(hd.soTienDaThanhToan, 0, 'POINT') + ' đ'}"></span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge rounded-pill px-3 py-2 fw-bold"
+                                              th:classappend="${hd.trangThai == 'Đã thanh toán' ? 'bg-success text-white' : 'bg-warning text-dark'}"
+                                              th:text="${hd.trangThai}"></span>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <div class="btn-group btn-group-sm">
+                                            <a th:href="@{/admin/hoa-don/chi-tiet/{ma}(ma=${hd.maHoaDon})}" class="btn btn-outline-primary" title="Chi tiết hóa đơn">
+                                                <i class="fas fa-eye"></i> Chi tiết
+                                            </a>
+                                            <a th:href="@{/admin/hoa-don/xoa/{ma}(ma=${hd.maHoaDon})}" class="btn btn-outline-danger" title="Xóa hóa đơn"
+                                               onclick="return confirm('Bạn có chắc muốn xóa hóa đơn này không?')">
+                                                <i class="fas fa-trash-alt"></i> Xóa
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(danhSachHoaDon)}">
+                                    <td colspan="8" class="text-center py-5 text-muted">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/925/925014.png" width="85" class="mb-3 opacity-50" />
+                                        <p class="mb-0 fw-bold">Chưa có hóa đơn nào được khởi tạo</p>
+                                        <p class="small text-muted">Hóa đơn sẽ tự động phát sinh khi bạn làm thủ tục xuất viện nội trú và nhấn nút Thanh toán.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

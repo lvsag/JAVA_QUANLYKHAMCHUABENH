@@ -73,6 +73,8 @@
             }
             .badge-warning { background: #FEF3C7; color: #92400E; }
             .badge-success { background: #DCFCE7; color: #166534; }
+            .badge-danger { background: #FEE2E2; color: #991B1B; }
+            .badge-gray { background: #F1F5F9; color: #475569; }
             
             .btn-sm { padding: 6px 10px; border-radius: 4px; font-size: 12px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: 0.2s; }
             .btn-add { background: var(--accent-blue); color: white; }
@@ -140,7 +142,10 @@
                                 <td th:text="${dv.chuyenKhoa != null ? dv.chuyenKhoa.tenChuyenKhoa : 'Chưa rõ'}">Khoa</td>
                                 <td th:text="${#numbers.formatDecimal(dv.giaDichVu, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
                                 <td>
-                                    <span class="badge badge-success" th:text="${dv.trangThai}">Đang dùng</span>
+                                    <span class="badge" 
+                                          th:classappend="${dv.trangThai == 'Đang dùng' || dv.trangThai == 'Hoạt động' ? 'badge-success' : 
+                                                           (dv.trangThai == 'Ngừng cung cấp' || dv.trangThai == 'Ngừng dùng' || dv.trangThai == 'Không hoạt động' ? 'badge-gray' : 'badge-success')}" 
+                                          th:text="${dv.trangThai != null ? dv.trangThai : 'Chưa rõ'}">Đang dùng</span>
                                 </td>
                                 <td>
                                     <a th:href="@{/admin/xet-nghiem/sua/{id}(id=${dv.maDichVu})}" class="btn-sm btn-edit">Sửa</a>
@@ -196,8 +201,15 @@
                                     <span th:text="${t.tonKho}" th:style="${t.tonKho <= t.nguongCanhBao ? 'color: #EF4444; font-weight: bold;' : ''}">0</span>
                                 </td>
                                 <td>
-                                    <span th:class="${t.tonKho > 0 ? 'badge badge-success' : 'badge badge-warning'}"
-                                          th:text="${t.trangThai}">Còn hàng</span>
+                                    <!-- Ưu tiên trạng thái Ngừng kinh doanh -->
+                                    <span th:if="${t.trangThai == 'Ngừng kinh doanh' || t.trangThai == 'Ngừng dùng'}" class="badge badge-gray" th:text="${t.trangThai != null ? t.trangThai : 'Ngừng kinh doanh'}">Ngừng kinh doanh</span>
+                                    
+                                    <!-- Nếu không ngừng kinh doanh, tự động suy theo tồn kho -->
+                                    <th:block th:if="${t.trangThai != 'Ngừng kinh doanh' && t.trangThai != 'Ngừng dùng'}">
+                                        <span th:if="${t.tonKho == 0}" class="badge badge-danger">Hết hàng</span>
+                                        <span th:if="${t.tonKho > 0 && t.tonKho <= t.nguongCanhBao}" class="badge badge-warning">Sắp hết hàng</span>
+                                        <span th:if="${t.tonKho > t.nguongCanhBao}" class="badge badge-success">Còn hàng</span>
+                                    </th:block>
                                 </td>
                                 <td>
                                     <div style="display: flex; gap: 6px;">
@@ -221,8 +233,15 @@
                                     <span th:text="${v.tonKho}" th:style="${v.tonKho <= v.nguongCanhBao ? 'color: #EF4444; font-weight: bold;' : ''}">0</span>
                                 </td>
                                 <td>
-                                    <span th:class="${v.tonKho > 0 ? 'badge badge-success' : 'badge badge-warning'}"
-                                          th:text="${v.trangThai}">Còn hàng</span>
+                                    <!-- Ưu tiên trạng thái Ngừng kinh doanh -->
+                                    <span th:if="${v.trangThai == 'Ngừng kinh doanh' || v.trangThai == 'Ngừng dùng'}" class="badge badge-gray" th:text="${v.trangThai != null ? v.trangThai : 'Ngừng kinh doanh'}">Ngừng kinh doanh</span>
+                                    
+                                    <!-- Nếu không ngừng kinh doanh, tự động suy theo tồn kho -->
+                                    <th:block th:if="${v.trangThai != 'Ngừng kinh doanh' && v.trangThai != 'Ngừng dùng'}">
+                                        <span th:if="${v.tonKho == 0}" class="badge badge-danger">Hết hàng</span>
+                                        <span th:if="${v.tonKho > 0 && v.tonKho <= v.nguongCanhBao}" class="badge badge-warning">Sắp hết hàng</span>
+                                        <span th:if="${v.tonKho > v.nguongCanhBao}" class="badge badge-success">Còn hàng</span>
+                                    </th:block>
                                 </td>
                                 <td>
                                     <div style="display: flex; gap: 6px;">

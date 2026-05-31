@@ -27,6 +27,9 @@ public class HoaDonService {
     private NhapVienNoiTruService nhapVienNoiTruService;
 
     @Autowired
+    private KhamBenhService khamBenhService;
+
+    @Autowired
     private ChiTietHoaDonService chiTietHoaDonService;
 
     public List<HoaDon> findAll() {
@@ -43,6 +46,10 @@ public class HoaDonService {
 
     public Optional<HoaDon> findByMaNoiTru(String maNoiTru) {
         return hoaDonRepository.findByNhapVienNoiTru_MaNoiTru(maNoiTru);
+    }
+
+    public Optional<HoaDon> findByMaLichHen(String maLichHen) {
+        return hoaDonRepository.findByMaLichHen(maLichHen);
     }
 
     public boolean existsByMaNoiTru(String maNoiTru) {
@@ -159,10 +166,114 @@ public class HoaDonService {
         hd.setTongTien(tongTien);
         hd.setTongCanThanhToan(tongTien); // TongCanThanhToan = TongTien - GiamBHYT - GiamUuDai
         hd.setChiTietHoaDons(details);
-
-        // 7. Lưu HoaDon và các ChiTietHoaDon
+        // 7. Lưu HoaDon (JPA sẽ tự động lưu ChiTietHoaDon nhờ CascadeType.ALL)
         HoaDon savedHd = hoaDonRepository.save(hd);
-        chiTietHoaDonService.saveAll(details);
+
+        return savedHd;
+    }
+
+    public HoaDon taoHoaDonTuPhieuKham(String maPhieuKham) {
+        // 1. Tìm PhieuKham theo maPhieuKham
+        Optional<PhieuKham> pkOpt = khamBenhService.getPhieuKham(maPhieuKham);
+        if (!pkOpt.isPresent()) {
+            throw new IllegalArgumentException("Không tìm thấy phiếu khám với mã: " + maPhieuKham);
+        }
+        PhieuKham pk = pkOpt.get();
+
+        // 2. Lấy mã lịch hẹn để tránh tạo trùng hóa đơn
+        String maLichHen = null;
+        if (pk.getLichHen() != null) {
+            maLichHen = pk.getLichHen().getMaLichHen();
+            Optional<HoaDon> existingOpt = hoaDonRepository.findByMaLichHen(maLichHen);
+            if (existingOpt.isPresent()) {
+                return existingOpt.get(); // Nếu đã tạo hóa đơn cho lịch hẹn này rồi thì trả về
+            }
+        } else {
+            // Nếu phiếu khám không có lịch hẹn, lấy theo mã phiếu khám (lưu tạm vào maLichHen)
+            maLichHen = pk.getMaPhieuKham();
+            Optional<HoaDon> existingOpt = hoaDonRepository.findByMaLichHen(maLichHen);
+            if (existingOpt.isPresent()) {
+                return existingOpt.get();
+            }
+        }
+
+        // 3. Khởi tạo HoaDon
+        HoaDon hd = new HoaDon();
+        hd.setMaHoaDon(generateMaHoaDon());
+        hd.setBenhNhan(pk.getBenhNhan());
+        hd.setMaLichHen(maLichHen);
+        hd.setTrangThai("Chờ thanh toán");
+        hd.setGiamBHYT(BigDecimal.ZERO);
+        hd.setGiamUuDai(BigDecimal.ZERO);
+        hd.setSoTienDaThanhToan(BigDecimal.ZERO);
+
+        List<ChiTietHoaDon> details = new ArrayList<>();
+
+        // 4. Tạo ChiTietHoaDon cho Tiền Công Khám
+        BigDecimal phiKham = new BigDecimal("150000"); // Mặc định 150.000đ
+        if (pk.getBacSi() != null && pk.getBacSi().getPhiKham() != null) {
+            phiKham = pk.getBacSi().getPhiKham();
+        } else if (pk.getLichHen() != null && pk.getLichHen().getPhiDuKien() != null) {
+            phiKham = pk.getLichHen().getPhiDuKien();
+        }
+        ChiTietHoaDon ctKham = new ChiTietHoaDon();
+        ctKham.setHoaDon(hd);
+        ctKham.setKhoanMuc("Phí khám bệnh (" + (pk.getBacSi() != null ? pk.getBacSi().getHoTen() : "Bác sĩ") + ")");
+        ctKham.setSoLuong(1);
+        ctKham.setDonGia(phiKham);
+        ctKham.setThanhTien(phiKham);
+        ctKham.setGhiChu("Mã phiếu: " + pk.getMaPhieuKham());
+        details.add(ctKham);
+
+        // 5. Tính tiền Dịch vụ Cận lâm sàng (Từ PhieuChiDinh)
+        if (pk.getPhieuChiDinhs() != null) {
+            for (PhieuChiDinh pcd : pk.getPhieuChiDinhs()) {
+                if (pcd.getChiTietChiDinhs() != null) {
+                    for (ChiTietChiDinh ctcd : pcd.getChiTietChiDinhs()) {
+                        ChiTietHoaDon ctDichVu = new ChiTietHoaDon();
+                        ctDichVu.setHoaDon(hd);
+                        ctDichVu.setKhoanMuc("Dịch vụ CLS: " + (ctcd.getDichVu() != null ? ctcd.getDichVu().getTenDichVu() : "N/A"));
+                        ctDichVu.setSoLuong(1);
+                        BigDecimal giaDichVu = ctcd.getDichVu() != null && ctcd.getDichVu().getGiaDichVu() != null ? ctcd.getDichVu().getGiaDichVu() : BigDecimal.ZERO;
+                        ctDichVu.setDonGia(giaDichVu);
+                        ctDichVu.setThanhTien(giaDichVu);
+                        ctDichVu.setGhiChu("Phiếu CĐ: " + pcd.getMaPhieuChiDinh());
+                        details.add(ctDichVu);
+                    }
+                }
+            }
+        }
+
+        // 6. Tính tiền Thuốc (Từ DonThuoc)
+        if (pk.getDonThuocs() != null) {
+            for (DonThuoc dt : pk.getDonThuocs()) {
+                if (dt.getChiTietDonThuocs() != null) {
+                    for (ChiTietDonThuoc ctdt : dt.getChiTietDonThuocs()) {
+                        ChiTietHoaDon ctThuoc = new ChiTietHoaDon();
+                        ctThuoc.setHoaDon(hd);
+                        ctThuoc.setKhoanMuc("Thuốc: " + (ctdt.getThuoc() != null ? ctdt.getThuoc().getTenThuoc() : "N/A"));
+                        ctThuoc.setSoLuong(ctdt.getSoLuong() != null ? ctdt.getSoLuong() : 1);
+                        BigDecimal giaThuoc = ctdt.getThuoc() != null && ctdt.getThuoc().getGiaBan() != null ? ctdt.getThuoc().getGiaBan() : BigDecimal.ZERO;
+                        ctThuoc.setDonGia(giaThuoc);
+                        ctThuoc.setThanhTien(giaThuoc.multiply(new BigDecimal(ctThuoc.getSoLuong())));
+                        ctThuoc.setGhiChu("Liều dùng: " + ctdt.getLieuDung());
+                        details.add(ctThuoc);
+                    }
+                }
+            }
+        }
+
+        // 7. Tổng tiền
+        BigDecimal tongTien = BigDecimal.ZERO;
+        for (ChiTietHoaDon ct : details) {
+            tongTien = tongTien.add(ct.getThanhTien());
+        }
+        hd.setTongTien(tongTien);
+        hd.setTongCanThanhToan(tongTien);
+        hd.setChiTietHoaDons(details);
+
+        // 8. Lưu HoaDon (JPA sẽ tự động lưu ChiTietHoaDon nhờ CascadeType.ALL)
+        HoaDon savedHd = hoaDonRepository.save(hd);
 
         return savedHd;
     }

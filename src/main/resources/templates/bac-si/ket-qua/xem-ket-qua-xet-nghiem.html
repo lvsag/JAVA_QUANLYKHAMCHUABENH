@@ -28,7 +28,30 @@
         <div class="grid gap-5 lg:grid-cols-[405px_1fr]">
             <section class="rounded-lg border border-[#C7D4E4] bg-white">
                 <div class="rounded-t-lg bg-[#0B62C0] px-6 py-3 font-bold text-white">Danh sách bệnh nhân có kết quả</div>
-                <div class="p-4"><table class="w-full text-sm"><thead class="bg-[#E8EDF5]"><tr><th class="p-3 text-left">STT</th><th class="p-3 text-left">Bệnh nhân</th><th class="p-3 text-left">DV</th><th class="p-3 text-left">Giờ</th><th class="p-3 text-left">TT</th></tr></thead><tbody>
+                
+                <!-- Filter Form -->
+                <div class="p-4 border-b border-[#E1E8F0] bg-[#F8FAFC]">
+                    <form th:action="@{/bac-si/ket-qua}" method="get" class="flex flex-wrap gap-4 items-end">
+                        <div>
+                            <label class="block text-xs font-bold text-[#64748B] mb-1">Lọc theo ngày</label>
+                            <input type="date" name="ngayLoc" th:value="${ngayLoc}" class="rounded border border-[#C7D4E4] px-3 py-1.5 text-sm outline-none focus:border-[#0B62C0] min-w-[150px]">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-[#64748B] mb-1">Trạng thái kết luận</label>
+                            <select name="trangThaiLoc" class="rounded border border-[#C7D4E4] px-3 py-1.5 text-sm outline-none focus:border-[#0B62C0] min-w-[180px]">
+                                <option value="">Tất cả</option>
+                                <option value="Moi" th:selected="${trangThaiLoc == 'Moi'}">Chưa kết luận</option>
+                                <option value="Da xem" th:selected="${trangThaiLoc == 'Da xem'}">Đã kết luận</option>
+                            </select>
+                        </div>
+                        <div class="flex gap-2">
+                            <button type="submit" class="rounded bg-[#1565C0] px-4 py-1.5 text-sm font-bold text-white hover:bg-[#0D47A1]">Lọc</button>
+                            <a th:href="@{/bac-si/ket-qua}" class="rounded border border-[#C7D4E4] bg-white px-4 py-1.5 text-sm font-bold text-[#65758F] hover:bg-gray-50">Xóa</a>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="p-0"><table class="w-full text-sm"><thead class="bg-[#E8EDF5]"><tr><th class="p-3 text-left">STT</th><th class="p-3 text-left">Bệnh nhân</th><th class="p-3 text-left">DV</th><th class="p-3 text-left">Giờ</th><th class="p-3 text-left">TT</th></tr></thead><tbody>
                     <tr th:each="item,iter:${ketQuas}" th:classappend="${ketQua != null and item.maKetQua == ketQua.maKetQua ? 'bg-[#E7F1FF]' : ''}" class="border-b border-[#E1E8F0] hover:bg-blue-50">
                         <td class="p-3" th:text="${#numbers.formatInteger(iter.index+1,2)}">01</td>
                         <td class="p-3"><a th:href="@{/bac-si/ket-qua(maKetQua=${item.maKetQua})}" th:text="${item.benhNhan != null ? item.benhNhan.hoTen : 'Chưa có bệnh nhân'}">Nguyễn Văn A</a></td>
@@ -55,9 +78,10 @@
                         <label class="text-sm font-bold">Kết quả chi tiết<textarea class="mt-2 h-32 w-full rounded-lg border border-[#B8CADF] p-4 font-normal text-[#58708E]" readonly th:text="${ketQua.ketQuaChiTiet}"></textarea></label>
                         <label class="text-sm font-bold md:col-span-2">Nhận định từ dịch vụ<textarea class="mt-2 h-24 w-full rounded-lg border border-[#B8CADF] p-4 font-normal text-[#58708E]" readonly th:text="${ketQua.nhanDinh}"></textarea></label>
                     </div>
-                    <label class="block text-sm font-bold">Kết luận bác sĩ<textarea name="ketLuanBacSi" class="mt-2 h-24 w-full rounded-lg border border-[#90BFFF] p-4 text-[#244A78]" th:text="${ketQua.ketLuanBacSi}"></textarea></label>
-                    <div class="flex gap-8"><button class="rounded-lg bg-[#2CA24D] px-10 py-4 font-bold text-white">Kết luận</button><a th:href="@{/bac-si/ke-thuoc(maPhieuKham=${ketQua.phieuChiDinh != null and ketQua.phieuChiDinh.phieuKham != null ? ketQua.phieuChiDinh.phieuKham.maPhieuKham : ''})}" class="rounded-lg bg-[#FF7F11] px-10 py-4 font-bold text-white">Kê toa</a><a th:href="@{/admin/lich-hen/them}" class="rounded-lg bg-[#6D28D9] px-10 py-4 font-bold text-white">Hẹn tái khám</a></div>
-                    <div class="rounded-lg border border-[#A8D5A2] bg-[#F0FBF0] p-6 text-[#58708E]"><b class="mb-3 block text-xl text-[#2CA24D]">Lưu ý</b>Bác sĩ chỉ nhập kết luận</div>
+                    <label class="block text-sm font-bold">Kết luận bác sĩ<textarea name="ketLuanBacSi" class="mt-2 h-24 w-full rounded-lg border border-[#90BFFF] p-4 text-[#244A78] outline-none focus:ring-2 focus:ring-[#0B62C0]" th:text="${ketQua.ketLuanBacSi}" th:readonly="${ketQua.trangThai == 'Da xem' or ketQua.trangThai == 'Đã xem'}" th:classappend="${ketQua.trangThai == 'Da xem' or ketQua.trangThai == 'Đã xem' ? 'bg-[#F8FAFC]' : ''}"></textarea></label>
+                    <div class="flex gap-8" th:if="${ketQua.trangThai != 'Da xem' and ketQua.trangThai != 'Đã xem'}"><button class="rounded-lg bg-[#2CA24D] px-10 py-4 font-bold text-white hover:bg-green-700">Kết luận</button></div>
+                    <div class="rounded-lg border border-[#A8D5A2] bg-[#F0FBF0] p-6 text-[#58708E]" th:if="${ketQua.trangThai != 'Da xem' and ketQua.trangThai != 'Đã xem'}"><b class="mb-3 block text-xl text-[#2CA24D]">Lưu ý</b>Bác sĩ chỉ nhập kết luận. Sau khi kết luận sẽ không thể sửa đổi.</div>
+                    <div class="rounded-lg border border-[#B8CADF] bg-[#E7F1FF] p-6 text-[#1565C0]" th:if="${ketQua.trangThai == 'Da xem' or ketQua.trangThai == 'Đã xem'}"><b class="mb-3 block text-xl text-[#0B62C0]">Thông báo</b>Phiếu kết quả này đã được bác sĩ kết luận.</div>
                 </form>
             </section>
         </div>

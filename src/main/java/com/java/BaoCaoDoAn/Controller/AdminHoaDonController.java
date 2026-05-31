@@ -26,10 +26,25 @@ public class AdminHoaDonController {
     @Autowired
     private NhapVienNoiTruService nhapVienNoiTruService;
 
+    @Autowired
+    private KhamBenhService khamBenhService;
+
     @GetMapping("")
     public String danhSachHoaDon(Model model) {
         List<HoaDon> ds = hoaDonService.findAll();
+        List<PhieuKham> dsPhieuKham = khamBenhService.getAllPhieuKham(); // Fetch PhieuKham list for dropdown
+        
+        // Filter out PhieuKhams that already have an invoice
+        List<PhieuKham> phieuKhamChuaCoHoaDon = new java.util.ArrayList<>();
+        for (PhieuKham pk : dsPhieuKham) {
+            String maLichHen = pk.getLichHen() != null ? pk.getLichHen().getMaLichHen() : pk.getMaPhieuKham();
+            if (hoaDonService.findByMaLichHen(maLichHen).isEmpty()) {
+                phieuKhamChuaCoHoaDon.add(pk);
+            }
+        }
+
         model.addAttribute("danhSachHoaDon", ds);
+        model.addAttribute("phieuKhams", phieuKhamChuaCoHoaDon);
         model.addAttribute("activeMenu", "hoa-don");
         return "admin/hoa-don/danh-sach";
     }
@@ -78,6 +93,25 @@ public class AdminHoaDonController {
         } catch (Exception e) {
             ra.addFlashAttribute("errorMessage", "Lỗi khi tạo hóa đơn: " + e.getMessage());
             return "redirect:/admin/noi-tru";
+        }
+    }
+
+    @GetMapping("/tao-tu-ngoai-tru/{maPhieuKham}")
+    public String taoTuNgoaiTru(@PathVariable("maPhieuKham") String maPhieuKham, RedirectAttributes ra) {
+        if (maPhieuKham == null || maPhieuKham.trim().isEmpty()) {
+            ra.addFlashAttribute("errorMessage", "Vui lòng chọn Phiếu Khám.");
+            return "redirect:/admin/hoa-don";
+        }
+        try {
+            HoaDon hd = hoaDonService.taoHoaDonTuPhieuKham(maPhieuKham);
+            ra.addFlashAttribute("successMessage", "Tạo hóa đơn từ hồ sơ ngoại trú thành công.");
+            return "redirect:/admin/hoa-don/chi-tiet/" + hd.getMaHoaDon();
+        } catch (IllegalArgumentException e) {
+            ra.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/admin/hoa-don";
+        } catch (Exception e) {
+            ra.addFlashAttribute("errorMessage", "Lỗi khi tạo hóa đơn: " + e.getMessage());
+            return "redirect:/admin/hoa-don";
         }
     }
 

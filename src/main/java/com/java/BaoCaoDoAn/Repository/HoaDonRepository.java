@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
     List<HoaDon> findByBenhNhan_MaBenhNhan(String maBenhNhan);
     Optional<HoaDon> findByNhapVienNoiTru_MaNoiTru(String maNoiTru);
+    Optional<HoaDon> findByMaLichHen(String maLichHen);
 }

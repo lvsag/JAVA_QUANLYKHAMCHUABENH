@@ -89,11 +89,14 @@
         <a th:href="@{/admin/noi-tru}" class="nav-item" th:classappend="${activeMenu == 'noi-tru' ? 'active' : ''}"><span class="nav-icon">📋</span><span class="nav-text">Quản Lý Nội Trú</span></a>
         
         <!-- XET NGHIEM -->
-        <a th:href="@{/admin/xet-nghiem}" class="nav-item" th:classappend="${activeMenu == 'xet-nghiem' ? 'active' : ''}"><span class="nav-icon">🧪</span><span class="nav-text">Xét Nghiệm</span></a>
+        <a th:href="@{/admin/xet-nghiem}" class="nav-item" th:classappend="${activeMenu == 'xet-nghiem' ? 'active' : ''}"><span class="nav-icon">📋</span><span class="nav-text">Danh Mục Xét Nghiệm</span></a>
+        
+        <!-- NHAP KET QUA -->
+        <a th:href="@{/admin/nhap-ket-qua}" class="nav-item" th:classappend="${activeMenu == 'nhap-ket-qua' ? 'active' : ''}"><span class="nav-icon">🧪</span><span class="nav-text">Nhập Kết Quả CLS</span></a>
         
         <!-- THANH TOAN -->
         <a th:href="@{/admin/hoa-don}" class="nav-item" th:classappend="${activeMenu == 'hoa-don' || activeMenu == 'thanh-toan' ? 'active' : ''}"><span class="nav-icon">💰</span><span class="nav-text">Thanh Toán</span></a>
-        <a href="#" class="nav-item" th:classappend="${activeMenu == 'bao-cao' ? 'active' : ''}"><span class="nav-icon">📊</span><span class="nav-text">Báo Cáo</span></a>
+        <a th:href="@{/admin/bao-cao}" class="nav-item" th:classappend="${activeMenu == 'bao-cao' ? 'active' : ''}"><span class="nav-icon">📊</span><span class="nav-text">Báo Cáo</span></a>
         <div class="nav-separator"></div>
         <a th:href="@{/admin/cai-dat}" class="nav-item" th:classappend="${activeMenu == 'cai-dat' ? 'active' : ''}"><span class="nav-icon">⚙️</span><span class="nav-text">Cài Đặt</span></a>
         <a th:href="@{/admin/tai-khoan}" class="nav-item" th:classappend="${activeMenu == 'tai-khoan' ? 'active' : ''}"><span class="nav-icon">🔒</span><span class="nav-text">Phân Quyền</span></a>

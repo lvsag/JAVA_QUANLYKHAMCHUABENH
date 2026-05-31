@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -116,9 +116,9 @@
         </div>
         <ul class="side-menu">
             <li><a href="/lich-su-dat-lich" class="active"><span class="menu-icon">📅</span> Lịch sử khám</a></li>
-            <li><a href="#"><span class="menu-icon">💊</span> Đơn thuốc</a></li>
-            <li><a href="#"><span class="menu-icon">🔬</span> Kết quả xét nghiệm</a></li>
-            <li><a href="#"><span class="menu-icon">⭐</span> Đánh giá của tôi</a></li>
+            <li><a href="/ho-so/don-thuoc"><span class="menu-icon">💊</span> Đơn thuốc</a></li>
+            <li><a href="/ho-so/xet-nghiem"><span class="menu-icon">🔬</span> Kết quả xét nghiệm</a></li>
+            <li><a href="#" onclick="alert('Chức năng đánh giá đang được phát triển')"><span class="menu-icon">⭐</span> Đánh giá của tôi</a></li>
             <li><a href="/ho-so"><span class="menu-icon">👤</span> Thông tin cá nhân</a></li>
         </ul>
     </aside>
@@ -212,8 +212,8 @@
                             <button type="submit" class="btn-act btn-act-danger">Hủy lịch</button>
                         </form>
                         
-                        <a href="#" class="btn-act btn-act-secondary" th:if="${lh.trangThai != 'Chờ xác nhận' && lh.trangThai != 'Đã hủy'}">Xem chi tiết</a>
-                        <a href="#" class="btn-act btn-act-primary" th:if="${lh.trangThai == 'Hoàn thành'}">In đơn thuốc</a>
+                        <a href="#" onclick="alert('Chức năng đang phát triển')" class="btn-act btn-act-secondary" th:if="${lh.trangThai != 'Chờ xác nhận' && lh.trangThai != 'Đã hủy'}">Xem chi tiết</a>
+                        <a href="#" onclick="alert('Chức năng in đang phát triển')" class="btn-act btn-act-primary" th:if="${lh.trangThai == 'Hoàn thành'}">In đơn thuốc</a>
                         <a th:href="@{/dat-lich/tao-moi}" class="btn-act btn-act-secondary" th:if="${lh.trangThai == 'Đã hủy'}">Đặt lại lịch</a>
                     </div>
                 </div>

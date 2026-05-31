@@ -66,7 +66,16 @@ public class DonThuocService {
             chiTiet.setThuoc(thuoc);
             chiTiet.setLieuDung(getValue(lieuDung, i));
             chiTiet.setSoLanTrongNgay(getValue(soLanTrongNgay, i));
-            chiTiet.setSoLuong(parseInt(getValue(soLuong, i), 1));
+            
+            int soLuongThuoc = parseInt(getValue(soLuong, i), 1);
+            chiTiet.setSoLuong(soLuongThuoc);
+            
+            // Deduct from inventory
+            if (thuoc.getTonKho() != null) {
+                thuoc.setTonKho(Math.max(0, thuoc.getTonKho() - soLuongThuoc));
+                thuocService.save(thuoc);
+            }
+            
             chiTiet.setGhiChu(getValue(ghiChu, i));
             chiTietList.add(chiTiet);
         }

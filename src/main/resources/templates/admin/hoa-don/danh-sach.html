@@ -34,6 +34,38 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
 
+            <!-- Create Invoice from Outpatient (Ngoại trú) -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4 bg-light rounded d-flex align-items-center justify-content-between">
+                    <div>
+                        <h6 class="fw-bold text-dark mb-1"><i class="fas fa-stethoscope text-primary me-2"></i> Lập Hóa Đơn Ngoại Trú (Khám Bệnh)</h6>
+                        <p class="text-muted small mb-0">Tự động tổng hợp tiền công khám, tiền dịch vụ CLS và tiền thuốc từ Phiếu Khám.</p>
+                    </div>
+                    <div class="d-flex gap-2 align-items-center">
+                        <select id="selectPhieuKham" class="form-select form-select-sm" style="width: 250px;">
+                            <option value="">-- Chọn Phiếu Khám --</option>
+                            <option th:each="pk : ${phieuKhams}" th:value="${pk.maPhieuKham}" 
+                                    th:text="${pk.maPhieuKham + ' - ' + (pk.benhNhan != null ? pk.benhNhan.hoTen : 'N/A')}">
+                            </option>
+                        </select>
+                        <button type="button" class="btn btn-primary btn-sm px-3 fw-bold" onclick="taoHoaDonNgoaiTru()">
+                            <i class="fas fa-file-invoice-dollar me-1"></i> Tạo Hóa Đơn
+                        </button>
+                        
+                        <script>
+                            function taoHoaDonNgoaiTru() {
+                                const maPk = document.getElementById('selectPhieuKham').value;
+                                if (!maPk) {
+                                    alert('Vui lòng chọn Phiếu Khám trước khi tạo hóa đơn!');
+                                    return;
+                                }
+                                window.location.href = '/admin/hoa-don/tao-tu-ngoai-tru/' + encodeURIComponent(maPk);
+                            }
+                        </script>
+                    </div>
+                </div>
+            </div>
+
             <!-- Invoices Card Table -->
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">

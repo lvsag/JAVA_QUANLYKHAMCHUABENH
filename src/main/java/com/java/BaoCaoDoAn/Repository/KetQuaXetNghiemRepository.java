@@ -13,4 +13,13 @@ public interface KetQuaXetNghiemRepository extends JpaRepository<KetQuaXetNghiem
     List<KetQuaXetNghiem> findByBacSi_MaBacSiOrderByNgayKetQuaDesc(String maBacSi);
 
     List<KetQuaXetNghiem> findByTrangThaiOrderByNgayKetQuaDesc(String trangThai);
+
+    @org.springframework.data.jpa.repository.Query("SELECT k FROM KetQuaXetNghiem k WHERE " +
+            "(:trangThai IS NULL OR :trangThai = '' OR k.trangThai = :trangThai) AND " +
+            "(:ngay IS NULL OR :ngay = '' OR FUNCTION('DATE', k.ngayKetQua) = FUNCTION('DATE', :ngay)) " +
+            "ORDER BY k.ngayKetQua DESC")
+    List<KetQuaXetNghiem> filterKetQua(
+            @org.springframework.data.repository.query.Param("trangThai") String trangThai,
+            @org.springframework.data.repository.query.Param("ngay") String ngay
+    );
 }

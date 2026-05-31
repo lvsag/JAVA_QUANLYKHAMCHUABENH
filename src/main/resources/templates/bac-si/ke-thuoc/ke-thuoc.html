@@ -85,7 +85,7 @@
                             <th class="p-3 text-left">Ghi chú</th>
                         </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="thuocTableBody">
                         <tr th:each="i:${#numbers.sequence(0,2)}" class="border-b border-[#EEF2F7]">
                             <td class="p-3" th:text="${i+1}">1</td>
                             <td class="p-3"><select name="tenThuoc" class="w-full rounded border border-[#D6DEE8] p-2">
@@ -105,6 +105,38 @@
                         </tr>
                         </tbody>
                     </table>
+                    <button type="button" onclick="addMedicineRow()" class="mt-3 flex items-center gap-1 text-xs font-bold text-[#1565C0] hover:underline">
+                        <span class="text-lg leading-none">+</span> Thêm dòng thuốc
+                    </button>
+                    
+                    <script>
+                        function addMedicineRow() {
+                            const tbody = document.getElementById('thuocTableBody');
+                            const rows = tbody.querySelectorAll('tr');
+                            if (rows.length === 0) return;
+                            const lastRow = rows[rows.length - 1];
+                            const newRow = lastRow.cloneNode(true);
+                            
+                            // Xóa dữ liệu cũ trên dòng mới
+                            const inputs = newRow.querySelectorAll('input');
+                            inputs.forEach(input => {
+                                if (input.name === 'soLuong') input.value = '1';
+                                else input.value = '';
+                            });
+                            
+                            const select = newRow.querySelector('select');
+                            if (select) select.selectedIndex = 0;
+                            
+                            tbody.appendChild(newRow);
+                            
+                            // Cập nhật lại số thứ tự
+                            const allRows = tbody.querySelectorAll('tr');
+                            allRows.forEach((row, index) => {
+                                const tdSTT = row.querySelector('td:first-child');
+                                if (tdSTT) tdSTT.innerText = index + 1;
+                            });
+                        }
+                    </script>
                     <label class="mt-5 block text-xs font-bold">Lời dặn<textarea name="loiDan"
                                                                                  class="mt-2 h-24 w-full rounded border border-[#B0BEC5] p-3 font-normal text-[#607D8B]"
                                                                                  placeholder="Ăn uống nhẹ, tránh cay nóng. Tái khám sau 7 ngày hoặc khi triệu chứng nặng hơn."></textarea></label>

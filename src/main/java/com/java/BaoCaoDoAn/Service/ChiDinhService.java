@@ -41,6 +41,18 @@ public class ChiDinhService {
         return chiTietChiDinhRepository.findByPhieuChiDinh_MaPhieuChiDinh(maPhieuChiDinh);
     }
 
+    public List<ChiTietChiDinh> getChiTietChoThucHien() {
+        return chiTietChiDinhRepository.findByTrangThaiOrderByPhieuChiDinh_NgayChiDinhAsc("Cho");
+    }
+
+    public Optional<ChiTietChiDinh> getChiTietById(Long id) {
+        return chiTietChiDinhRepository.findById(id);
+    }
+    
+    public void saveChiTietChiDinh(ChiTietChiDinh chiTiet) {
+        chiTietChiDinhRepository.save(chiTiet);
+    }
+
     @Transactional
     public PhieuChiDinh taoPhieuChiDinh(PhieuKham phieuKham, BenhNhan benhNhan, BacSi bacSi,
                                         List<String> maDichVuList, String ghiChu) {

@@ -10,8 +10,9 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
-
-
+import java.util.Optional;
+import jakarta.persistence.LockModeType;
+import org.springframework.data.jpa.repository.Lock;
 @Repository
 public interface KhungGioKhamRepository extends JpaRepository<KhungGioKham, Integer> {
 
@@ -21,4 +22,14 @@ public interface KhungGioKhamRepository extends JpaRepository<KhungGioKham, Inte
             @Param("maBacSi") String maBacSi,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
+
+    @Query("SELECT k FROM KhungGioKham k JOIN k.lichLamViec l WHERE l.bacSi.maBacSi = :maBacSi AND k.ngayKham = :ngayKham AND k.trangThai = :trangThai ORDER BY k.gioBatDau ASC")
+    List<KhungGioKham> findAvailableSlots(
+            @Param("maBacSi") String maBacSi,
+            @Param("ngayKham") LocalDate ngayKham,
+            @Param("trangThai") String trangThai);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT k FROM KhungGioKham k WHERE k.maKhungGio = :maKhungGio")
+    Optional<KhungGioKham> findByIdWithLock(@Param("maKhungGio") Integer maKhungGio);
 }

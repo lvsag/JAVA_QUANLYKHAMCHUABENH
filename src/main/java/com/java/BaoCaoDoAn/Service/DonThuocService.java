@@ -27,6 +27,10 @@ public class DonThuocService {
         return donThuocRepository.findByBenhNhan_MaBenhNhanOrderByNgayKeDesc(maBenhNhan);
     }
 
+    public List<DonThuoc> getPaidDonThuocByBenhNhan(String maBenhNhan) {
+        return donThuocRepository.findPaidDonThuocByBenhNhan(maBenhNhan);
+    }
+
     public Optional<DonThuoc> getDonThuoc(String maDonThuoc) {
         return donThuocRepository.findById(maDonThuoc);
     }

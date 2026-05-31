@@ -19,8 +19,8 @@ public class KetQuaXetNghiemService {
         return ketQuaXetNghiemRepository.findAll();
     }
 
-    public List<KetQuaXetNghiem> filterKetQua(String trangThai, String ngay) {
-        return ketQuaXetNghiemRepository.filterKetQua(trangThai, ngay);
+    public List<KetQuaXetNghiem> filterKetQua(String trangThai, String ngay, String maBacSi) {
+        return ketQuaXetNghiemRepository.filterKetQua(trangThai, ngay, maBacSi);
     }
 
     public List<KetQuaXetNghiem> getKetQuaMoi() {
@@ -29,6 +29,10 @@ public class KetQuaXetNghiemService {
 
     public List<KetQuaXetNghiem> getKetQuaByBenhNhan(String maBenhNhan) {
         return ketQuaXetNghiemRepository.findByBenhNhan_MaBenhNhanOrderByNgayKetQuaDesc(maBenhNhan);
+    }
+
+    public List<KetQuaXetNghiem> getPaidKetQuaByBenhNhan(String maBenhNhan) {
+        return ketQuaXetNghiemRepository.findPaidKetQuaByBenhNhan(maBenhNhan);
     }
 
     public Optional<KetQuaXetNghiem> getKetQua(String maKetQua) {

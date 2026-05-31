@@ -192,8 +192,8 @@ public class AuthController {
                                         HttpSession session,
                                         Model model) {
         try {
-            java.util.Date dob = new java.text.SimpleDateFormat("yyyy-MM-dd").parse(ngaySinh);
-            Optional<com.java.BaoCaoDoAn.Model.BenhNhan> bnOpt = benhNhanRepository.findBySoDienThoaiAndNgaySinhAndSoCCCD(soDienThoai, dob, soCCCD);
+            java.sql.Date dob = java.sql.Date.valueOf(ngaySinh.trim());
+            Optional<com.java.BaoCaoDoAn.Model.BenhNhan> bnOpt = benhNhanRepository.findBySoDienThoaiAndNgaySinhAndSoCCCD(soDienThoai.trim(), dob, soCCCD.trim());
             
             if (bnOpt.isPresent() && bnOpt.get().getTaiKhoan() != null) {
                 // Save account ID to session for reset step
@@ -204,6 +204,7 @@ public class AuthController {
                 return "public/forgot-password";
             }
         } catch (Exception e) {
+            e.printStackTrace();
             model.addAttribute("error", "Dữ liệu không hợp lệ.");
             return "public/forgot-password";
         }

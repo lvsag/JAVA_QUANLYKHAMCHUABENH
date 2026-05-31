@@ -67,8 +67,9 @@
                     <input type="hidden" th:field="*{maPhieuKham}">
                     <input type="hidden" name="benhNhan.maBenhNhan" th:value="${phieuKham.benhNhan != null ? phieuKham.benhNhan.maBenhNhan : ''}">
                     <input type="hidden" name="bacSi.maBacSi" th:value="${phieuKham.bacSi != null ? phieuKham.bacSi.maBacSi : ''}">
+                    <input type="hidden" name="lichHen.maLichHen" th:value="${phieuKham.lichHen != null ? phieuKham.lichHen.maLichHen : ''}">
                     <div class="grid gap-4 md:grid-cols-4">
-                        <label class="text-xs font-bold">Mã phiếu khám<input class="mt-1 w-full rounded border border-[#B0BEC5] p-2 font-normal text-[#607D8B]" th:field="*{maPhieuKham}" readonly></label>
+                        <label class="text-xs font-bold">Mã phiếu khám<input class="mt-1 w-full rounded border border-[#B0BEC5] p-2 font-normal text-[#607D8B]" th:value="${phieuKham.maPhieuKham}" disabled></label>
                         <label class="text-xs font-bold">Bệnh nhân<input class="mt-1 w-full rounded border border-[#B0BEC5] p-2 font-normal text-[#607D8B]" th:value="${phieuKham.benhNhan != null ? phieuKham.benhNhan.hoTen : ''}" readonly></label>
                         <label class="text-xs font-bold">Phòng khám<input class="mt-1 w-full rounded border border-[#B0BEC5] p-2 font-normal text-[#607D8B]" th:field="*{phongKham}" placeholder="PK01"></label>
                         <label class="text-xs font-bold">Bác sĩ<input class="mt-1 w-full rounded border border-[#B0BEC5] p-2 font-normal text-[#607D8B]" th:value="${phieuKham.bacSi != null ? phieuKham.bacSi.hoTen : ''}" readonly></label>

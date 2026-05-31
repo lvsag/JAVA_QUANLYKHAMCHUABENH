@@ -60,15 +60,24 @@ public class KhungGioGeneratorService {
                 LocalTime end    = llv.getGioKetThuc().toLocalTime();
                 List<KhungGioKham> newSlots = new ArrayList<>();
 
-                while (!cursor.plusMinutes(SLOT_DURATION_MINUTES).isAfter(end)) {
+                long totalMinutes = java.time.Duration.between(cursor, end).toMinutes();
+                if (totalMinutes <= 0) {
+                    totalMinutes += 24 * 60; // Nếu giờ kết thúc qua ngày hôm sau
+                }
+
+                int numSlots = (int) (totalMinutes / SLOT_DURATION_MINUTES);
+                for (int i = 0; i < numSlots; i++) {
                     KhungGioKham slot = new KhungGioKham();
                     slot.setLichLamViec(llv);
                     slot.setNgayKham(currentDate);
                     slot.setGioBatDau(cursor);
-                    slot.setGioKetThuc(cursor.plusMinutes(SLOT_DURATION_MINUTES));
+                    
+                    LocalTime next = cursor.plusMinutes(SLOT_DURATION_MINUTES);
+                    slot.setGioKetThuc(next);
                     slot.setTrangThai("Còn chỗ");
                     newSlots.add(slot);
-                    cursor = cursor.plusMinutes(SLOT_DURATION_MINUTES);
+                    
+                    cursor = next;
                 }
 
                 // Giới hạn số slot theo SoSlotToiDa

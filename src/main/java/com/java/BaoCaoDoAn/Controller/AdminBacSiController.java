@@ -36,8 +36,8 @@ public class AdminBacSiController {
         // Lấy danh sách bác sĩ kèm lịch làm việc hôm nay
         java.util.List<java.util.Map<String, Object>> danhSachBS = jdbcTemplate.queryForList(
             "SELECT bs.MaBacSi, bs.HoTen, ck.TenChuyenKhoa, bs.TrangThai, " +
-            "(SELECT CaLamViec FROM LichLamViec WHERE MaBacSi = bs.MaBacSi AND NgayTrongTuan = CASE WHEN DAYOFWEEK(CURRENT_DATE) = 1 THEN 8 ELSE DAYOFWEEK(CURRENT_DATE) END LIMIT 1) as CaHomNay, " +
-            "(SELECT SoSlotToiDa FROM LichLamViec WHERE MaBacSi = bs.MaBacSi AND NgayTrongTuan = CASE WHEN DAYOFWEEK(CURRENT_DATE) = 1 THEN 8 ELSE DAYOFWEEK(CURRENT_DATE) END LIMIT 1) as SlotHomNay " +
+            "(SELECT CaLamViec FROM LichLamViec WHERE MaBacSi = bs.MaBacSi AND TrangThai = 'Làm việc' AND NgayTrongTuan = CASE WHEN DAYOFWEEK(CURRENT_DATE) = 1 THEN 8 ELSE DAYOFWEEK(CURRENT_DATE) END LIMIT 1) as CaHomNay, " +
+            "(SELECT SoSlotToiDa FROM LichLamViec WHERE MaBacSi = bs.MaBacSi AND TrangThai = 'Làm việc' AND NgayTrongTuan = CASE WHEN DAYOFWEEK(CURRENT_DATE) = 1 THEN 8 ELSE DAYOFWEEK(CURRENT_DATE) END LIMIT 1) as SlotHomNay " +
             "FROM BacSi bs " +
             "LEFT JOIN ChuyenKhoa ck ON bs.MaChuyenKhoa = ck.MaChuyenKhoa"
         );
@@ -84,7 +84,7 @@ public class AdminBacSiController {
         model.addAttribute("selectedMaBacSi", selectedMaBacSi);
 
         if (selectedMaBacSi != null) {
-            java.util.List<com.java.BaoCaoDoAn.Model.LichLamViec> lichTuan = lichLamViecRepository.findByBacSi_MaBacSi(selectedMaBacSi);
+            java.util.List<com.java.BaoCaoDoAn.Model.LichLamViec> lichTuan = lichLamViecRepository.findByBacSi_MaBacSiAndTrangThai(selectedMaBacSi, "Làm việc");
             
             // Đảm bảo có đủ 7 ngày (Thứ 2 = 2, ..., CN = 8)
             java.util.Map<Integer, com.java.BaoCaoDoAn.Model.LichLamViec> lichMap = new java.util.HashMap<>();
@@ -120,11 +120,14 @@ public class AdminBacSiController {
         
         BacSi bs = bacSiService.getBacSiById(maBacSi).orElse(null);
         if (bs != null) {
-            // Xóa lịch cũ
-            java.util.List<com.java.BaoCaoDoAn.Model.LichLamViec> oldLich = lichLamViecRepository.findByBacSi_MaBacSi(maBacSi);
+            // Xóa lịch cũ bằng cách đổi trạng thái thành Hủy để không lỗi khóa ngoại
+            java.util.List<com.java.BaoCaoDoAn.Model.LichLamViec> oldLich = lichLamViecRepository.findByBacSi_MaBacSiAndTrangThai(maBacSi, "Làm việc");
             if (oldLich != null && !oldLich.isEmpty()) {
-                khungGioKhamRepository.deleteByLichLamViecIn(oldLich);
-                lichLamViecRepository.deleteAll(oldLich);
+                khungGioKhamRepository.cancelAvailableSlotsByLichLamViecIn(oldLich);
+                for (com.java.BaoCaoDoAn.Model.LichLamViec l : oldLich) {
+                    l.setTrangThai("Hủy");
+                }
+                lichLamViecRepository.saveAll(oldLich);
             }
             
             // Lưu lịch mới

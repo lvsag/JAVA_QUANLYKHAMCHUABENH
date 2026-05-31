@@ -191,6 +191,12 @@
         const ngayHenInput = document.getElementById("ngayHen");
         const khungGioSelect = document.getElementById("maKhungGio");
 
+        // Set min date for ngayHen to today
+        if (ngayHenInput) {
+            const today = new Date().toLocaleDateString('en-CA'); // Gets YYYY-MM-DD in local time
+            ngayHenInput.setAttribute('min', today);
+        }
+
         // Xử lý Thymeleaf th:field id (thường id sẽ map với tên field)
         const chuyenKhoaEl = chuyenKhoaSelect || document.getElementById("chuyenKhoaSelect");
 
@@ -224,6 +230,17 @@
                     .then(res => res.json())
                     .then(data => {
                         khungGioSelect.innerHTML = '<option value="">-- Chọn giờ rảnh --</option>';
+                        
+                        // Filter out past time slots if the selected date is today
+                        const todayStr = new Date().toLocaleDateString('en-CA');
+                        if (ngayHen === todayStr) {
+                            const now = new Date();
+                            const currentTime = now.getHours().toString().padStart(2, '0') + ':' + 
+                                              now.getMinutes().toString().padStart(2, '0') + ':' + 
+                                              now.getSeconds().toString().padStart(2, '0');
+                            data = data.filter(slot => slot.gioBatDau && slot.gioBatDau > currentTime);
+                        }
+
                         if (data.length === 0) {
                             khungGioSelect.innerHTML = '<option value="">Không có giờ trống</option>';
                         } else {

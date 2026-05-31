@@ -35,5 +35,6 @@ public interface KhungGioKhamRepository extends JpaRepository<KhungGioKham, Inte
 
     @org.springframework.data.jpa.repository.Modifying
     @org.springframework.transaction.annotation.Transactional
-    void deleteByLichLamViecIn(List<com.java.BaoCaoDoAn.Model.LichLamViec> lichLamViecs);
+    @Query("UPDATE KhungGioKham k SET k.trangThai = 'Hủy' WHERE k.lichLamViec IN :lichLamViecs AND k.trangThai = 'Còn chỗ'")
+    void cancelAvailableSlotsByLichLamViecIn(@Param("lichLamViecs") List<com.java.BaoCaoDoAn.Model.LichLamViec> lichLamViecs);
 }

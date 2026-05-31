@@ -46,7 +46,4 @@ public class KhuyenMai {
     @Column(name = "TrangThai", length = 20)
     private String trangThai = "Hoạt động";
 
-    @Column(name = "NgayTao", insertable = false, updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date ngayTao;
 }

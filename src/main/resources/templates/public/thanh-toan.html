@@ -91,7 +91,7 @@
             <tr>
               <td>Gói dịch vụ đã chọn (theo Step 1)</td>
               <td>1</td>
-              <td class="price-col" th:text="${tongTien != null ? #numbers.formatDecimal(tongTien, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Tính tại quầy'}">0đ</td>
+              <td class="price-col" th:text="${rawSubtotal != null ? #numbers.formatDecimal(rawSubtotal, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Tính tại quầy'}">0đ</td>
             </tr>
             </tbody>
           </table>
@@ -108,15 +108,15 @@
           <div class="card-title">Tóm tắt thanh toán</div>
           <div class="summary-row">
             <span>Tạm tính</span>
-            <span th:text="${tongTien != null ? #numbers.formatDecimal(tongTien, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Tính tại quầy'}">0đ</span>
+            <span th:text="${rawSubtotal != null ? #numbers.formatDecimal(rawSubtotal, 0, 'COMMA', 0, 'POINT') + 'đ' : '0đ'}">0đ</span>
           </div>
           <div class="summary-row">
             <span>Giảm giá / Ưu đãi</span>
-            <span style="color: #10b981;">0đ</span>
+            <span style="color: #10b981;" th:text="${giamGia != null ? '-' + #numbers.formatDecimal(giamGia, 0, 'COMMA', 0, 'POINT') + 'đ' : '0đ'}">0đ</span>
           </div>
           <div class="total-row">
             <span>Tổng cần thanh toán</span>
-            <span th:text="${tongTien != null ? #numbers.formatDecimal(tongTien, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Tính tại quầy'}">0đ</span>
+            <span th:text="${tongTien != null ? #numbers.formatDecimal(tongTien, 0, 'COMMA', 0, 'POINT') + 'đ' : '0đ'}">0đ</span>
           </div>
         </div>
 

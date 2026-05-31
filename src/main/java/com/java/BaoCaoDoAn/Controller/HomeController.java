@@ -241,7 +241,12 @@ public class HomeController {
         }
 
         // 2. Tính Tổng Tiền từ danh sách dịch vụ đẩy lên UI
+        double rawSubtotal = lichHenService.tinhTongTien(dto.getDanhSachMaDichVu(), null, dto.getMaBacSi());
         double tongTien = lichHenService.tinhTongTien(dto.getDanhSachMaDichVu(), dto.getMaKhuyenMai(), dto.getMaBacSi());
+        double giamGia = Math.max(0.0, rawSubtotal - tongTien);
+
+        model.addAttribute("rawSubtotal", rawSubtotal);
+        model.addAttribute("giamGia", giamGia);
         model.addAttribute("tongTien", tongTien);
         return "public/thanh-toan";
     }

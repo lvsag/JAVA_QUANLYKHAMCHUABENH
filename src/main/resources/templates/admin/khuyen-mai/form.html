@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout('Thiết Lập Khuyến Mãi', 'khuyen-mai', ~{::section})}">
+<head>
+    <title>Thiết Lập Khuyến Mãi</title>
+</head>
+<body>
+    <section>
+        <!-- Import Bootstrap & FontAwesome inside content area -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+
+        <div class="container py-4" style="max-width: 800px;">
+            <!-- Page Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="h4 mb-1 text-primary fw-bold" th:text="${khuyenMai.maKhuyenMai == null ? '🎁 Tạo Mới Chương Trình Khuyến Mãi' : '⚙️ Cập Nhật Chương Trình Khuyến Mãi'}">Thiết Lập Khuyến Mãi</h2>
+                    <p class="text-muted small mb-0">Nhập đầy đủ thông tin để định nghĩa mã giảm giá hoặc mã ưu đãi.</p>
+                </div>
+                <div>
+                    <a th:href="@{/admin/khuyen-mai}" class="btn btn-outline-secondary px-3 shadow-sm fw-bold">
+                        <i class="fas fa-arrow-left me-1"></i> Quay lại
+                    </a>
+                </div>
+            </div>
+
+            <!-- Error message feedback -->
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i> <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- Form Card -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white py-3">
+                    <h6 class="mb-0 fw-bold"><i class="fas fa-edit me-2"></i> Thông tin cấu hình chi tiết mã khuyến mãi</h6>
+                </div>
+                <div class="card-body p-4">
+                    <form th:action="@{/admin/khuyen-mai/luu}" th:object="${khuyenMai}" method="post">
+                        <!-- Hidden Primary Key (Only render when editing to prevent null parsing errors) -->
+                        <input type="hidden" th:if="${khuyenMai.maKhuyenMai != null}" th:field="*{maKhuyenMai}" />
+                        <input type="hidden" th:if="${khuyenMai.maKhuyenMai != null}" th:field="*{soLuotDaDung}" />
+
+                        <div class="row g-3">
+                            <!-- MaCode -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-muted small">Mã Code <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{maCode}" class="form-control border shadow-sm font-monospace text-uppercase" placeholder="Ví dụ: KM10K" required th:readonly="${khuyenMai.maKhuyenMai != null}" />
+                                <div class="form-text small">Viết liền không dấu, tự động chuyển thành chữ hoa. Không thể chỉnh sửa sau khi tạo.</div>
+                            </div>
+
+                            <!-- TenKhuyenMai -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-muted small">Tên Chương Trình <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{tenKhuyenMai}" class="form-control border shadow-sm" placeholder="Ví dụ: Giảm 10.000đ thanh toán" required />
+                            </div>
+
+                            <!-- GiaTriGiam -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-muted small">Giá Trị Giảm Cố Định (đ) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text border shadow-sm bg-light">đ</span>
+                                    <input type="number" th:field="*{giaTriGiam}" class="form-control border shadow-sm" placeholder="Ví dụ: 10000" min="0" required />
+                                </div>
+                            </div>
+
+                            <!-- SoLuotToiDa -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-muted small">Số Lượt Sử Dụng Tối Đa (Lượt)</label>
+                                <input type="number" th:field="*{soLuotToiDa}" class="form-control border shadow-sm" placeholder="Để trống nếu không giới hạn" min="0" />
+                            </div>
+
+                            <!-- NgayBatDau -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-muted small">Ngày Bắt Đầu Áp Dụng <span class="text-danger">*</span></label>
+                                <input type="date" th:field="*{ngayBatDau}" class="form-control border shadow-sm" required />
+                            </div>
+
+                            <!-- NgayKetThuc -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-muted small">Ngày Kết Thúc Áp Dụng <span class="text-danger">*</span></label>
+                                <input type="date" th:field="*{ngayKetThuc}" class="form-control border shadow-sm" required />
+                            </div>
+
+                            <!-- TrangThai -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-muted small">Trạng Thái Chương Trình</label>
+                                <select th:field="*{trangThai}" class="form-select border shadow-sm">
+                                    <option value="Hoạt động">🟢 Hoạt động</option>
+                                    <option value="Ngừng áp dụng">🔴 Ngừng áp dụng</option>
+                                </select>
+                            </div>
+
+                            <!-- SoLuotDaDung (Display Only if editing) -->
+                            <div class="col-md-6" th:if="${khuyenMai.maKhuyenMai != null}">
+                                <label class="form-label fw-bold text-muted small">Đã Sử Dụng Thực Tế</label>
+                                <input type="text" class="form-control border shadow-sm bg-light text-secondary fw-bold" th:value="${khuyenMai.soLuotDaDung + ' lượt'}" readonly />
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                            <a th:href="@{/admin/khuyen-mai}" class="btn btn-light px-4 py-2 border shadow-sm fw-bold">Hủy bỏ</a>
+                            <button type="submit" class="btn btn-primary px-4 py-2 shadow-sm fw-bold">
+                                <i class="fas fa-save me-1"></i> Lưu lại
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

@@ -25,7 +25,6 @@ public class LichHenService {
     private final ChuyenKhoaRepository chuyenKhoaRepository;
     private final KhungGioKhamRepository khungGioKhamRepository;
 
-    // ĐÃ THÊM: Repository để lấy giá Dịch vụ từ Database
     private final DichVuRepository     dichVuRepository;
     private final ChiTietLichHenRepository chiTietLichHenRepository;
 
@@ -59,10 +58,18 @@ public class LichHenService {
         // 3. Áp dụng mã khuyến mãi
         if (voucherCode != null && !voucherCode.trim().isEmpty()) {
             String code = voucherCode.trim().toUpperCase();
-            switch (code) {
-                case "GIAM30K"    -> subtotal = Math.max(0, subtotal - 30000);
-                case "CENTRAL10"  -> subtotal = subtotal * 0.9;
-                case "BHYT20"     -> subtotal = subtotal * 0.8;
+            
+            // Check in Database strictly
+            KhuyenMai km = khuyenMaiRepository.findByMaCode(code).orElse(null);
+            if (km != null && "Hoạt động".equals(km.getTrangThai())) {
+                java.sql.Date sqlToday = new java.sql.Date(System.currentTimeMillis());
+                if ((km.getNgayBatDau() == null || !sqlToday.before(km.getNgayBatDau())) &&
+                    (km.getNgayKetThuc() == null || !sqlToday.after(km.getNgayKetThuc()))) {
+                    if (km.getSoLuotToiDa() == null || km.getSoLuotDaDung() < km.getSoLuotToiDa()) {
+                        double discountAmount = km.getGiaTriGiam() != null ? km.getGiaTriGiam().doubleValue() : 0.0;
+                        subtotal = Math.max(0.0, subtotal - discountAmount);
+                    }
+                }
             }
         }
         return subtotal;
@@ -187,6 +194,90 @@ public class LichHenService {
                 slot.setTrangThai("Hết chỗ");
                 khungGioKhamRepository.save(slot);
             });
+        }
+
+        // TỰ ĐỘNG TẠO HÓA ĐƠN NGOẠI TRÚ KHI ĐẶT LỊCH THÀNH CÔNG VÀ TĂNG LƯỢT DÙNG MÃ KM
+        java.util.Optional<HoaDon> existingHd = hoaDonRepository.findByMaLichHen(saved.getMaLichHen());
+        if (!existingHd.isPresent()) {
+            double subtotal = 0.0;
+            List<ChiTietHoaDon> details = new java.util.ArrayList<>();
+
+            // A. Dịch vụ cận lâm sàng/chuyên sâu
+            if (req.getDanhSachMaDichVu() != null && !req.getDanhSachMaDichVu().isEmpty()) {
+                List<DichVu> dichVus = dichVuRepository.findAllById(req.getDanhSachMaDichVu());
+                for (DichVu dv : dichVus) {
+                    if (dv.getGiaDichVu() != null) {
+                        double price = dv.getGiaDichVu().doubleValue();
+                        subtotal += price;
+
+                        ChiTietHoaDon ct = new ChiTietHoaDon();
+                        ct.setKhoanMuc(dv.getTenDichVu());
+                        ct.setSoLuong(1);
+                        ct.setDonGia(dv.getGiaDichVu());
+                        ct.setThanhTien(dv.getGiaDichVu());
+                        ct.setGhiChu("Dịch vụ cận lâm sàng");
+                        details.add(ct);
+                    }
+                }
+            }
+
+            // B. Phí khám của Bác sĩ
+            if (bacSi != null && bacSi.getPhiKham() != null) {
+                double price = bacSi.getPhiKham().doubleValue();
+                subtotal += price;
+
+                ChiTietHoaDon ct = new ChiTietHoaDon();
+                ct.setKhoanMuc("Phí khám bác sĩ (" + bacSi.getHoTen() + ")");
+                ct.setSoLuong(1);
+                ct.setDonGia(bacSi.getPhiKham());
+                ct.setThanhTien(bacSi.getPhiKham());
+                ct.setGhiChu("Phí khám ban đầu");
+                details.add(ct);
+            }
+
+            double finalTotal = saved.getPhiDuKien().doubleValue();
+            double giamGia = Math.max(0.0, subtotal - finalTotal);
+
+            HoaDon hd = new HoaDon();
+            hd.setMaHoaDon("HD" + System.currentTimeMillis());
+            hd.setBenhNhan(benhNhan);
+            hd.setMaLichHen(saved.getMaLichHen());
+            hd.setTongTien(BigDecimal.valueOf(subtotal));
+            hd.setGiamBHYT(BigDecimal.ZERO);
+            hd.setGiamUuDai(BigDecimal.valueOf(giamGia));
+            hd.setTongCanThanhToan(BigDecimal.valueOf(finalTotal));
+            hd.setSoTienDaThanhToan(BigDecimal.ZERO);
+            hd.setTrangThai("Chờ thanh toán");
+            hd.setPhuongThucThanhToan("Chưa thanh toán");
+            if (req.getMaKhuyenMai() != null && !req.getMaKhuyenMai().trim().isEmpty()) {
+                hd.setGhiChu("Mã khuyến mãi áp dụng: " + req.getMaKhuyenMai().trim().toUpperCase());
+            } else {
+                hd.setGhiChu("Đặt lịch khám ngoại trú");
+            }
+
+            HoaDon savedHd = hoaDonRepository.save(hd);
+
+            for (ChiTietHoaDon ct : details) {
+                ct.setHoaDon(savedHd);
+            }
+            chiTietHoaDonRepository.saveAll(details);
+
+            // C. Tăng số lượt đã dùng của mã khuyến mãi (chỉ tăng một lần duy nhất khi tạo hóa đơn thành công)
+            if (req.getMaKhuyenMai() != null && !req.getMaKhuyenMai().trim().isEmpty()) {
+                String code = req.getMaKhuyenMai().trim().toUpperCase();
+                KhuyenMai km = khuyenMaiRepository.findByMaCode(code).orElse(null);
+                if (km != null && "Hoạt động".equals(km.getTrangThai())) {
+                    java.sql.Date sqlToday = new java.sql.Date(System.currentTimeMillis());
+                    if ((km.getNgayBatDau() == null || !sqlToday.before(km.getNgayBatDau())) &&
+                        (km.getNgayKetThuc() == null || !sqlToday.after(km.getNgayKetThuc()))) {
+                        if (km.getSoLuotToiDa() == null || km.getSoLuotDaDung() < km.getSoLuotToiDa()) {
+                            int currentUsage = km.getSoLuotDaDung() != null ? km.getSoLuotDaDung() : 0;
+                            km.setSoLuotDaDung(currentUsage + 1);
+                            khuyenMaiRepository.save(km);
+                        }
+                    }
+                }
+            }
         }
 
         return saved;

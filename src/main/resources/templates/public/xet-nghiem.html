@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -98,31 +98,7 @@
     </style>
 </head>
 <body>
-
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="logo">🏥 <span th:text="${siteSettings['TenPhongKham'] ?: 'Phòng Khám Đa Khoa'}">Phòng Khám</span></div>
-        <div class="nav-links">
-            <a href="/home">Trang Chủ</a>
-            <a href="/bac-si">Bác Sĩ</a>
-            <a href="#">Dịch Vụ</a>
-            <a href="#">Đặt Lịch Hẹn</a>
-            <a href="/ho-so" style="color: #2563EB; font-weight: 600;">Hồ Sơ Của Tôi</a>
-        </div>
-        <div class="nav-actions">
-            <span style="font-size: 20px; cursor: pointer;">🔔</span>
-            <div class="user-menu" th:if="${session.loggedInUser != null}">
-                👤 <span th:text="${session.loggedInUser.hoTen}">Người dùng</span> ▾
-                <div class="dropdown-menu">
-                    <a href="/ho-so" class="dropdown-item">👤 Hồ sơ cá nhân</a>
-                    <a href="#" class="dropdown-item">📅 Lịch hẹn của tôi</a>
-                    <a href="/ho-so/bao-mat" class="dropdown-item">🔒 Đổi mật khẩu</a>
-                    <div class="dropdown-divider"></div>
-                    <a href="/logout" class="dropdown-item" style="color: #EF4444;">🚪 Đăng xuất</a>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <div th:replace="~{fragments/public-header :: publicHeader('')}"></div>
 
     <div class="container">
         <!-- Sidebar -->

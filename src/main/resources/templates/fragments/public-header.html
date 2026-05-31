@@ -1,0 +1,235 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<body>
+<header th:fragment="publicHeader(activeMenu)">
+    <style>
+        .public-navbar,
+        .public-navbar * {
+            box-sizing: border-box;
+        }
+
+        .public-navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            height: 72px;
+            width: 100%;
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .public-navbar__inner {
+            height: 100%;
+            display: grid;
+            grid-template-columns: 240px minmax(360px, 1fr) minmax(360px, auto);
+            align-items: center;
+            gap: 24px;
+            padding: 0 40px;
+        }
+
+        .public-navbar__logo {
+            color: #1E40AF;
+            font-size: 20px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .public-navbar__links {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            height: 100%;
+            font-size: 15px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .public-navbar__links a {
+            display: inline-flex;
+            align-items: center;
+            height: 100%;
+            color: #334155;
+            text-decoration: none;
+            border-bottom: 3px solid transparent;
+            padding-top: 3px;
+        }
+
+        .public-navbar__links a:hover,
+        .public-navbar__links a.active {
+            color: #2563EB;
+        }
+
+        .public-navbar__links a.active {
+            font-weight: 600;
+            border-bottom-color: #2563EB;
+        }
+
+        .public-navbar__actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 16px;
+            min-width: 0;
+        }
+
+        .public-navbar__search {
+            width: 250px;
+            height: 38px;
+            border: 1px solid #E2E8F0;
+            border-radius: 999px;
+            background: #F1F5F9;
+            color: #334155;
+            font-size: 14px;
+            outline: none;
+            padding: 0 16px;
+        }
+
+        .public-navbar__bell {
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            line-height: 1;
+            flex: 0 0 24px;
+        }
+
+        .public-user-menu {
+            position: relative;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #1E40AF;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .public-user-menu__dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            min-width: 190px;
+            overflow: hidden;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+        }
+
+        .public-user-menu:hover .public-user-menu__dropdown {
+            display: block;
+        }
+
+        .public-user-menu__item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            color: #334155;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .public-user-menu__item:hover {
+            background: #F1F5F9;
+            color: #2563EB;
+        }
+
+        .public-user-menu__divider {
+            height: 1px;
+            margin: 4px 0;
+            background: #E2E8F0;
+        }
+
+        .public-navbar__login {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 38px;
+            padding: 0 16px;
+            border-radius: 8px;
+            background: #2563EB;
+            color: #fff;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+            white-space: nowrap;
+        }
+
+        @media (max-width: 1100px) {
+            .public-navbar {
+                height: auto;
+            }
+
+            .public-navbar__inner {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                padding: 14px 20px;
+            }
+
+            .public-navbar__links {
+                justify-content: flex-start;
+                overflow-x: auto;
+                height: 36px;
+            }
+
+            .public-navbar__links a {
+                height: 36px;
+            }
+
+            .public-navbar__actions {
+                justify-content: flex-start;
+                width: 100%;
+            }
+
+            .public-navbar__search {
+                width: min(100%, 320px);
+            }
+
+            .public-user-menu {
+                height: 38px;
+            }
+        }
+    </style>
+
+    <nav class="public-navbar">
+        <div class="public-navbar__inner">
+            <a href="/home" th:href="@{/home}" class="public-navbar__logo">Phòng Khám Đa Khoa</a>
+
+            <div class="public-navbar__links">
+                <a href="/home" th:href="@{/home}" th:classappend="${activeMenu == 'home'} ? 'active' : ''">Trang Chủ</a>
+                <a href="/danh-sach-dich-vu" th:href="@{/danh-sach-dich-vu}" th:classappend="${activeMenu == 'dich-vu'} ? 'active' : ''">Dịch Vụ</a>
+                <a href="/bac-si" th:href="@{/bac-si}" th:classappend="${activeMenu == 'bac-si'} ? 'active' : ''">Bác Sĩ</a>
+                <a href="/dat-lich/tao-moi" th:href="@{/dat-lich/tao-moi}" th:classappend="${activeMenu == 'dat-lich'} ? 'active' : ''">Đặt Lịch Hẹn</a>
+                <a href="#lien-he" th:classappend="${activeMenu == 'lien-he'} ? 'active' : ''">Liên Hệ</a>
+            </div>
+
+            <div class="public-navbar__actions">
+                <form action="/bac-si" th:action="@{/bac-si}" method="get" style="margin: 0;">
+                    <input type="text" name="keyword" class="public-navbar__search" placeholder="Tìm dịch vụ, bác sĩ..." th:value="${keyword}">
+                </form>
+                <span class="public-navbar__bell" aria-hidden="true">!</span>
+                <div class="public-user-menu" th:if="${session.loggedInUser != null}">
+                    <span th:text="${session.loggedInUser.hoTen}">Tai khoan</span>
+                    <span aria-hidden="true">v</span>
+                    <div class="public-user-menu__dropdown">
+                        <a href="/ho-so" class="public-user-menu__item">Hồ sơ cá nhân</a>
+                        <a href="/lich-su-dat-lich" class="public-user-menu__item">Lịch hẹn của tôi</a>
+                        <a href="/ho-so/bao-mat" class="public-user-menu__item">Đổi mật khẩu</a>
+                        <div class="public-user-menu__divider"></div>
+                        <a href="/logout" class="public-user-menu__item" style="color: #EF4444;">Đăng xuất</a>
+                    </div>
+                </div>
+                <a href="/login" th:href="@{/login}" class="public-navbar__login" th:if="${session.loggedInUser == null}">Đăng nhập</a>
+            </div>
+        </div>
+    </nav>
+</header>
+</body>
+</html>

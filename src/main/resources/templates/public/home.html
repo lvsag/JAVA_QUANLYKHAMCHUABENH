@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -70,35 +70,7 @@
     </style>
 </head>
 <body>
-
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="logo">🏥 Phòng Khám Đa Khoa</div>
-        <div class="nav-links">
-            <a th:href="@{/home}" style="color: #2563EB; font-weight: 600;">Trang Chủ</a>
-            <a th:href="@{/danh-sach-dich-vu}">Dịch Vụ</a>
-            <a th:href="@{/bac-si}">Bác Sĩ</a>
-            <a th:href="@{/dat-lich/tao-moi}">Đặt Lịch Hẹn</a>
-            <a href="#">Liên Hệ</a>
-        </div>
-        <div class="nav-actions">
-            <form th:action="@{/bac-si}" method="get" style="margin: 0;">
-                <input type="text" name="keyword" class="search-bar" placeholder="🔍 Tìm kiếm dịch vụ, bác sĩ...">
-            </form>
-            <span style="font-size: 20px; cursor: pointer;">🔔</span>
-            <div class="user-menu" th:if="${session.loggedInUser != null}">
-                👤 <span th:text="${session.loggedInUser.hoTen}">Tên người dùng</span> ▾
-                <div class="dropdown-menu">
-                    <a href="/ho-so" class="dropdown-item">👤 Hồ sơ cá nhân</a>
-                    <a href="/lich-su-dat-lich" class="dropdown-item">📅 Lịch hẹn của tôi</a>
-                    <a href="/ho-so/bao-mat" class="dropdown-item">🔒 Đổi mật khẩu</a>
-                    <div class="dropdown-divider"></div>
-                    <a href="/logout" class="dropdown-item" style="color: #EF4444;">🚪 Đăng xuất</a>
-                </div>
-            </div>
-            <a href="/login" class="btn-primary" th:if="${session.loggedInUser == null}" style="padding: 8px 16px;">Đăng nhập / Tài khoản</a>
-        </div>
-    </nav>
+    <div th:replace="~{fragments/public-header :: publicHeader('home')}"></div>
 
     <!-- Hero Section -->
     <section class="hero">
@@ -179,7 +151,7 @@
                             📞 <span th:text="${bs.soDienThoai}">000</span>
                         </div>
                     </div>
-                    <a th:href="@{/dat-lich/tao-moi(maBacSi=${bs.maBacSi})}" class="btn-book-sm" style="display:block; text-decoration:none; text-align:center; box-sizing:border-box;">Đặt Lịch Hẹn</a>
+                    <a href="/dat-lich/tao-moi" th:href="@{/dat-lich/tao-moi(maBacSi=${bs.maBacSi})}" class="btn-book-sm" style="display:block; text-decoration:none; text-align:center; box-sizing:border-box;">Đặt Lịch Hẹn</a>
                 </div>
             </div>
         </th:block>

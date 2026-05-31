@@ -36,7 +36,9 @@ public class AdminVatTuController {
 
     // Hiển thị danh sách dịch vụ, thuốc và vật tư y tế (MH21)
     @GetMapping
-    public String danhSachVatTu(Model model) {
+    public String danhSachVatTu(@RequestParam(value = "keywordDichVu", required = false) String keywordDichVu,
+                                @RequestParam(value = "keywordKho", required = false) String keywordKho,
+                                Model model) {
         var dsThuoc = thuocService.findAll();
         var dsVatTu = vatTuYTeService.findAll();
         var dsDichVu = dichVuService.getAllXetNghiem();

@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="vi">
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -42,50 +42,7 @@
     </style>
 </head>
 <body class="bg-clinic-bg font-inter text-sm min-h-screen flex flex-col">
-
-<!-- Navigation Bar -->
-<div class="bg-clinic-nav flex items-center px-4 h-[52px] gap-4 shrink-0">
-    <!-- Brand -->
-    <div class="flex items-center gap-2 mr-4 shrink-0">
-        <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-base">🏥</div>
-        <span class="text-white font-bold text-[13px] hidden sm:block">Phòng Khám Đa Khoa</span>
-    </div>
-
-    <!-- Nav Links -->
-    <nav class="hidden md:flex items-center gap-1">
-        <a href="#" class="relative text-white font-semibold text-[12px] px-3 py-1.5 hover:text-white/80 transition-colors">
-            Trang Chủ
-            <span class="absolute bottom-0 left-3 right-3 h-[2px] bg-clinic-yellow rounded"></span>
-        </a>
-        <a href="#" class="text-white/80 text-[12px] px-3 py-1.5 hover:text-white transition-colors">Dịch Vụ</a>
-        <a href="#" class="text-white/80 text-[12px] px-3 py-1.5 hover:text-white transition-colors">Bác Sĩ</a>
-        <a href="#" class="text-white/80 text-[12px] px-3 py-1.5 hover:text-white transition-colors">Đặt Lịch Hẹn</a>
-        <a href="#" class="text-white/80 text-[12px] px-3 py-1.5 hover:text-white transition-colors">Liên Hệ</a>
-    </nav>
-
-    <!-- Search -->
-    <div class="flex-1 max-w-xs mx-2">
-        <div class="relative">
-            <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-[11px]">🔍</span>
-            <input
-                    type="text"
-                    placeholder="Tìm kiếm dịch vụ, bác sĩ..."
-                    class="w-full bg-white/15 border border-white/25 rounded-full text-white placeholder-white/60 text-[11px] pl-7 pr-3 py-1.5 focus:outline-none focus:bg-white/25 transition-colors"
-            />
-        </div>
-    </div>
-
-    <!-- Right -->
-    <div class="flex items-center gap-2 ml-auto shrink-0">
-        <button class="flex items-center gap-1.5 bg-white/10 border border-white/25 rounded-full px-3 py-1 text-white text-[11px] hover:bg-white/20 transition-colors">
-            🔔 <span>Thông báo</span>
-        </button>
-        <button class="flex items-center gap-1.5 text-white text-[11px] hover:text-white/80 transition-colors">
-            <div class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-base shrink-0">👤</div>
-            <span class="hidden sm:block">Nguyễn A ▾</span>
-        </button>
-    </div>
-</div>
+<div th:replace="~{fragments/public-header :: publicHeader('')}"></div>
 
 <!-- Body -->
 <div class="flex flex-1 overflow-hidden">

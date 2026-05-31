@@ -34,6 +34,9 @@ public class HomeController {
     private com.java.BaoCaoDoAn.Repository.DichVuRepository dichVuRepository;
 
     @Autowired
+    private com.java.BaoCaoDoAn.Service.DichVuService dichVuService;
+
+    @Autowired
     private LichHenService lichHenService;
 
     @Autowired
@@ -66,6 +69,27 @@ public class HomeController {
         model.addAttribute("specialties", chuyenKhoaRepository.findAll());
         model.addAttribute("doctors", bacSiRepository.findAll());
         return "public/home";
+    }
+
+    @GetMapping("/danh-sach-dich-vu")
+    public String danhSachDichVu(
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "maChuyenKhoa", required = false) String maChuyenKhoa,
+            @RequestParam(value = "mucGia", required = false) String mucGia,
+            @RequestParam(value = "loaiDichVu", required = false) String loaiDichVu,
+            Model model) {
+
+        var chuyenKhoas = chuyenKhoaRepository.findAll();
+        model.addAttribute("dichVus", dichVuService.searchDichVu(keyword, maChuyenKhoa, mucGia, loaiDichVu));
+        model.addAttribute("chuyenKhoas", chuyenKhoas);
+        model.addAttribute("footerSpecialties", chuyenKhoas.stream().limit(6).toList());
+        model.addAttribute("totalServices", dichVuRepository.count());
+        model.addAttribute("totalSpecialties", chuyenKhoaRepository.count());
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("selectedMaChuyenKhoa", maChuyenKhoa);
+        model.addAttribute("selectedMucGia", mucGia);
+        model.addAttribute("selectedLoaiDichVu", loaiDichVu);
+        return "public/danh-sach-dich-vu";
     }
 
     // ===================================================================

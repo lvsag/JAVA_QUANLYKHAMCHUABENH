@@ -1,0 +1,196 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt Lịch Thành Công</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f4f8; color: #333; }
+
+        /* Navbar */
+        .navbar { background: #1565c0; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; height: 60px; color: #fff; position: sticky; top: 0; z-index: 100; }
+        .logo a { font-size: 18px; font-weight: 700; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+        .nav-links { display: flex; list-style: none; gap: 20px; margin: 0; height: 100%; }
+        .nav-links a { text-decoration: none; color: rgba(255,255,255,0.8); font-weight: 500; display: flex; align-items: center; padding: 0 10px; border-bottom: 3px solid transparent; }
+        .nav-links a:hover { color: #fff; }
+        .nav-links a.active { color: #fff; border-bottom-color: #ffb300; font-weight: 600; }
+        .nav-actions { display: flex; align-items: center; gap: 16px; }
+        .search-box { background: rgba(255,255,255,0.15); border-radius: 20px; padding: 6px 14px; display: flex; align-items: center; gap: 8px; width: 220px; }
+        .search-box input { border: none; background: transparent; color: #fff; outline: none; font-size: 13px; width: 100%; }
+        .search-box input::placeholder { color: rgba(255,255,255,0.6); }
+
+        /* Stepper */
+        .stepper-container { background: #fff; padding: 15px 0; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: center; }
+        .stepper { display: flex; align-items: center; gap: 15px; width: 600px; justify-content: space-between; position: relative; }
+        .stepper::before { content: ''; position: absolute; top: 12px; left: 30px; right: 30px; height: 2px; background: #e0e0e0; z-index: 1; }
+        .step { display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 2; background: #fff; padding: 0 10px; }
+        .step-circle { width: 26px; height: 26px; border-radius: 50%; background: #e0e0e0; color: #888; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: bold; }
+        .step-text { font-size: 12px; color: #888; font-weight: 500; }
+        
+        .step.done .step-circle { background: #4caf50; color: #fff; }
+        .step.done .step-text { color: #4caf50; font-weight: 700; }
+
+        /* Banner */
+        .top-banner { background: #4caf50; color: white; text-align: center; padding: 12px; font-weight: 700; font-size: 15px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+
+        /* Card */
+        .success-card { max-width: 700px; margin: 30px auto 50px; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); padding: 40px; }
+        
+        .check-wrapper { display: flex; justify-content: center; margin-bottom: 20px; }
+        .check-circle { width: 90px; height: 90px; background: #e8f5e9; color: #4caf50; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; border: 4px solid #c8e6c9; }
+
+        .success-title { text-align: center; color: #4caf50; margin-bottom: 8px; font-size: 26px; font-weight: 700; }
+        .code-text { text-align: center; color: #666; font-size: 14px; margin-bottom: 30px; }
+
+        /* Details */
+        .detail-box { border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 20px 0; margin-bottom: 24px; }
+        .detail-title { font-weight: 700; color: #1565c0; font-size: 15px; margin-bottom: 16px; }
+        
+        .detail-row { display: flex; justify-content: space-between; font-size: 14px; color: #333; margin-bottom: 12px; }
+        .detail-row span:first-child { color: #555; font-weight: 600; }
+        
+        .total-row { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 16px; padding-top: 16px; border-top: 1px dashed #ccc; }
+        .total-left { display: flex; flex-direction: column; gap: 4px; }
+        .total-left span { font-weight: 700; color: #333; }
+        .total-left small { font-size: 11px; color: #888; }
+        .total-price { font-size: 20px; font-weight: 700; color: #1565c0; }
+
+        /* Sent To Box */
+        .sent-box { background: #f8fcf8; border: 1px solid #dcedc8; padding: 16px; border-radius: 8px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+        .sent-info { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #33691e; }
+        .sent-info strong { color: #2e7d32; font-size: 14px; }
+        .btn-resend { background: #fff; border: 1px solid #aed581; color: #558b2f; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; }
+
+        /* Warning */
+        .warning-box { background: #fffde7; border: 1px solid #fff176; padding: 16px; border-radius: 8px; font-size: 13px; color: #f57f17; margin-bottom: 30px; line-height: 1.6; }
+        .warning-box strong { color: #e65100; display: block; margin-bottom: 6px; }
+        .warning-box ul { padding-left: 20px; }
+        .warning-box li.red-text { color: #d32f2f; font-weight: 600; }
+
+        /* Buttons */
+        .btn-group { display: flex; gap: 16px; }
+        .btn { flex: 1; padding: 14px; text-align: center; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none; transition: 0.2s; }
+        .btn-primary { background: #1565c0; color: #fff; border: none; }
+        .btn-primary:hover { background: #0d47a1; }
+        .btn-outline { background: #fff; color: #1565c0; border: 1px solid #1565c0; }
+        .btn-outline:hover { background: #f8fbff; }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/public-header :: publicHeader('dat-lich')}"></div>
+
+<div class="stepper-container">
+    <div class="stepper">
+        <div class="step done">
+            <div class="step-circle">✓</div>
+            <div class="step-text">Dịch vụ</div>
+        </div>
+        <div class="step done">
+            <div class="step-circle">✓</div>
+            <div class="step-text">Thông tin</div>
+        </div>
+        <div class="step done">
+            <div class="step-circle">✓</div>
+            <div class="step-text">Thanh toán</div>
+        </div>
+        <div class="step done">
+            <div class="step-circle">✓</div>
+            <div class="step-text">Hoàn thành</div>
+        </div>
+    </div>
+</div>
+
+<div class="top-banner">
+    <span>✅</span> Dat Lich Thanh Cong!
+</div>
+
+<div class="success-card">
+    <div class="check-wrapper">
+        <div class="check-circle">✓</div>
+    </div>
+    <div class="success-title">Dat lich thanh cong!</div>
+    <div class="code-text">Ma xac nhan: <span th:text="${maLichHen != null ? maLichHen : 'LH-2026-0249'}">LH-2026-0249</span></div>
+
+    <div class="detail-box" th:if="${lichHen != null}">
+        <div class="detail-title">Chi tiet dat lich:</div>
+        
+        <div class="detail-row">
+            <span>Kham benh:</span>
+            <span style="text-align: right;" th:text="${#dates.format(lichHen.ngayHen, 'EEE, dd/MM/yyyy')} + ' | ' + ${lichHen.gioHen}">Thu 6, 19/05 | 07:30</span>
+        </div>
+        <div class="detail-row">
+            <span>Bac si:</span>
+            <span style="text-align: right;" th:text="${lichHen.bacSi != null ? 'BS. ' + lichHen.bacSi.hoTen : 'Chua phan cong'}">TS.BS. Nguyen Van Minh</span>
+        </div>
+        <div class="detail-row">
+            <span>Nguoi kham:</span>
+            <span style="text-align: right;" th:text="${lichHen.hoTenNguoiKham}">Nguyen Van An</span>
+        </div>
+
+        <div class="total-row">
+            <div class="total-left">
+                <span>Tong phi (du kien):</span>
+                <small>Phuong thuc: Tien mat tai quay</small>
+                <small>Thanh toan khi den kham</small>
+            </div>
+            <div class="total-price" th:text="${lichHen.phiDuKien != null ? #numbers.formatDecimal(lichHen.phiDuKien, 0, 'COMMA', 0, 'POINT') + 'd' : 'Tinh tai quay'}">600,000d</div>
+        </div>
+    </div>
+    
+    <!-- Fallback if lichHen is null but we want to show the mock exactly -->
+    <div class="detail-box" th:if="${lichHen == null}">
+        <div class="detail-title">Chi tiet dat lich:</div>
+        <div class="detail-row">
+            <span>Kham tim mach:</span>
+            <span>Thu 6, 19/05 | 07:30</span>
+        </div>
+        <div class="detail-row">
+            <span>Bac si:</span>
+            <span>TS.BS. Nguyen Van Minh</span>
+        </div>
+        <div class="detail-row">
+            <span>Xet nghiem mau:</span>
+            <span>Thu 6, 19/05 | 07:00</span>
+        </div>
+        <div class="detail-row">
+            <span>Sieu am bung:</span>
+            <span>Thu 6, 19/05 | 09:00</span>
+        </div>
+        <div class="total-row">
+            <div class="total-left">
+                <span>Tong phi (du kien):</span>
+                <small>Phuong thuc: Tien mat tai quay</small>
+                <small>Thanh toan khi den kham</small>
+            </div>
+            <div class="total-price">600,000d</div>
+        </div>
+    </div>
+
+    <div class="sent-box">
+        <div class="sent-info">
+            <strong>Chung toi da gui xac nhan den:</strong>
+            <div>✉️ Email: <span th:text="${lichHen != null ? lichHen.emailXacNhan : (session.loggedInUser != null ? session.loggedInUser.email : 'an@gmail.com')}">an@gmail.com</span></div>
+            <div>📱 SMS: <span th:text="${lichHen != null ? lichHen.sdtNguoiKham : '0901 234 567'}">0901 234 567</span></div>
+        </div>
+        <button class="btn-resend">Gui lai email</button>
+    </div>
+
+    <div class="warning-box">
+        <strong>📝 Luu y quan trong:</strong>
+        <ul>
+            <li>Den truoc 15 phut lam thu tuc dang ky</li>
+            <li>Mang CCCD va the BHYT (neu co)</li>
+            <li>Nhin truoc 4-6h neu lay mau xet nghiem</li>
+            <li class="red-text">Chi duoc huy lich khi con "Cho xac nhan"</li>
+        </ul>
+    </div>
+
+    <div class="btn-group">
+        <a href="/lich-su-dat-lich" class="btn btn-primary">Xem lich hen</a>
+        <a href="/home" class="btn btn-outline">Ve trang chu</a>
+    </div>
+</div>
+
+</body>
+</html>

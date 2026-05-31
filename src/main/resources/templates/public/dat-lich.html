@@ -1,0 +1,132 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt Lịch Khám Bệnh - Phòng Khám Đa Khoa</title>
+    <style>
+        :root {
+            --primary-color: #0056b3;
+            --primary-hover: #004085;
+            --secondary-color: #6c757d;
+            --light-bg: #f4f6f9;
+            --dark-text: #333333;
+            --border-color: #e0e0e0;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --radius: 8px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background-color: var(--light-bg); color: var(--dark-text); line-height: 1.6; }
+
+        header { background: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000; }
+        .navbar { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
+        .logo a { font-size: 22px; font-weight: 700; color: var(--primary-color); text-decoration: none; }
+        .nav-links { display: flex; list-style: none; gap: 20px; }
+        .nav-links a { text-decoration: none; color: #555; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--primary-color); }
+
+        .main-container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .page-title { text-align: center; color: var(--primary-color); margin-bottom: 10px; font-size: 28px; }
+        .page-subtitle { text-align: center; color: var(--secondary-color); margin-bottom: 30px; }
+
+        .booking-card { background: #ffffff; border-radius: var(--radius); box-shadow: var(--card-shadow); padding: 30px; }
+        .form-section-title { font-size: 18px; font-weight: 600; color: var(--primary-color); margin-bottom: 15px; border-bottom: 2px solid var(--light-bg); padding-bottom: 5px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 500; margin-bottom: 8px; color: #444; }
+        .form-control { width: 100%; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: var(--radius); font-size: 15px; transition: all 0.3s ease; }
+        .form-control:focus { border-color: var(--primary-color); outline: none; box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+        .alert-error { background-color: #fff5f5; color: #e53e3e; border: 1px solid #fed7d7; padding: 15px; border-radius: var(--radius); margin-bottom: 25px; font-weight: 500; }
+
+        .btn-submit { background-color: var(--primary-color); color: white; border: none; padding: 14px; width: 100%; border-radius: var(--radius); font-size: 16px; font-weight: 600; cursor: pointer; transition: background-color 0.2s; margin-top: 10px; }
+        .btn-submit:hover { background-color: var(--primary-hover); }
+        footer { background: #222; color: #fff; text-align: center; padding: 20px; margin-top: 60px; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div th:replace="~{fragments/public-header :: publicHeader('dat-lich')}"></div>
+</header>
+
+<main class="main-container">
+    <h1 class="page-title">Đặt Lịch Hẹn Khám</h1>
+    <p class="page-subtitle">Vui lòng điền đầy đủ thông tin để hoàn tất đặt lịch</p>
+
+    <div class="alert-error" th:if="${error}" th:text="${error}"></div>
+
+    <div class="booking-card">
+        <form th:action="@{/dat-lich/buoc-2-thong-tin}" th:object="${datLichSession}" method="POST">
+
+            <div class="form-section-title">1. Chọn thông tin khám</div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Chuyên khoa</label>
+                    <select class="form-control" th:field="*{maChuyenKhoa}" id="chuyenKhoaSelect">
+                        <option value="">-- Chọn chuyên khoa --</option>
+                        <option th:each="ck : ${specialties}" th:value="${ck.maChuyenKhoa}" th:text="${ck.tenChuyenKhoa}"></option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Bác sĩ điều trị</label>
+                    <select class="form-control" th:field="*{maBacSi}">
+                        <option value="">-- Chọn bác sĩ --</option>
+                        <option th:each="bs : ${doctors}" th:value="${bs.maBacSi}" th:text="${bs.hoTen}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Ngày hẹn khám</label>
+                    <input type="date" class="form-control" th:field="*{ngayHen}" required>
+                </div>
+                <div class="form-group">
+                    <label>Khung giờ khám</label>
+                    <select class="form-control" th:field="*{maKhungGio}" required>
+                        <option value="">-- Chọn giờ rảnh --</option>
+                        <option value="1">08:00 - 08:30</option>
+                        <option value="2">08:30 - 09:00</option>
+                        <option value="3">09:00 - 09:30</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-section-title" style="margin-top: 30px;">2. Thông tin người bệnh</div>
+
+            <div class="form-group">
+                <label>Họ và tên người khám</label>
+                <input type="text" class="form-control" th:field="*{hoTenNguoiKham}" placeholder="Nhập đầy đủ họ tên" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Số thẻ BHYT (Nếu có)</label>
+                    <input type="text" class="form-control" th:field="*{soBHYT}" placeholder="Nhập số thẻ BHYT">
+                </div>
+                <div class="form-group">
+                    <label>Mã Khuyến Mãi (Ưu đãi)</label>
+                    <input type="text" class="form-control" th:field="*{maKhuyenMai}" placeholder="Ví dụ: GIAM20K">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Triệu chứng / Ghi chú sức khỏe</label>
+                <textarea class="form-control" th:field="*{ghiChuTrieuChung}" rows="3" placeholder="Mô tả sơ lược tình trạng của bạn..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">Tiếp tục Thanh Toán ➔</button>
+        </form>
+    </div>
+</main>
+
+<footer>
+    <p>© 2026 Hệ thống Quản lý Phòng Khám Đa khoa Central. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

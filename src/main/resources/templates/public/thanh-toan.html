@@ -1,0 +1,151 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thanh Toán - Phòng Khám Đa Khoa</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --blue: #1a56db; --blue-light: #eff6ff; --gray-bg: #f3f4f6; --text-main: #1e293b; --text-sub: #64748b; --border: #e5e7eb; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { background-color: var(--gray-bg); color: var(--text-main); }
+
+    /* Navbar */
+    .navbar { background: var(--blue); color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
+    .navbar a { color: white; text-decoration: none; font-weight: 500; opacity: 0.8; margin-right: 20px;}
+    .navbar a.active, .navbar a:hover { opacity: 1; font-weight: 600; border-bottom: 2px solid white; padding-bottom: 5px; }
+
+    .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+    .page-header { margin-bottom: 20px; }
+    .page-header h1 { font-size: 24px; color: var(--text-main); }
+    .page-header p { color: var(--text-sub); font-size: 14px; }
+
+    .layout-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+    .card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px; }
+    .card-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+
+    /* Left Column Info */
+    .doc-info { background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; }
+    .doc-info h3 { color: var(--blue); font-size: 16px; margin-bottom: 8px; }
+    .doc-info p { color: var(--text-sub); font-size: 14px; margin-bottom: 4px; }
+
+    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
+    th { color: var(--text-sub); font-weight: 500; }
+    .price-col { text-align: right; font-weight: 600; }
+
+    .bhyt-box { background: #fffbeb; border: 1px solid #fde68a; padding: 16px; border-radius: 8px; font-size: 14px; }
+
+    /* Right Column */
+    .summary-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; }
+    .total-row { display: flex; justify-content: space-between; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 18px; font-weight: 700; color: var(--blue); }
+
+    .payment-method { border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s; }
+    .payment-method:hover { border-color: var(--blue); background: var(--blue-light); }
+    .payment-method input[type="radio"] { transform: scale(1.2); accent-color: var(--blue); }
+
+    .btn-submit { background: var(--blue); color: white; width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: 600; font-size: 15px; cursor: pointer; margin-top: 20px; transition: 0.2s; }
+    .btn-submit:hover { background: #1e40af; }
+    .btn-back { display: block; width: 100%; text-align: center; padding: 14px; border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); font-weight: 500; text-decoration: none; margin-top: 12px; }
+    .btn-back:hover { background: #f1f5f9; }
+  </style>
+</head>
+<body>
+    <div th:replace="~{fragments/public-header :: publicHeader('dat-lich')}"></div>
+
+<div class="container">
+  <div class="page-header">
+    <h1>03. Thanh toán dịch vụ khám</h1>
+    <p>Xác nhận chi phí, ưu đãi/BHYT và chọn phương thức thanh toán</p>
+  </div>
+
+  <div style="background-color: #fee2e2; color: #b91c1c; padding: 15px; border-radius: 8px; margin-bottom: 20px;" th:if="${error}" th:text="${error}"></div>
+
+  <form th:action="@{/dat-lich/buoc-3-thanh-toan}" th:object="${datLichSession}" method="POST">
+    <div class="layout-grid">
+      <th:block th:each="item : *{danhSachMaDichVu}">
+        <input type="hidden" name="danhSachMaDichVu" th:value="${item}">
+      </th:block>
+      <input type="hidden" th:field="*{maBacSi}">
+      <input type="hidden" th:field="*{maKhuyenMai}">
+      <div>
+        <div class="card">
+          <div class="card-title">Thông tin phiếu đặt lịch</div>
+          <div class="doc-info">
+            <h3>👨‍⚕️ Lịch khám đã chọn</h3>
+            <p>Bác sĩ: <b th:text="${bacSi != null ? 'BS. ' + bacSi.hoTen : 'Khám tổng quát (Chưa chọn BS)'}" style="color: var(--blue);"></b></p>
+            <p>Thời gian: <b><span th:text="${datLichSession.ngayHen}"></span></b></p>
+            <p>Bệnh nhân: <b th:text="${datLichSession.hoTenNguoiKham}"></b> | SĐT: <b th:text="${datLichSession.sdtNguoiKham}"></b></p>
+          </div>
+
+          <div class="card-title" style="border: none; margin-bottom: 0;">Dịch vụ đã chọn</div>
+          <table>
+            <thead>
+            <tr>
+              <th>Dịch vụ</th>
+              <th>Số lượng</th>
+              <th class="price-col">Thành tiền</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>Gói dịch vụ đã chọn (theo Step 1)</td>
+              <td>1</td>
+              <td class="price-col" th:text="${tongTien != null ? #numbers.formatDecimal(tongTien, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Tính tại quầy'}">0đ</td>
+            </tr>
+            </tbody>
+          </table>
+
+          <div class="bhyt-box">
+            💡 <b>Ưu đãi/BHYT áp dụng:</b> <br>
+            Mã KM: <span th:text="${datLichSession.maKhuyenMai != null and !datLichSession.maKhuyenMai.isEmpty() ? datLichSession.maKhuyenMai : 'Chưa nhập'}"></span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div class="card-title">Tóm tắt thanh toán</div>
+          <div class="summary-row">
+            <span>Tạm tính</span>
+            <span th:text="${tongTien != null ? #numbers.formatDecimal(tongTien, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Tính tại quầy'}">0đ</span>
+          </div>
+          <div class="summary-row">
+            <span>Giảm giá / Ưu đãi</span>
+            <span style="color: #10b981;">0đ</span>
+          </div>
+          <div class="total-row">
+            <span>Tổng cần thanh toán</span>
+            <span th:text="${tongTien != null ? #numbers.formatDecimal(tongTien, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Tính tại quầy'}">0đ</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="font-size: 16px;">Phương thức thanh toán</div>
+
+          <label class="payment-method">
+            <input type="radio" th:field="*{phuongThucThanhToan}" value="TIEN_MAT" required checked>
+            <span>💵 Tiền mặt tại quầy</span>
+          </label>
+
+          <label class="payment-method">
+            <input type="radio" th:field="*{phuongThucThanhToan}" value="CHUYEN_KHOAN">
+            <span>🏦 Chuyển khoản ngân hàng</span>
+          </label>
+
+          <label class="payment-method">
+            <input type="radio" th:field="*{phuongThucThanhToan}" value="MOMO">
+            <span>📱 Ví điện tử MoMo / ZaloPay</span>
+          </label>
+
+          <button type="submit" class="btn-submit">Xác nhận thanh toán</button>
+          <a th:href="@{/dat-lich/buoc-2-thong-tin}" class="btn-back">Quay lại</a>
+          <p style="font-size: 12px; color: var(--text-sub); text-align: center; margin-top: 15px;">Sau khi xác nhận, hệ thống ghi nhận trạng thái đã thanh toán/đặt lịch.</p>
+        </div>
+      </div>
+
+    </div>
+  </form>
+</div>
+</body>
+</html>

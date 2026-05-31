@@ -21,6 +21,17 @@ public class ThuocService {
     }
 
     public Optional<Thuoc> getThuoc(Integer maThuoc) {
+<<<<<<< Updated upstream
         return thuocRepository.findById(maThuoc);
+=======
+        return findById(maThuoc);
+    }
+
+    public List<Thuoc> searchThuoc(String keyword) {
+        if (keyword == null || keyword.isEmpty()) {
+            return getAllThuoc();
+        }
+        return thuocRepository.findByTenThuocContainingIgnoreCase(keyword);
+>>>>>>> Stashed changes
     }
 }

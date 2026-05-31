@@ -26,6 +26,9 @@ public class AdminBacSiController {
     private com.java.BaoCaoDoAn.Repository.LichLamViecRepository lichLamViecRepository;
 
     @Autowired
+    private com.java.BaoCaoDoAn.Repository.KhungGioKhamRepository khungGioKhamRepository;
+
+    @Autowired
     private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
     @GetMapping
@@ -119,7 +122,10 @@ public class AdminBacSiController {
         if (bs != null) {
             // Xóa lịch cũ
             java.util.List<com.java.BaoCaoDoAn.Model.LichLamViec> oldLich = lichLamViecRepository.findByBacSi_MaBacSi(maBacSi);
-            lichLamViecRepository.deleteAll(oldLich);
+            if (oldLich != null && !oldLich.isEmpty()) {
+                khungGioKhamRepository.deleteByLichLamViecIn(oldLich);
+                lichLamViecRepository.deleteAll(oldLich);
+            }
             
             // Lưu lịch mới
             for (int i = 0; i < ngayTrongTuan.size(); i++) {

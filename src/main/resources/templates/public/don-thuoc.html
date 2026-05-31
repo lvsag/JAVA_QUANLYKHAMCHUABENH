@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -180,7 +180,45 @@
                 <p style="color: #64748B; margin-top: 10px;">Bạn chưa có đơn thuốc nào được kê từ bác sĩ trong hệ thống.</p>
             </div>
             
-            <!-- When there is data, render the list of prescriptions here -->
+            <div th:if="${not #lists.isEmpty(donThuocs)}">
+                <div th:each="dt : ${donThuocs}" style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 20px; border: 1px solid #E2E8F0;">
+                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #F1F5F9; padding-bottom: 15px; margin-bottom: 15px;">
+                        <div>
+                            <h3 style="margin: 0; color: #1E40AF; font-size: 16px;">Mã Đơn Thuốc: <span th:text="${dt.maDonThuoc}"></span></h3>
+                            <p style="margin: 5px 0 0 0; font-size: 14px; color: #64748B;">Ngày kê: <span th:text="${#dates.format(dt.ngayKe, 'dd/MM/yyyy HH:mm')}"></span></p>
+                        </div>
+                        <div style="text-align: right;">
+                            <p style="margin: 0; font-weight: 500; font-size: 14px;">Bác sĩ: <span th:text="${dt.bacSi != null ? dt.bacSi.hoTen : 'Hệ thống'}"></span></p>
+                            <p style="margin: 5px 0 0 0; font-size: 14px; color: #64748B;">Chẩn đoán: <span th:text="${dt.chanDoan}"></span></p>
+                        </div>
+                    </div>
+                    
+                    <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                        <thead>
+                            <tr style="background: #F8FAFC; color: #475569;">
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #E2E8F0;">Tên thuốc</th>
+                                <th style="padding: 10px; text-align: center; border-bottom: 1px solid #E2E8F0;">Số lượng</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #E2E8F0;">Cách dùng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="ct : ${dt.chiTietDonThuocs}">
+                                <td style="padding: 10px; border-bottom: 1px solid #F1F5F9; font-weight: 500;" th:text="${ct.thuoc.tenThuoc}"></td>
+                                <td style="padding: 10px; border-bottom: 1px solid #F1F5F9; text-align: center;" th:text="${ct.soLuong}"></td>
+                                <td style="padding: 10px; border-bottom: 1px solid #F1F5F9;">
+                                    <span th:text="${ct.lieuDung}"></span> - 
+                                    <span th:text="${ct.soLanTrongNgay}"></span> 
+                                    <span th:if="${ct.ghiChu != null and !ct.ghiChu.isEmpty()}" th:text="' (' + ${ct.ghiChu} + ')'" style="color: #64748B;"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div th:if="${dt.loiDan != null and !dt.loiDan.isEmpty()}" style="margin-top: 15px; padding: 15px; background: #FEF3C7; border-radius: 8px; border-left: 4px solid #F59E0B; font-size: 14px; color: #92400E;">
+                        <strong>Lời dặn của bác sĩ:</strong> <span th:text="${dt.loiDan}"></span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

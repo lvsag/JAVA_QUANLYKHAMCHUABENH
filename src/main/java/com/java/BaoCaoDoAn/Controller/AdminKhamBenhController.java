@@ -107,11 +107,17 @@ public class AdminKhamBenhController {
     }
 
     @GetMapping("/chi-dinh")
-    public String lapPhieuChiDinh(@RequestParam(value = "maPhieuKham", required = false) String maPhieuKham, Model model) {
+    public String lapPhieuChiDinh(@RequestParam(value = "maPhieuKham", required = false) String maPhieuKham, 
+                                  HttpSession session,
+                                  Model model) {
         // Added to connect phieu-chi-dinh.html with real examination and service data.
         PhieuKham phieuKham = maPhieuKham != null ? khamBenhService.getPhieuKham(maPhieuKham).orElse(null) : null;
         // Added: combobox source for selecting an examination if the page is opened directly.
-        model.addAttribute("phieuKhams", khamBenhService.getAllPhieuKham());
+        BacSi currentBacSi = resolveLoggedInBacSi(session);
+        List<PhieuKham> phieuKhams = currentBacSi != null 
+                ? khamBenhService.getPhieuKhamByBacSi(currentBacSi.getMaBacSi())
+                : khamBenhService.getAllPhieuKham();
+        model.addAttribute("phieuKhams", phieuKhams);
         model.addAttribute("phieuKham", phieuKham);
         model.addAttribute("dichVus", dichVuService.getAllDichVu());
         model.addAttribute("phieuChiDinh", new PhieuChiDinh());
@@ -174,8 +180,11 @@ public class AdminKhamBenhController {
     public String xemKetQua(@RequestParam(value = "maKetQua", required = false) String maKetQua,
                             @RequestParam(value = "ngayLoc", required = false) String ngayLoc,
                             @RequestParam(value = "trangThaiLoc", required = false) String trangThaiLoc,
+                            HttpSession session,
                             Model model) {
-        List<KetQuaXetNghiem> ketQuas = ketQuaXetNghiemService.filterKetQua(trangThaiLoc, ngayLoc);
+        BacSi currentBacSi = resolveLoggedInBacSi(session);
+        String currentMaBacSi = currentBacSi != null ? currentBacSi.getMaBacSi() : null;
+        List<KetQuaXetNghiem> ketQuas = ketQuaXetNghiemService.filterKetQua(trangThaiLoc, ngayLoc, currentMaBacSi);
         KetQuaXetNghiem selected = maKetQua != null
                 ? ketQuaXetNghiemService.getKetQua(maKetQua).orElse(null)
                 : (ketQuas.isEmpty() ? null : ketQuas.get(0));
@@ -213,11 +222,17 @@ public class AdminKhamBenhController {
     }
 
     @GetMapping("/ke-thuoc")
-    public String keThuoc(@RequestParam(value = "maPhieuKham", required = false) String maPhieuKham, Model model) {
+    public String keThuoc(@RequestParam(value = "maPhieuKham", required = false) String maPhieuKham, 
+                          HttpSession session,
+                          Model model) {
         // Added to connect ke-thuoc.html with selected examination data.
         PhieuKham phieuKham = maPhieuKham != null ? khamBenhService.getPhieuKham(maPhieuKham).orElse(null) : null;
         // Added: combobox source for choosing the examination when entering prescription directly.
-        model.addAttribute("phieuKhams", khamBenhService.getAllPhieuKham());
+        BacSi currentBacSi = resolveLoggedInBacSi(session);
+        List<PhieuKham> phieuKhams = currentBacSi != null 
+                ? khamBenhService.getPhieuKhamByBacSi(currentBacSi.getMaBacSi())
+                : khamBenhService.getAllPhieuKham();
+        model.addAttribute("phieuKhams", phieuKhams);
         model.addAttribute("phieuKham", phieuKham);
         model.addAttribute("donThuoc", new DonThuoc());
         // Added: dynamic medicine catalog and stock data for prescription rows.

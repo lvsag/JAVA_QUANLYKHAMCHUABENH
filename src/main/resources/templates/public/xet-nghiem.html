@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -180,7 +180,31 @@
                 <p style="color: #64748B; margin-top: 10px;">Bạn chưa thực hiện dịch vụ cận lâm sàng nào (xét nghiệm, siêu âm, X-Quang...).</p>
             </div>
             
-            <!-- When there is data, render the test results here -->
+            <div th:if="${not #lists.isEmpty(ketQuas)}">
+                <div th:each="kq : ${ketQuas}" style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 20px; border: 1px solid #E2E8F0;">
+                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #F1F5F9; padding-bottom: 15px; margin-bottom: 15px;">
+                        <div>
+                            <h3 style="margin: 0; color: #1E40AF; font-size: 16px;">Mã Kết Quả: <span th:text="${kq.maKetQua}"></span></h3>
+                            <p style="margin: 5px 0 0 0; font-size: 14px; color: #64748B;">Ngày thực hiện: <span th:text="${#dates.format(kq.ngayKetQua, 'dd/MM/yyyy HH:mm')}"></span></p>
+                        </div>
+                        <div style="text-align: right;">
+                            <p style="margin: 0; font-weight: 500; font-size: 14px;">Bác sĩ chỉ định: <span th:text="${kq.bacSi != null ? kq.bacSi.hoTen : 'Hệ thống'}"></span></p>
+                            <span style="display: inline-block; padding: 4px 10px; background: #DCFCE7; color: #166534; border-radius: 20px; font-size: 12px; font-weight: 600; margin-top: 5px;" th:text="${kq.dichVu != null ? kq.dichVu.tenDichVu : 'Dịch vụ CLS'}">Tên dịch vụ</span>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 15px;">
+                        <div style="padding: 15px; background: #F8FAFC; border-radius: 8px; border: 1px solid #E2E8F0;">
+                            <h4 style="margin: 0 0 10px 0; color: #334155; font-size: 14px;">Chỉ Số Chính / Kết Quả</h4>
+                            <p style="margin: 0; font-size: 14px; white-space: pre-line;" th:text="${kq.chiSoChinh != null and !kq.chiSoChinh.isEmpty() ? kq.chiSoChinh : (kq.ketQuaChiTiet != null and !kq.ketQuaChiTiet.isEmpty() ? kq.ketQuaChiTiet : 'Chưa có dữ liệu')}"></p>
+                        </div>
+                        <div style="padding: 15px; background: #EFF6FF; border-radius: 8px; border: 1px solid #BFDBFE;">
+                            <h4 style="margin: 0 0 10px 0; color: #1E40AF; font-size: 14px;">Kết Luận Bác Sĩ</h4>
+                            <p style="margin: 0; font-size: 14px; white-space: pre-line; font-weight: 500;" th:text="${kq.ketLuanBacSi != null and !kq.ketLuanBacSi.isEmpty() ? kq.ketLuanBacSi : (kq.nhanDinh != null and !kq.nhanDinh.isEmpty() ? kq.nhanDinh : 'Chưa có kết luận')}"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

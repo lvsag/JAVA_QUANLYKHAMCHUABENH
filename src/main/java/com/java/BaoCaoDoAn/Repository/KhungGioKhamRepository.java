@@ -32,4 +32,8 @@ public interface KhungGioKhamRepository extends JpaRepository<KhungGioKham, Inte
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT k FROM KhungGioKham k WHERE k.maKhungGio = :maKhungGio")
     Optional<KhungGioKham> findByIdWithLock(@Param("maKhungGio") Integer maKhungGio);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.transaction.annotation.Transactional
+    void deleteByLichLamViecIn(List<com.java.BaoCaoDoAn.Model.LichLamViec> lichLamViecs);
 }

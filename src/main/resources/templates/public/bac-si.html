@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -91,7 +91,35 @@
     </style>
 </head>
 <body>
-    <div th:replace="~{fragments/public-header :: publicHeader('bac-si')}"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">🏥 Phòng Khám Đa Khoa</div>
+        <div class="nav-links">
+            <a href="/home">Trang Chủ</a>
+            <a href="#">Dịch Vụ</a>
+            <a href="/bac-si" style="color: #2563EB; font-weight: 600;">Bác Sĩ</a>
+            <a href="#">Đặt Lịch Hẹn</a>
+            <a href="#">Liên Hệ</a>
+        </div>
+        <div class="nav-actions">
+            <form action="/bac-si" method="get" style="margin: 0;">
+                <input type="text" name="keyword" class="search-bar" placeholder="🔍 Tìm kiếm dịch vụ, bác sĩ..." th:value="${keyword}">
+            </form>
+            <span style="font-size: 20px; cursor: pointer;">🔔</span>
+            <div class="user-menu" th:if="${session.loggedInUser != null}">
+                👤 <span th:text="${session.loggedInUser.hoTen}">Tên người dùng</span> ▾
+                <div class="dropdown-menu">
+                    <a href="/ho-so" class="dropdown-item">👤 Hồ sơ cá nhân</a>
+                    <a href="#" class="dropdown-item">📅 Lịch hẹn của tôi</a>
+                    <a href="/ho-so/bao-mat" class="dropdown-item">🔒 Đổi mật khẩu</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="/logout" class="dropdown-item" style="color: #EF4444;">🚪 Đăng xuất</a>
+                </div>
+            </div>
+            <a href="/login" class="btn-primary" th:if="${session.loggedInUser == null}" style="padding: 8px 16px;">Đăng nhập / Tài khoản</a>
+        </div>
+    </nav>
 
     <div class="container">
         <!-- Sidebar Filters -->
@@ -181,8 +209,6 @@
                             </div>
                             
                             <div class="doc-actions">
-                                <a href="/dat-lich/tao-moi" th:href="@{/dat-lich/tao-moi(maBacSi=${bs.maBacSi})}" class="btn btn-primary" style="display:inline-block; text-align:center; text-decoration:none; box-sizing:border-box;">📅 Đặt lịch ngay</a>
-                                <a href="/bac-si" th:href="@{/bac-si/{id}(id=${bs.maBacSi})}" class="btn btn-secondary" style="display:inline-block; text-align:center; text-decoration:none; box-sizing:border-box;">👁 Xem nhanh</a>
                                 <a th:href="@{/dat-lich/tao-moi(maBacSi=${bs.maBacSi})}" class="btn btn-primary" style="display:inline-block; text-align:center; text-decoration:none; box-sizing:border-box;">📅 Đặt lịch ngay</a>
                                 <a th:href="@{/bac-si/{id}(id=${bs.maBacSi})}" class="btn btn-secondary" style="display:inline-block; text-align:center; text-decoration:none; box-sizing:border-box;">👁 Xem nhanh</a>
                             </div>

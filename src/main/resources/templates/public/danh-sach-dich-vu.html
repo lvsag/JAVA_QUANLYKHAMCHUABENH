@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 
 <head>
@@ -229,14 +229,42 @@
 
 <body>
     <div class="min-h-screen flex flex-col">
-    <div th:replace="~{fragments/public-header :: publicHeader('dich-vu')}"></div>
+        <!-- Navbar -->
+        <nav class="navbar">
+            <div class="logo">🏥 Phòng Khám Đa Khoa</div>
+            <div class="nav-links">
+                <a href="/home">Trang Chủ</a>
+                <a href="/danh-sach-dich-vu" style="color: #2563EB; font-weight: 600;">Dịch Vụ</a>
+                <a href="/bac-si">Bác Sĩ</a>
+                <a href="#">Đặt Lịch Hẹn</a>
+                <a href="#">Liên Hệ</a>
+            </div>
+            <div class="nav-actions">
+                <form action="/bac-si" method="get" style="margin: 0;">
+                    <input type="text" name="keyword" class="search-bar" placeholder="🔍 Tìm kiếm dịch vụ, bác sĩ...">
+                </form>
+                <span style="font-size: 20px; cursor: pointer;">🔔</span>
+                <div class="user-menu" th:if="${session.loggedInUser != null}">
+                    👤 <span th:text="${session.loggedInUser.hoTen}">Tên người dùng</span> ▾
+                    <div class="dropdown-menu">
+                        <a href="/ho-so" class="dropdown-item">👤 Hồ sơ cá nhân</a>
+                        <a href="#" class="dropdown-item">📅 Lịch hẹn của tôi</a>
+                        <a href="/ho-so/bao-mat" class="dropdown-item">🔒 Đổi mật khẩu</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="/logout" class="dropdown-item" style="color: #EF4444;">🚪 Đăng xuất</a>
+                    </div>
+                </div>
+                <a href="/login" class="btn-primary" th:if="${session.loggedInUser == null}"
+                    style="padding: 8px 16px;">Đăng nhập / Tài khoản</a>
+            </div>
+        </nav>
 
         <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-5 flex-1">
             <section class="bg-white rounded-xl soft-card border border-[#F1F5F9] p-5 sm:p-6 mb-5 overflow-hidden">
                 <div class="flex flex-col lg:flex-row lg:items-center gap-5">
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-3 text-[13px] mb-3">
-                            <a href="/home" th:href="@{/home}" class="text-[#2563EB] font-bold">Trang chủ</a>
+                            <a th:href="@{/home}" class="text-[#2563EB] font-bold">Trang chủ</a>
                             <span class="text-[#6B7F98]">›</span>
                             <span class="text-[#4E647D]">Dịch vụ</span>
                         </div>
@@ -262,7 +290,7 @@
             </section>
 
             <section class="bg-white rounded-xl soft-card border border-[#F1F5F9] p-4 sm:p-5 mb-5">
-                <form action="/danh-sach-dich-vu" th:action="@{/danh-sach-dich-vu}" method="get"
+                <form th:action="@{/danh-sach-dich-vu}" method="get"
                     class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[1.4fr_1fr_1fr_1fr_auto] gap-3 items-end">
                     <label class="block min-w-0">
                         <span class="text-[#51677F] text-[11px] font-bold block mb-1">Tìm kiếm</span>
@@ -310,7 +338,7 @@
                     <div class="flex gap-2">
                         <button
                             class="rounded-xl bg-[#2563EB] text-white px-5 py-2.5 text-[13px] font-bold hover:bg-[#1D4ED8] whitespace-nowrap">Lọc</button>
-                        <a href="/danh-sach-dich-vu" th:href="@{/danh-sach-dich-vu}"
+                        <a th:href="@{/danh-sach-dich-vu}"
                             class="rounded-xl border border-[#E2E8F0] text-[#2563EB] px-4 py-2.5 text-[13px] font-bold hover:bg-[#EFF6FF] whitespace-nowrap">Xóa</a>
                     </div>
                 </form>
@@ -345,7 +373,7 @@
                     <div class="grid grid-cols-2 border-t border-[#F1F5F9]">
                         <button type="button" class="text-[#2563EB] text-xs font-bold py-3 hover:bg-[#EFF6FF]">Xem chi
                             tiết</button>
-                        <a href="/bac-si" th:href="@{/bac-si(maChuyenKhoa=${dv.chuyenKhoa != null ? dv.chuyenKhoa.maChuyenKhoa : ''})}"
+                        <a th:href="@{/bac-si(maChuyenKhoa=${dv.chuyenKhoa != null ? dv.chuyenKhoa.maChuyenKhoa : ''})}"
                             class="text-white text-xs font-bold py-3 bg-[#2563EB] text-center hover:bg-[#1D4ED8]">Đặt
                             lịch</a>
                     </div>

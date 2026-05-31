@@ -23,10 +23,6 @@ public class BacSiService {
         return bacSiRepository.findById(id);
     }
 
-    public Optional<BacSi> getBacSiByTaiKhoan(Integer maTaiKhoan) {
-        return bacSiRepository.findByTaiKhoan_MaTaiKhoan(maTaiKhoan);
-    }
-
     public BacSi saveBacSi(BacSi bacSi) {
         if (bacSi.getMaBacSi() == null || bacSi.getMaBacSi().isEmpty()) {
             long count = bacSiRepository.count() + 1;

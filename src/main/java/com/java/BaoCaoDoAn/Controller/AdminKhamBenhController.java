@@ -43,29 +43,12 @@ public class AdminKhamBenhController {
     }
 
     @GetMapping("/kham-benh")
-    public String khamBenh(@RequestParam(value = "maPhieuKham", required = false) String maPhieuKham,
-                           Model model,
-                           HttpSession session) {
+    public String khamBenh(@RequestParam(value = "maPhieuKham", required = false) String maPhieuKham, Model model) {
         // Added to connect kham-benh.html with the examination queue and selected examination detail.
-        BacSi currentBacSi = resolveLoggedInBacSi(session);
-        List<PhieuKham> phieuKhams = currentBacSi != null
-                ? khamBenhService.getPhieuKhamByBacSi(currentBacSi.getMaBacSi())
-                : java.util.Collections.emptyList();
+        List<PhieuKham> phieuKhams = khamBenhService.getAllPhieuKham();
         PhieuKham selected = maPhieuKham != null
                 ? khamBenhService.getPhieuKham(maPhieuKham).orElse(null)
                 : (phieuKhams.isEmpty() ? null : phieuKhams.get(0));
-        if (selected != null) {
-            boolean selectedInQueue = false;
-            for (PhieuKham item : phieuKhams) {
-                if (item.getMaPhieuKham().equals(selected.getMaPhieuKham())) {
-                    selectedInQueue = true;
-                    break;
-                }
-            }
-            if (!selectedInQueue) {
-                selected = phieuKhams.isEmpty() ? null : phieuKhams.get(0);
-            }
-        }
         java.util.List<java.util.Map<String, String>> patientQueue = new java.util.ArrayList<>();
         for (int i = 0; i < phieuKhams.size(); i++) {
             PhieuKham item = phieuKhams.get(i);
@@ -282,14 +265,6 @@ public class AdminKhamBenhController {
             return phieuKham.getBacSi();
         }
         return maBacSi == null || maBacSi.isBlank() ? null : bacSiService.getBacSiById(maBacSi).orElse(null);
-    }
-
-    private BacSi resolveLoggedInBacSi(HttpSession session) {
-        Object user = session.getAttribute("loggedInUser");
-        if (!(user instanceof TaiKhoan taiKhoan) || taiKhoan.getMaTaiKhoan() == null) {
-            return null;
-        }
-        return bacSiService.getBacSiByTaiKhoan(taiKhoan.getMaTaiKhoan()).orElse(null);
     }
 
     private boolean isBlank(String value) {

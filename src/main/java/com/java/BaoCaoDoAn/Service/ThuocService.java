@@ -47,4 +47,20 @@ public class ThuocService {
         }
         return thuocRepository.findByTenThuocContainingIgnoreCase(keyword);
     }
+
+    public List<Thuoc> findAll() {
+        return thuocRepository.findAll();
+    }
+
+    public Thuoc save(Thuoc thuoc) {
+        return thuocRepository.save(thuoc);
+    }
+
+    public Optional<Thuoc> findById(Integer id) {
+        return thuocRepository.findById(id);
+    }
+
+    public void deleteById(Integer id) {
+        thuocRepository.deleteById(id);
+    }
 }

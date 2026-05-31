@@ -2,6 +2,7 @@ package com.java.BaoCaoDoAn.Model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -23,14 +24,8 @@ public class KhuyenMai {
     @Column(name = "TenKhuyenMai", length = 200, nullable = false)
     private String tenKhuyenMai;
 
-    @Column(name = "LoaiGiam", length = 20, nullable = false)
-    private String loaiGiam;
-
     @Column(name = "GiaTriGiam", nullable = false)
     private BigDecimal giaTriGiam;
-
-    @Column(name = "DonHangToiThieu")
-    private BigDecimal donHangToiThieu = BigDecimal.ZERO;
 
     @Column(name = "SoLuotToiDa")
     private Integer soLuotToiDa;
@@ -40,10 +35,12 @@ public class KhuyenMai {
 
     @Column(name = "NgayBatDau", nullable = false)
     @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date ngayBatDau;
 
     @Column(name = "NgayKetThuc", nullable = false)
     @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date ngayKetThuc;
 
     @Column(name = "TrangThai", length = 20)

@@ -9,5 +9,6 @@ import java.util.Optional;
 @Repository
 public interface KhuyenMaiRepository extends JpaRepository<KhuyenMai, Integer> {
     Optional<KhuyenMai> findByMaCode(String maCode);
+
     boolean existsByMaCode(String maCode);
 }

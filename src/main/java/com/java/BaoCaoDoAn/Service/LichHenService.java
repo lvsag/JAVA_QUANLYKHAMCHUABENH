@@ -27,10 +27,9 @@ public class LichHenService {
 
     private final DichVuRepository     dichVuRepository;
     private final ChiTietLichHenRepository chiTietLichHenRepository;
-    private final KhuyenMaiRepository  khuyenMaiRepository;
-    private final HoaDonRepository     hoaDonRepository;
+    private final KhuyenMaiRepository khuyenMaiRepository;
+    private final HoaDonRepository hoaDonRepository;
     private final ChiTietHoaDonRepository chiTietHoaDonRepository;
-    private final KhuyenMaiService     khuyenMaiService;
 
     // ------------------------------------------------------------------
     // HÀM TÍNH TỔNG TIỀN (Ánh xạ cho màn hình Thanh Toán và Bước 1)
@@ -355,16 +354,5 @@ public class LichHenService {
 
     public void saveLichHen(LichHen lichHen) {
         lichHenRepository.save(lichHen);
-    }
-
-    private LocalDate toLocalDate(Date date) {
-        if (date == null) return null;
-        if (date instanceof java.sql.Date) {
-            return ((java.sql.Date) date).toLocalDate();
-        }
-        if (date instanceof java.sql.Timestamp) {
-            return ((java.sql.Timestamp) date).toLocalDateTime().toLocalDate();
-        }
-        return date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
     }
 }

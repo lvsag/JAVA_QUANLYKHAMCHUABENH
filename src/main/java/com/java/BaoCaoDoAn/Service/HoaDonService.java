@@ -315,6 +315,33 @@ public class HoaDonService {
 
         // Validate and retrieve valid KhuyenMai using the shared service method
         KhuyenMai km = khuyenMaiService.layKhuyenMaiHopLe(maCode);
+        if (maCode == null || maCode.trim().isEmpty()) {
+            throw new IllegalArgumentException("Mã khuyến mãi không được để trống.");
+        }
+
+        String code = maCode.trim().toUpperCase();
+        KhuyenMai km = khuyenMaiRepository.findByMaCode(code)
+                .orElseThrow(() -> new IllegalArgumentException("Mã khuyến mãi không tồn tại."));
+
+        if (!"Hoạt động".equals(km.getTrangThai())) {
+            throw new IllegalStateException("Mã khuyến mãi này hiện đang bị khóa hoặc ngừng hoạt động.");
+        }
+
+        // Validate dates
+        Date now = new Date();
+        if (km.getNgayBatDau() != null && now.before(km.getNgayBatDau())) {
+            throw new IllegalStateException("Mã khuyến mãi chưa đến thời gian áp dụng.");
+        }
+
+        java.sql.Date sqlToday = new java.sql.Date(System.currentTimeMillis());
+        if (km.getNgayKetThuc() != null && sqlToday.after(km.getNgayKetThuc())) {
+            throw new IllegalStateException("Mã khuyến mãi đã hết hạn sử dụng.");
+        }
+
+        // Validate usage
+        if (km.getSoLuotToiDa() != null && km.getSoLuotDaDung() != null && km.getSoLuotDaDung() >= km.getSoLuotToiDa()) {
+            throw new IllegalStateException("Mã khuyến mãi đã đạt số lượt sử dụng tối đa.");
+        }
 
         // Apply discount
         BigDecimal discount = km.getGiaTriGiam();

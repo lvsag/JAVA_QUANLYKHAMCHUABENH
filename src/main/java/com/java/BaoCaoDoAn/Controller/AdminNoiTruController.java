@@ -45,11 +45,43 @@ public class AdminNoiTruController {
     @Autowired
     private ChuyenKhoaService chuyenKhoaService;
 
+    @Autowired
+    private DonThuocService donThuocService;
+
+    @Autowired
+    private KhamBenhService khamBenhService;
+
     @GetMapping("")
     public String danhSachNoiTru(Model model) {
         model.addAttribute("danhSachNoiTru", nhapVienNoiTruService.findAll());
         model.addAttribute("activeMenu", "noi-tru");
         return "admin/noi-tru/danh-sach";
+    }
+
+    @GetMapping("/don-thuoc/{maBenhNhan}")
+    public String xemDonThuocAdmin(@PathVariable("maBenhNhan") String maBenhNhan, Model model, RedirectAttributes ra) {
+        Optional<BenhNhan> bnOpt = benhNhanService.getBenhNhanById(maBenhNhan);
+        if (!bnOpt.isPresent()) {
+            ra.addFlashAttribute("errorMessage", "Không tìm thấy bệnh nhân.");
+            return "redirect:/admin/noi-tru";
+        }
+        model.addAttribute("benhNhan", bnOpt.get());
+        model.addAttribute("donThuocs", donThuocService.getDonThuocByBenhNhan(maBenhNhan));
+        model.addAttribute("activeMenu", "noi-tru");
+        return "admin/noi-tru/don-thuoc";
+    }
+
+    @GetMapping("/lich-su-kham/{maBenhNhan}")
+    public String xemLichSuKhamAdmin(@PathVariable("maBenhNhan") String maBenhNhan, Model model, RedirectAttributes ra) {
+        Optional<BenhNhan> bnOpt = benhNhanService.getBenhNhanById(maBenhNhan);
+        if (!bnOpt.isPresent()) {
+            ra.addFlashAttribute("errorMessage", "Không tìm thấy bệnh nhân.");
+            return "redirect:/admin/noi-tru";
+        }
+        model.addAttribute("benhNhan", bnOpt.get());
+        model.addAttribute("lichSuKhams", khamBenhService.getPhieuKhamByBenhNhan(maBenhNhan));
+        model.addAttribute("activeMenu", "noi-tru");
+        return "admin/noi-tru/lich-su-kham";
     }
 
     @GetMapping("/nhap-vien/{maBenhNhan}")

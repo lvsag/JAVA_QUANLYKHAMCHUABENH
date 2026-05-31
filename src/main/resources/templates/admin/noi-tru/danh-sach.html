@@ -83,14 +83,17 @@
                                     </td>
                                     <td class="text-end pe-4">
                                         <div class="btn-group btn-group-sm">
-                                            <a href="#" class="btn btn-outline-primary" title="Xem bệnh án">
+                                            <a th:href="@{/admin/noi-tru/lich-su-kham/{id}(id=${nt.benhNhan.maBenhNhan})}" class="btn btn-outline-primary" title="Xem hồ sơ bệnh án">
                                                 <i class="fas fa-file-alt"></i>
                                             </a>
-                                            <a href="#" class="btn btn-outline-info" title="Đơn thuốc">
+                                            <a th:href="@{/admin/noi-tru/don-thuoc/{id}(id=${nt.benhNhan.maBenhNhan})}" class="btn btn-outline-info" title="Xem đơn thuốc">
                                                 <i class="fas fa-pills"></i>
                                             </a>
                                             <a th:if="${nt.trangThai == 'Đang điều trị'}" th:href="@{/admin/noi-tru/xuat-vien/{id}(id=${nt.maNoiTru})}" class="btn btn-outline-danger" title="Lập phiếu xuất viện">
                                                 <i class="fas fa-sign-out-alt"></i> Xuất viện
+                                            </a>
+                                            <a th:if="${nt.trangThai == 'Đã xuất viện'}" th:href="@{/admin/hoa-don/tao-tu-noi-tru/{id}(id=${nt.maNoiTru})}" class="btn btn-outline-success" title="Thanh toán viện phí">
+                                                <i class="fas fa-file-invoice-dollar"></i> Thanh toán
                                             </a>
                                         </div>
                                     </td>

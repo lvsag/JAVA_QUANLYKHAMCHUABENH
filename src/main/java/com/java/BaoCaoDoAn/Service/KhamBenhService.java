@@ -33,4 +33,8 @@ public class KhamBenhService {
         }
         return phieuKhamRepository.save(phieuKham);
     }
+
+    public List<PhieuKham> getPhieuKhamByBenhNhan(String maBenhNhan) {
+        return phieuKhamRepository.findByBenhNhan_MaBenhNhanOrderByNgayKhamDesc(maBenhNhan);
+    }
 }

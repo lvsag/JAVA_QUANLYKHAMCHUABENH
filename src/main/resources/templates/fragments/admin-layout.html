@@ -79,9 +79,20 @@
         <a th:href="@{/admin/benh-nhan}" class="nav-item" th:classappend="${activeMenu == 'benh-nhan' ? 'active' : ''}"><span class="nav-icon">👥</span><span class="nav-text">Quản Lý Bệnh Nhân</span></a>
         <a th:href="@{/admin/bac-si}" class="nav-item" th:classappend="${activeMenu == 'bac-si' ? 'active' : ''}"><span class="nav-icon">👨‍⚕️</span><span class="nav-text">Quản Lý Bác Sĩ</span></a>
         <a th:href="@{/admin/chuyen-khoa}" class="nav-item" th:classappend="${activeMenu == 'chuyen-khoa' ? 'active' : ''}"><span class="nav-icon">🏥</span><span class="nav-text">Chuyên Khoa</span></a>
-        <a th:href="@{/admin/vat-tu}" class="nav-item" th:classappend="${activeMenu == 'vat-tu' ? 'active' : ''}"><span class="nav-icon">💊</span><span class="nav-text">Dịch Vụ / Thuốc</span></a>
+        <!-- VAT TU / DICH VU -->
+        <a th:href="@{/admin/vat-tu}" class="nav-item" th:classappend="${activeMenu == 'vat-tu' || activeMenu == 'dich-vu' ? 'active' : ''}"><span class="nav-icon">💊</span><span class="nav-text">Dịch Vụ / Thuốc</span></a>
+        
+        <!-- PHONG BENH -->
+        <a th:href="@{/admin/phong-benh}" class="nav-item" th:classappend="${activeMenu == 'phong-benh' ? 'active' : ''}"><span class="nav-icon">🏨</span><span class="nav-text">Quản Lý Phòng Bệnh</span></a>
+        
+        <!-- NOI TRU -->
+        <a th:href="@{/admin/noi-tru}" class="nav-item" th:classappend="${activeMenu == 'noi-tru' ? 'active' : ''}"><span class="nav-icon">📋</span><span class="nav-text">Quản Lý Nội Trú</span></a>
+        
+        <!-- XET NGHIEM -->
         <a th:href="@{/admin/xet-nghiem}" class="nav-item" th:classappend="${activeMenu == 'xet-nghiem' ? 'active' : ''}"><span class="nav-icon">🧪</span><span class="nav-text">Xét Nghiệm</span></a>
-        <a href="#" class="nav-item" th:classappend="${activeMenu == 'thanh-toan' ? 'active' : ''}"><span class="nav-icon">💰</span><span class="nav-text">Thanh Toán</span></a>
+        
+        <!-- THANH TOAN -->
+        <a th:href="@{/admin/hoa-don}" class="nav-item" th:classappend="${activeMenu == 'hoa-don' || activeMenu == 'thanh-toan' ? 'active' : ''}"><span class="nav-icon">💰</span><span class="nav-text">Thanh Toán</span></a>
         <a href="#" class="nav-item" th:classappend="${activeMenu == 'bao-cao' ? 'active' : ''}"><span class="nav-icon">📊</span><span class="nav-text">Báo Cáo</span></a>
         <div class="nav-separator"></div>
         <a th:href="@{/admin/cai-dat}" class="nav-item" th:classappend="${activeMenu == 'cai-dat' ? 'active' : ''}"><span class="nav-icon">⚙️</span><span class="nav-text">Cài Đặt</span></a>

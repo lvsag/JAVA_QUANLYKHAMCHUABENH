@@ -118,24 +118,16 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td><i class="fas fa-bed text-muted me-2"></i> Tiền Giường Bệnh (Dự tính 300,000 đ/ngày)</td>
-                                                <td class="text-end fw-bold text-dark">900,000 đ</td>
+                                                <td><i class="fas fa-bed text-muted me-2"></i> Tiền Giường Bệnh (300,000 đ/ngày)</td>
+                                                <td class="text-end fw-bold text-dark" id="tienGiuongDisplay">0 đ</td>
                                             </tr>
                                             <tr>
                                                 <td><i class="fas fa-user-md text-muted me-2"></i> Phí Khám &amp; Bác Sĩ Điều Trị</td>
-                                                <td class="text-end fw-bold text-dark" th:text="${#numbers.formatInteger(nhapVienNoiTru.bacSiDieuTri != null ? nhapVienNoiTru.bacSiDieuTri.phiKham : 150000, 0) + ' đ'}">150,000 đ</td>
-                                            </tr>
-                                            <tr>
-                                                <td><i class="fas fa-pills text-muted me-2"></i> Thuốc &amp; Vật Tư Tiêu Hao (Mẫu)</td>
-                                                <td class="text-end fw-bold text-dark">350,000 đ</td>
-                                            </tr>
-                                            <tr>
-                                                <td><i class="fas fa-vial text-muted me-2"></i> Dịch Vụ Xét Nghiệm &amp; Cận Lâm Sàng</td>
-                                                <td class="text-end fw-bold text-dark">500,000 đ</td>
+                                                <td class="text-end fw-bold text-dark" id="phiBacSiDisplay" th:text="${#numbers.formatInteger(nhapVienNoiTru.bacSiDieuTri != null ? nhapVienNoiTru.bacSiDieuTri.phiKham : 0, 0)} + ' đ'" th:data-phi="${nhapVienNoiTru.bacSiDieuTri != null ? nhapVienNoiTru.bacSiDieuTri.phiKham : 0}">0 đ</td>
                                             </tr>
                                             <tr class="table-warning fw-bold fs-6">
-                                                <td class="text-primary"><i class="fas fa-coins me-2"></i> Tổng chi phí ước tính</td>
-                                                <td class="text-end text-primary">1,900,000 đ</td>
+                                                <td class="text-primary"><i class="fas fa-coins me-2"></i> Tổng chi phí xuất viện</td>
+                                                <td class="text-end text-primary" id="tongChiPhiDisplay">0 đ</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -143,8 +135,54 @@
 
                                 <div class="alert alert-warning border-0 small mb-4" role="alert">
                                     <i class="fas fa-info-circle me-2"></i>
-                                    Chi phí hiển thị trên đây là <b>chi phí tạm tính</b> dựa trên hồ sơ lâm sàng. Việc thanh toán chính thức sẽ được xử lý tại quầy Viện phí (sau khi bấm "Chuyển Thanh Toán").
+                                    Chi phí hiển thị trên đây chỉ bao gồm tiền giường và phí bác sĩ. Tiền thuốc và dịch vụ sẽ được tính riêng ở hóa đơn khác.
                                 </div>
+
+                                <script th:inline="javascript">
+                                    document.addEventListener('DOMContentLoaded', function() {
+                                        const ngayNhapVienStr = /*[[${#dates.format(nhapVienNoiTru.ngayNhapVien, 'yyyy-MM-dd')}]]*/ '';
+                                        const ngayXuatVienInput = document.querySelector('input[name="ngayXuatVien"]');
+                                        
+                                        const tienGiuongDisplay = document.getElementById('tienGiuongDisplay');
+                                        const tongChiPhiDisplay = document.getElementById('tongChiPhiDisplay');
+                                        const phiBacSiDisplay = document.getElementById('phiBacSiDisplay');
+                                        
+                                        const donGiaGiuong = 300000;
+                                        const phiBacSi = parseInt(phiBacSiDisplay.getAttribute('data-phi')) || 0;
+
+                                        function formatCurrency(amount) {
+                                            return new Intl.NumberFormat('vi-VN').format(amount) + ' đ';
+                                        }
+
+                                        function calculateCost() {
+                                            const ngayNhap = new Date(ngayNhapVienStr);
+                                            ngayNhap.setHours(0,0,0,0);
+                                            
+                                            const ngayXuat = new Date(ngayXuatVienInput.value);
+                                            ngayXuat.setHours(0,0,0,0);
+
+                                            if (isNaN(ngayXuat.getTime())) return;
+
+                                            // Tính số ngày
+                                            const diffTime = Math.abs(ngayXuat - ngayNhap);
+                                            let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                                            
+                                            // Nếu xuất viện cùng ngày thì tính là 1 ngày
+                                            if (diffDays === 0) diffDays = 1;
+
+                                            const tongTienGiuong = diffDays * donGiaGiuong;
+                                            tienGiuongDisplay.textContent = formatCurrency(tongTienGiuong) + ` (${diffDays} ngày)`;
+                                            
+                                            const tongChiPhi = tongTienGiuong + phiBacSi;
+                                            tongChiPhiDisplay.textContent = formatCurrency(tongChiPhi);
+                                        }
+
+                                        ngayXuatVienInput.addEventListener('change', calculateCost);
+                                        
+                                        // Calculate immediately on load
+                                        calculateCost();
+                                    });
+                                </script>
 
                                 <div class="d-grid">
                                     <a th:href="@{/admin/noi-tru}" class="btn btn-outline-secondary btn-block"><i class="fas fa-arrow-left me-1"></i> Quay lại Danh sách</a>

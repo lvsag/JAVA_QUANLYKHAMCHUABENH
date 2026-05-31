@@ -39,8 +39,8 @@ public class AuthController {
         if (userOpt.isPresent()) {
             TaiKhoan user = userOpt.get();
             if (BCrypt.checkpw(password, user.getMatKhau())) {
-                if ("Khóa".equals(user.getTrangThai())) {
-                    model.addAttribute("error", "Tài khoản đã bị khóa!");
+                if (!"Hoạt động".equalsIgnoreCase(user.getTrangThai())) {
+                    model.addAttribute("error", "Tài khoản của bạn đã bị khóa hoặc ngừng hoạt động!");
                     return "public/login";
                 }
                 

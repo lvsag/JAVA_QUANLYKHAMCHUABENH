@@ -145,7 +145,10 @@
                             <td th:text="${p.maPhong}" style="font-weight: 600;">P001</td>
                             <td th:text="${p.chuyenKhoa != null ? p.chuyenKhoa.tenChuyenKhoa : 'Chưa rõ'}">Khoa</td>
                             <td th:text="${p.loaiPhong}">Thường</td>
-                            <td th:text="${p.soGiuongDangDung + '/' + p.soGiuongToiDa}">0/10</td>
+                            <td>
+                                <span th:text="${p.soGiuongDangDung + '/' + (mapTongGiuong != null ? mapTongGiuong.get(p.maPhong) : 0) + '/' + p.soGiuongToiDa}">0/0/10</span>
+                                <small style="display:block; color:#64748B; font-size: 11px;">(Có người / Đã tạo / Tối đa)</small>
+                            </td>
                             <td th:text="${p.bacSiPhuTrach != null ? p.bacSiPhuTrach.hoTen : 'Chưa có'}">BS. A</td>
                             <td>
                                 <span th:class="${p.trangThai == 'Còn nhận' ? 'badge badge-success' : (p.trangThai == 'Bảo trì' ? 'badge badge-warning' : 'badge badge-danger')}"

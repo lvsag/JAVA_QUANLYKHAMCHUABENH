@@ -20,7 +20,10 @@ public class AdminTaiKhoanController {
 
     @GetMapping
     public String danhSachTaiKhoan(Model model) {
-        model.addAttribute("danhSach", taiKhoanService.getAllTaiKhoan());
+        java.util.List<TaiKhoan> danhSachFiltered = taiKhoanService.getAllTaiKhoan().stream()
+                .filter(tk -> tk.getVaiTro() == null || (!"ADMIN".equalsIgnoreCase(tk.getVaiTro().getTenVaiTro()) && !"Admin".equalsIgnoreCase(tk.getVaiTro().getTenVaiTro())))
+                .collect(java.util.stream.Collectors.toList());
+        model.addAttribute("danhSach", danhSachFiltered);
         return "admin/tai-khoan/danh-sach";
     }
 

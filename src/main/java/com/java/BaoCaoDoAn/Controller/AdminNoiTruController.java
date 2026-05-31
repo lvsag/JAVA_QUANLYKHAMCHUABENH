@@ -102,6 +102,19 @@ public class AdminNoiTruController {
         nhapVien.setNgayNhapVien(new Date());
         nhapVien.setTrangThai("Đang điều trị");
 
+        // Load chẩn đoán từ phiếu khám gần nhất
+        List<PhieuKham> dsPhieuKham = khamBenhService.getPhieuKhamByBenhNhan(maBenhNhan);
+        if (dsPhieuKham != null && !dsPhieuKham.isEmpty()) {
+            PhieuKham pk = dsPhieuKham.get(0);
+            String chanDoan = pk.getChanDoanCuoi();
+            if (chanDoan == null || chanDoan.trim().isEmpty()) {
+                chanDoan = pk.getChanDoanBanDau();
+            }
+            nhapVien.setChanDoan(chanDoan != null && !chanDoan.trim().isEmpty() ? chanDoan : "Chưa có chẩn đoán từ bác sĩ.");
+        } else {
+            nhapVien.setChanDoan("Bệnh nhân chưa có lịch sử khám.");
+        }
+
         model.addAttribute("benhNhan", bnOpt.get());
         model.addAttribute("nhapVienNoiTru", nhapVien);
         model.addAttribute("danhSachPhong", phongBenhService.findByTrangThai("Còn nhận"));
@@ -138,6 +151,22 @@ public class AdminNoiTruController {
         if (nhapVienNoiTruService.isBenhNhanDangNoiTru(maBenhNhan)) {
             ra.addFlashAttribute("errorMessage", "Bệnh nhân này đang điều trị nội trú, không thể nhập viện thêm.");
             return "redirect:/admin/benh-nhan";
+        }
+        
+        // Kiểm tra ngày nhập viện
+        if (nhapVien.getNgayNhapVien() != null) {
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
+            cal.set(java.util.Calendar.MINUTE, 0);
+            cal.set(java.util.Calendar.SECOND, 0);
+            cal.set(java.util.Calendar.MILLISECOND, 0);
+            Date today = cal.getTime();
+            
+            if (nhapVien.getNgayNhapVien().before(today)) {
+                return returnToFormWithError(maBenhNhan, nhapVien, "Ngày nhập viện không được nhỏ hơn ngày hiện tại.", model);
+            }
+        } else {
+             return returnToFormWithError(maBenhNhan, nhapVien, "Vui lòng chọn ngày nhập viện.", model);
         }
         
         if (maPhong == null || maPhong.trim().isEmpty()) {

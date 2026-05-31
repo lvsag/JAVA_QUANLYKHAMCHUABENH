@@ -55,13 +55,13 @@
 
                                 <div class="mb-3">
                                     <label class="form-label fw-bold small text-muted">Chẩn Đoán Ban Đầu <span class="text-danger">*</span></label>
-                                    <textarea class="form-control" th:field="*{chanDoan}" rows="3" placeholder="Nhập chẩn đoán từ bác sĩ..." required></textarea>
+                                    <textarea class="form-control bg-light" th:field="*{chanDoan}" rows="3" placeholder="Nhập chẩn đoán từ bác sĩ..." readonly required></textarea>
                                 </div>
 
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <label class="form-label fw-bold small text-muted">Khoa Điều Trị <span class="text-danger">*</span></label>
-                                        <select class="form-select" name="maChuyenKhoa" required>
+                                        <select class="form-select bg-light" name="maChuyenKhoa" style="pointer-events: none;" tabindex="-1" required>
                                             <option value="">-- Chọn khoa --</option>
                                             <option th:each="ck : ${danhSachChuyenKhoa}" 
                                                     th:value="${ck.maChuyenKhoa}" 
@@ -70,7 +70,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-bold small text-muted">Bác Sĩ Phụ Trách</label>
-                                        <select class="form-select" name="maBacSiDieuTri">
+                                        <select class="form-select bg-light" name="maBacSiDieuTri" style="pointer-events: none;" tabindex="-1">
                                             <option value="">-- Chọn bác sĩ --</option>
                                             <option th:each="bs : ${danhSachBacSi}" 
                                                     th:value="${bs.maBacSi}" 
@@ -82,7 +82,7 @@
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <label class="form-label fw-bold small text-muted">Ngày Nhập Viện <span class="text-danger">*</span></label>
-                                        <input type="date" class="form-control" th:field="*{ngayNhapVien}" required>
+                                        <input type="date" class="form-control" th:field="*{ngayNhapVien}" th:min="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-bold small text-muted">Dự Kiến Điều Trị</label>
@@ -113,6 +113,8 @@
                                             <option value="">-- Chọn phòng bệnh --</option>
                                             <option th:each="p : ${danhSachPhong}" 
                                                     th:value="${p.maPhong}" 
+                                                    th:data-ma-chuyen-khoa="${p.chuyenKhoa != null ? p.chuyenKhoa.maChuyenKhoa : ''}"
+                                                    th:data-ma-bac-si="${p.bacSiPhuTrach != null ? p.bacSiPhuTrach.maBacSi : ''}"
                                                     th:text="${p.maPhong + ' - ' + p.loaiPhong + ' (Khoa: ' + (p.chuyenKhoa != null ? p.chuyenKhoa.tenChuyenKhoa : 'Chưa rõ') + ')'}"></option>
                                         </select>
                                     </div>
@@ -224,6 +226,23 @@
 
                 maPhongSelect.addEventListener('change', function() {
                     filterBeds(this.value);
+                    
+                    // Auto select Khoa and BacSi
+                    if (this.selectedIndex > 0) {
+                        const selectedOption = this.options[this.selectedIndex];
+                        const maKhoa = selectedOption.getAttribute('data-ma-chuyen-khoa');
+                        const maBacSi = selectedOption.getAttribute('data-ma-bac-si');
+                        
+                        const khoaSelect = document.querySelector('select[name="maChuyenKhoa"]');
+                        if (maKhoa && khoaSelect) {
+                            khoaSelect.value = maKhoa;
+                        }
+                        
+                        const bacSiSelect = document.querySelector('select[name="maBacSiDieuTri"]');
+                        if (maBacSi && bacSiSelect) {
+                            bacSiSelect.value = maBacSi;
+                        }
+                    }
                 });
 
                 maGiuongSelect.addEventListener('change', function() {

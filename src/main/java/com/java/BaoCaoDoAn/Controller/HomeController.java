@@ -58,6 +58,11 @@ public class HomeController {
         return "redirect:/home";
     }
 
+    @GetMapping("/403")
+    public String accessDenied() {
+        return "public/403";
+    }
+
     @GetMapping("/home")
     public String home(Model model) {
         model.addAttribute("totalPatients", benhNhanRepository.count());

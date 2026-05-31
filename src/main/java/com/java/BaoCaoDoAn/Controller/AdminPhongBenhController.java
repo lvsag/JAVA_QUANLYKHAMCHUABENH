@@ -45,8 +45,19 @@ public class AdminPhongBenhController {
         // Cập nhật số giường đang dùng thực tế từ bảng GiuongBenh cho từng phòng
         for (PhongBenh p : list) {
             long occupied = giuongBenhService.countByPhongBenhAndTrangThai(p, "Có người");
+            long totalCreated = giuongBenhService.countByPhongBenh(p);
             p.setSoGiuongDangDung((int) occupied);
+            // We use GhiChu temporarily to pass totalCreated to UI, or just format the string in the controller.
+            // Better: just add a transient field in PhongBenh? Since we can't change model easily, let's just pass it to the model as a map, or change the UI string later.
         }
+        
+        model.addAttribute("danhSachPhong", list);
+        // Let's create a map for total beds
+        java.util.Map<String, Long> mapTongGiuong = new java.util.HashMap<>();
+        for(PhongBenh p : list) {
+            mapTongGiuong.put(p.getMaPhong(), giuongBenhService.countByPhongBenh(p));
+        }
+        model.addAttribute("mapTongGiuong", mapTongGiuong);
         
         model.addAttribute("danhSachPhong", list);
         model.addAttribute("listChuyenKhoa", chuyenKhoaService.getAllChuyenKhoa());
@@ -136,35 +147,46 @@ public class AdminPhongBenhController {
                     return "redirect:/admin/phong-benh/sua/" + phongBenh.getMaPhong();
                 }
             }
+        }
+        
+        PhongBenh phongToSave;
+        if (!isNew) {
+            phongToSave = phongBenhService.findById(phongBenh.getMaPhong()).get();
+            phongToSave.setLoaiPhong(phongBenh.getLoaiPhong());
+            phongToSave.setTrangThai(phongBenh.getTrangThai());
+            phongToSave.setSoGiuongToiDa(phongBenh.getSoGiuongToiDa());
+            phongToSave.setGhiChu(phongBenh.getGhiChu());
+            // validation logic already done on phongBenh
+            phongToSave.setSoGiuongDangDung(phongBenh.getSoGiuongDangDung());
         } else {
-            // Thêm mới mặc định SoGiuongDangDung = 0
-            phongBenh.setSoGiuongDangDung(0);
+            phongToSave = phongBenh;
+            phongToSave.setSoGiuongDangDung(0);
         }
         
         // Load Chuyên khoa thật từ DB
-        chuyenKhoaService.getChuyenKhoaById(maChuyenKhoa).ifPresent(phongBenh::setChuyenKhoa);
+        chuyenKhoaService.getChuyenKhoaById(maChuyenKhoa).ifPresent(phongToSave::setChuyenKhoa);
         
         // Load Bác sĩ thật từ DB nếu có
         if (maBacSiPhuTrach != null && !maBacSiPhuTrach.isEmpty()) {
-            bacSiService.getBacSiById(maBacSiPhuTrach).ifPresent(phongBenh::setBacSiPhuTrach);
+            bacSiService.getBacSiById(maBacSiPhuTrach).ifPresent(phongToSave::setBacSiPhuTrach);
         } else {
-            phongBenh.setBacSiPhuTrach(null);
+            phongToSave.setBacSiPhuTrach(null);
         }
         
-        PhongBenh savedPhong = phongBenhService.save(phongBenh);
+        PhongBenh savedPhong = phongBenhService.save(phongToSave);
         
-        // Nếu là thêm mới, tự động tạo giường
-        if (isNew) {
-            giuongBenhService.syncGiuongChoPhong(savedPhong.getMaPhong());
-        }
+        // Luôn gọi đồng bộ giường (nếu thừa nó sẽ bỏ qua, thiếu sẽ tạo)
+        giuongBenhService.syncGiuongChoPhong(savedPhong.getMaPhong());
         
+        redirectAttributes.addFlashAttribute("success", "Đã lưu phòng bệnh và đồng bộ giường thành công!");
         return "redirect:/admin/phong-benh";
     }
 
     // Đồng bộ giường cho phòng
     @GetMapping("/dong-bo-giuong/{maPhong}")
-    public String dongBoGiuong(@PathVariable("maPhong") String maPhong) {
+    public String dongBoGiuong(@PathVariable("maPhong") String maPhong, RedirectAttributes redirectAttributes) {
         giuongBenhService.syncGiuongChoPhong(maPhong);
+        redirectAttributes.addFlashAttribute("success", "Đã đồng bộ giường thành công cho phòng " + maPhong);
         return "redirect:/admin/phong-benh";
     }
 

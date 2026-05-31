@@ -24,12 +24,34 @@
         .dropdown-divider { height: 1px; background: #E2E8F0; margin: 4px 0; }
         
         /* Hero Section */
-        .hero { display: flex; align-items: center; justify-content: space-between; padding: 60px 10%; background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); }
+        .hero { display: flex; align-items: center; justify-content: space-between; gap: 40px; padding: 60px 10%; background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); }
         .hero-text { max-width: 500px; }
         .hero-text h1 { font-size: 42px; font-weight: 800; color: #1E3A8A; line-height: 1.2; margin-bottom: 20px; }
         .hero-text p { font-size: 16px; color: #475569; margin-bottom: 30px; line-height: 1.6; }
         .btn-primary { background: #2563EB; color: white; padding: 12px 24px; border-radius: 8px; font-weight: 600; box-shadow: 0 4px 14px rgba(37,99,235,0.3); display: inline-block; }
         .btn-secondary { background: white; color: #2563EB; padding: 12px 24px; border-radius: 8px; font-weight: 600; border: 1px solid #BFDBFE; display: inline-block; margin-left: 10px; }
+        .hero-carousel { width: min(46vw, 520px); min-width: 380px; aspect-ratio: 16 / 10; border-radius: 20px; overflow: hidden; position: relative; box-shadow: 0 20px 40px rgba(37,99,235,0.18); background: #BFDBFE; }
+        .carousel-track { display: flex; width: 300%; height: 100%; animation: hospitalSlider 15s infinite; }
+        .carousel-slide { width: calc(100% / 3); height: 100%; position: relative; flex: 0 0 calc(100% / 3); color: white; }
+        .carousel-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .carousel-slide::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,23,42,0.04) 30%, rgba(15,23,42,0.62) 100%); }
+        .slide-caption { position: absolute; left: 24px; right: 24px; bottom: 22px; z-index: 1; }
+        .slide-caption strong { display: block; font-size: 22px; font-weight: 800; margin-bottom: 6px; color: #FFFFFF; }
+        .slide-caption span { display: block; font-size: 14px; line-height: 1.5; color: #E0F2FE; }
+        .carousel-dots { position: absolute; left: 0; right: 0; bottom: 10px; display: flex; justify-content: center; gap: 8px; z-index: 2; pointer-events: none; }
+        .carousel-dots span { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.55); animation: dotActive 15s infinite; }
+        .carousel-dots span:nth-child(2) { animation-delay: 5s; }
+        .carousel-dots span:nth-child(3) { animation-delay: 10s; }
+        @keyframes hospitalSlider {
+            0%, 28% { transform: translateX(0); }
+            33%, 61% { transform: translateX(-33.3333%); }
+            66%, 94% { transform: translateX(-66.6667%); }
+            100% { transform: translateX(0); }
+        }
+        @keyframes dotActive {
+            0%, 28% { background: #FFFFFF; transform: scale(1.25); }
+            33%, 100% { background: rgba(255,255,255,0.55); transform: scale(1); }
+        }
         
         /* Stats */
         .stats { display: flex; justify-content: space-around; background: white; padding: 40px 10%; box-shadow: 0 4px 20px rgba(0,0,0,0.02); margin: -30px 5% 40px 5%; border-radius: 12px; position: relative; }
@@ -67,6 +89,16 @@
         .footer-links { list-style: none; padding: 0; margin: 0; }
         .footer-links li { margin-bottom: 10px; font-size: 14px; }
         .footer-bottom { border-top: 1px solid #334155; padding-top: 20px; text-align: center; font-size: 13px; }
+
+        @media (max-width: 980px) {
+            .hero { flex-direction: column; align-items: flex-start; padding: 44px 6%; }
+            .hero-text { max-width: 100%; }
+            .hero-carousel { width: 100%; min-width: 0; }
+            .specialties-grid, .doctors-grid { grid-template-columns: 1fr; padding: 0 6%; }
+            .stats { margin: -20px 4% 32px 4%; padding: 28px 6%; flex-wrap: wrap; gap: 22px; }
+            .section-header { padding: 0 6%; }
+            .footer-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -80,10 +112,34 @@
             <a href="/dat-lich/tao-moi" class="btn-primary">Đặt Lịch Ngay &rarr;</a>
             <a href="/danh-sach-dich-vu" class="btn-secondary">Xem Dịch Vụ</a>
         </div>
-        <div>
-            <!-- Placeholder for Hero Image -->
-            <div style="width: 400px; height: 300px; background: #BFDBFE; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 50px; color: #2563EB; box-shadow: 0 20px 40px rgba(37,99,235,0.15);">
-                👨‍⚕️👩‍⚕️
+        <div class="hero-carousel" aria-label="Hình ảnh giới thiệu phòng khám">
+            <div class="carousel-track">
+                <a class="carousel-slide" href="/dat-lich/tao-moi" title="Đặt lịch khám">
+                    <img src="/images/hospital-exterior.png" alt="Tòa nhà bệnh viện hiện đại">
+                    <span class="slide-caption">
+                        <strong>Đặt lịch nhanh chóng</strong>
+                        <span>Chọn thời gian khám phù hợp với nhu cầu của bạn.</span>
+                    </span>
+                </a>
+                <a class="carousel-slide" href="/danh-sach-dich-vu" title="Xem dịch vụ y tế">
+                    <img src="/images/hospital-reception.png" alt="Khu tiếp nhận bệnh viện">
+                    <span class="slide-caption">
+                        <strong>Dịch vụ y tế đầy đủ</strong>
+                        <span>Tra cứu chuyên khoa và các gói khám đang cung cấp.</span>
+                    </span>
+                </a>
+                <a class="carousel-slide" href="/bac-si" title="Xem danh sách bác sĩ">
+                    <img src="/images/hospital-consultation.png" alt="Bác sĩ tư vấn cho bệnh nhân">
+                    <span class="slide-caption">
+                        <strong>Đội ngũ bác sĩ tận tâm</strong>
+                        <span>Tìm bác sĩ phù hợp và đặt lịch khám trực tuyến.</span>
+                    </span>
+                </a>
+            </div>
+            <div class="carousel-dots" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
         </div>
     </section>

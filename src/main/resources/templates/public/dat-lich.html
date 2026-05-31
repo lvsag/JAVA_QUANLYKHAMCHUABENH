@@ -26,6 +26,15 @@
         .nav-links a { text-decoration: none; color: #555; font-weight: 500; transition: color 0.3s; }
         .nav-links a:hover, .nav-links a.active { color: var(--primary-color); }
 
+        .stepper-container { background: #fff; padding: 15px 0; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: center; }
+        .stepper { display: flex; align-items: center; gap: 15px; width: 600px; justify-content: space-between; position: relative; }
+        .stepper::before { content: ''; position: absolute; top: 12px; left: 30px; right: 30px; height: 2px; background: #e0e0e0; z-index: 1; }
+        .step { display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 2; background: #fff; padding: 0 10px; }
+        .step-circle { width: 26px; height: 26px; border-radius: 50%; background: #e0e0e0; color: #888; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: bold; }
+        .step-text { font-size: 12px; color: #888; font-weight: 500; }
+        .step.active .step-circle { background: #1565c0; color: #fff; }
+        .step.active .step-text { color: #1565c0; font-weight: 700; }
+
         .main-container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
         .page-title { text-align: center; color: var(--primary-color); margin-bottom: 10px; font-size: 28px; }
         .page-subtitle { text-align: center; color: var(--secondary-color); margin-bottom: 30px; }
@@ -50,6 +59,27 @@
 <header>
     <div th:replace="~{fragments/public-header :: publicHeader('dat-lich')}"></div>
 </header>
+
+<div class="stepper-container">
+    <div class="stepper">
+        <div class="step">
+            <div class="step-circle">1</div>
+            <div class="step-text">Dịch vụ</div>
+        </div>
+        <div class="step active">
+            <div class="step-circle">2</div>
+            <div class="step-text">Thông tin</div>
+        </div>
+        <div class="step">
+            <div class="step-circle">3</div>
+            <div class="step-text">Thanh toán</div>
+        </div>
+        <div class="step">
+            <div class="step-circle">4</div>
+            <div class="step-text">Hoàn thành</div>
+        </div>
+    </div>
+</div>
 
 <main class="main-container">
     <h1 class="page-title">Đặt Lịch Hẹn Khám</h1>

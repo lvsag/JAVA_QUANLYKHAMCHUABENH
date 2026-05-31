@@ -33,8 +33,8 @@ public class AdminBacSiController {
         // Lấy danh sách bác sĩ kèm lịch làm việc hôm nay
         java.util.List<java.util.Map<String, Object>> danhSachBS = jdbcTemplate.queryForList(
             "SELECT bs.MaBacSi, bs.HoTen, ck.TenChuyenKhoa, bs.TrangThai, " +
-            "(SELECT CaLamViec FROM LichLamViec WHERE MaBacSi = bs.MaBacSi AND NgayTrongTuan = DAYOFWEEK(CURRENT_DATE) LIMIT 1) as CaHomNay, " +
-            "(SELECT SoSlotToiDa FROM LichLamViec WHERE MaBacSi = bs.MaBacSi AND NgayTrongTuan = DAYOFWEEK(CURRENT_DATE) LIMIT 1) as SlotHomNay " +
+            "(SELECT CaLamViec FROM LichLamViec WHERE MaBacSi = bs.MaBacSi AND NgayTrongTuan = CASE WHEN DAYOFWEEK(CURRENT_DATE) = 1 THEN 8 ELSE DAYOFWEEK(CURRENT_DATE) END LIMIT 1) as CaHomNay, " +
+            "(SELECT SoSlotToiDa FROM LichLamViec WHERE MaBacSi = bs.MaBacSi AND NgayTrongTuan = CASE WHEN DAYOFWEEK(CURRENT_DATE) = 1 THEN 8 ELSE DAYOFWEEK(CURRENT_DATE) END LIMIT 1) as SlotHomNay " +
             "FROM BacSi bs " +
             "LEFT JOIN ChuyenKhoa ck ON bs.MaChuyenKhoa = ck.MaChuyenKhoa"
         );
@@ -126,8 +126,12 @@ public class AdminBacSiController {
     }
 
     @GetMapping("/them")
-    public String hienThiFormThem(Model model) {
-        model.addAttribute("bacSi", new BacSi());
+    public String hienThiFormThem(@RequestParam(value = "chuyenKhoa", required = false) String maChuyenKhoa, Model model) {
+        BacSi bacSi = new BacSi();
+        if (maChuyenKhoa != null && !maChuyenKhoa.isBlank()) {
+            chuyenKhoaService.getChuyenKhoaById(maChuyenKhoa).ifPresent(bacSi::setChuyenKhoa);
+        }
+        model.addAttribute("bacSi", bacSi);
         model.addAttribute("chuyenKhoas", chuyenKhoaService.getAllChuyenKhoa());
         model.addAttribute("taiKhoans", taiKhoanService.getAllTaiKhoan()); 
         return "admin/bac-si/form";

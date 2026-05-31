@@ -28,7 +28,7 @@ public class AdminVatTuController {
     public String danhSachVatTu(Model model) {
         var dsThuoc = thuocService.findAll();
         var dsVatTu = vatTuYTeService.findAll();
-        var dsDichVu = dichVuService.getAllDichVu();
+        var dsDichVu = dichVuService.getAllXetNghiem();
 
         model.addAttribute("danhSachThuoc", dsThuoc);
         model.addAttribute("danhSachVatTu", dsVatTu);

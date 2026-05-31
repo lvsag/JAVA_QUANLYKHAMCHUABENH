@@ -88,7 +88,7 @@
                 <div class="stat-icon" style="background: #DBEAFE; color: #2563EB;">📋</div>
                 <div class="stat-info">
                     <h3 th:text="${soDichVuDangDung}">0</h3>
-                    <p>Dịch vụ đang dùng</p>
+                    <p>Xét nghiệm đang dùng</p>
                 </div>
             </div>
             <div class="stat-card">
@@ -108,18 +108,18 @@
         </div>
 
         <div class="inventory-container">
-            <!-- Panel Dịch Vụ -->
+            <!-- Panel Xét Nghiệm -->
             <div class="panel">
                 <div class="panel-header">
-                    <h2>📋 Danh Sách Dịch Vụ</h2>
-                    <a th:href="@{/admin/dich-vu/them}" class="btn-sm btn-add">+ Thêm DV</a>
+                    <h2>🧪 Danh Sách Xét Nghiệm</h2>
+                    <a th:href="@{/admin/xet-nghiem/them}" class="btn-sm btn-add">+ Thêm XN</a>
                 </div>
                 <div class="panel-content">
                     <table>
                         <thead>
                             <tr>
-                                <th>Mã DV</th>
-                                <th>Tên dịch vụ</th>
+                                <th>Mã XN</th>
+                                <th>Tên xét nghiệm</th>
                                 <th>Chuyên khoa</th>
                                 <th>Giá</th>
                                 <th>Trạng thái</th>
@@ -136,7 +136,7 @@
                                     <span class="badge badge-success" th:text="${dv.trangThai}">Đang dùng</span>
                                 </td>
                                 <td>
-                                    <a th:href="@{/admin/dich-vu/sua/{id}(id=${dv.maDichVu})}" class="btn-sm btn-edit">Sửa</a>
+                                    <a th:href="@{/admin/xet-nghiem/sua/{id}(id=${dv.maDichVu})}" class="btn-sm btn-edit">Sửa</a>
                                 </td>
                             </tr>
                             <tr th:if="${danhSachDichVu.empty}">

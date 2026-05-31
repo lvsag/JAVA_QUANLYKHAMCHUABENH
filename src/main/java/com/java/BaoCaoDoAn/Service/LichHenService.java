@@ -4,6 +4,7 @@ import com.java.BaoCaoDoAn.DTO.DatLichRequestDTO;
 import com.java.BaoCaoDoAn.Model.*;
 import com.java.BaoCaoDoAn.Repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,9 @@ public class LichHenService {
     private final KhuyenMaiRepository khuyenMaiRepository;
     private final HoaDonRepository hoaDonRepository;
     private final ChiTietHoaDonRepository chiTietHoaDonRepository;
+
+    @Autowired
+    private KhuyenMaiService khuyenMaiService;
 
     // ------------------------------------------------------------------
     // HÀM TÍNH TỔNG TIỀN (Ánh xạ cho màn hình Thanh Toán và Bước 1)

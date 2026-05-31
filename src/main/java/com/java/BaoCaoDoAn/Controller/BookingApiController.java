@@ -56,6 +56,7 @@ public class BookingApiController {
             Map<String, Object> map = new HashMap<>();
             map.put("maKhungGio", slot.getMaKhungGio());
             map.put("thoiGian", slot.getGioBatDau() + " - " + slot.getGioKetThuc());
+            map.put("gioBatDau", slot.getGioBatDau().toString());
             return map;
         }).collect(Collectors.toList());
 

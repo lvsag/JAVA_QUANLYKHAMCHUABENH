@@ -15,6 +15,9 @@ public class AdminLichHenController {
     private LichHenService lichHenService;
 
     @Autowired
+    private com.java.BaoCaoDoAn.Service.KhamBenhService khamBenhService;
+
+    @Autowired
     private com.java.BaoCaoDoAn.Service.BenhNhanService benhNhanService;
     
     @Autowired
@@ -31,6 +34,9 @@ public class AdminLichHenController {
         lichHenService.getLichHenById(id).ifPresent(lh -> {
             lh.setTrangThai("Đã xác nhận");
             lichHenService.saveLichHen(lh);
+            if (lh.getBacSi() != null && lh.getBenhNhan() != null) {
+                khamBenhService.taoPhieuKhamTuLichHen(lh);
+            }
         });
         return "redirect:/admin/lich-hen";
     }

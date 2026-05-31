@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,6 +27,9 @@ public class HoaDonService {
 
     @Autowired
     private KhuyenMaiRepository khuyenMaiRepository;
+
+    @Autowired
+    private KhuyenMaiService khuyenMaiService;
 
     @Autowired
     private NhapVienNoiTruService nhapVienNoiTruService;
@@ -309,6 +313,8 @@ public class HoaDonService {
             throw new IllegalStateException("Hóa đơn đã được thanh toán, không thể áp dụng khuyến mãi.");
         }
 
+        // Validate and retrieve valid KhuyenMai using the shared service method
+        KhuyenMai km = khuyenMaiService.layKhuyenMaiHopLe(maCode);
         if (maCode == null || maCode.trim().isEmpty()) {
             throw new IllegalArgumentException("Mã khuyến mãi không được để trống.");
         }

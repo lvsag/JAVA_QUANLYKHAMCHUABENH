@@ -27,6 +27,9 @@ public class LichHenService {
 
     private final DichVuRepository     dichVuRepository;
     private final ChiTietLichHenRepository chiTietLichHenRepository;
+    private final KhuyenMaiRepository khuyenMaiRepository;
+    private final HoaDonRepository hoaDonRepository;
+    private final ChiTietHoaDonRepository chiTietHoaDonRepository;
 
     // ------------------------------------------------------------------
     // HÀM TÍNH TỔNG TIỀN (Ánh xạ cho màn hình Thanh Toán và Bước 1)

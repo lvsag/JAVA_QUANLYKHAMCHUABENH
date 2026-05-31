@@ -318,7 +318,7 @@ public class HoaDonService {
                 .orElseThrow(() -> new IllegalArgumentException("Mã khuyến mãi không tồn tại."));
 
         if (!"Hoạt động".equals(km.getTrangThai())) {
-            throw new IllegalStateException("Mã khuyến mãi này hiện đang bị khóa hoặc ngưng hoạt động.");
+            throw new IllegalStateException("Mã khuyến mãi này hiện đang bị khóa hoặc ngừng hoạt động.");
         }
 
         // Validate dates

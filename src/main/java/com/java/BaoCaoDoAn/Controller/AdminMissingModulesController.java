@@ -21,12 +21,6 @@ public class AdminMissingModulesController {
         return "admin/lich-lam-viec/index";
     }
 
-    @GetMapping("/khuyen-mai")
-    public String showKhuyenMai(Model model) {
-        model.addAttribute("activeMenu", "khuyen-mai");
-        return "admin/khuyen-mai/index";
-    }
-
     @GetMapping("/tin-tuc")
     public String showTinTuc(Model model) {
         model.addAttribute("activeMenu", "tin-tuc");

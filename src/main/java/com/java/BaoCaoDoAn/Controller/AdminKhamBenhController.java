@@ -265,9 +265,9 @@ public class AdminKhamBenhController {
             redirectAttributes.addFlashAttribute("errorMessage", "Cần chọn ít nhất một thuốc trong đơn.");
             return "redirect:/bac-si/ke-thuoc?maPhieuKham=" + phieuKham.getMaPhieuKham();
         }
-        DonThuoc saved = donThuocService.taoDonThuoc(phieuKham, benhNhan, bacSi, chanDoan, loiDan, tenThuoc, lieuDung, soLanTrongNgay, soLuong, ghiChu);
+        donThuocService.taoDonThuoc(phieuKham, benhNhan, bacSi, chanDoan, loiDan, tenThuoc, lieuDung, soLanTrongNgay, soLuong, ghiChu);
         redirectAttributes.addFlashAttribute("successMessage", "Đã lưu đơn thuốc.");
-        return "redirect:/ho-so/don-thuoc?maDonThuoc=" + saved.getMaDonThuoc();
+        return "redirect:/bac-si/ke-thuoc?maPhieuKham=" + phieuKham.getMaPhieuKham();
     }
 
     private BenhNhan resolveBenhNhan(PhieuKham phieuKham, String maBenhNhan) {

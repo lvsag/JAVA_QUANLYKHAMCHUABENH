@@ -38,9 +38,44 @@ public class AdminBacSiController {
             "FROM BacSi bs " +
             "LEFT JOIN ChuyenKhoa ck ON bs.MaChuyenKhoa = ck.MaChuyenKhoa"
         );
-        model.addAttribute("danhSach", danhSachBS);
-        if (selectedMaBacSi == null && !danhSachBS.isEmpty()) {
-            selectedMaBacSi = danhSachBS.get(0).get("MaBacSi").toString();
+
+        // Chuẩn hóa key của Map để tránh lỗi phân biệt chữ hoa chữ thường giữa các HĐH/Database driver
+        java.util.List<java.util.Map<String, Object>> standardizedList = new java.util.ArrayList<>();
+        for (java.util.Map<String, Object> row : danhSachBS) {
+            java.util.Map<String, Object> standardRow = new java.util.HashMap<>();
+            for (java.util.Map.Entry<String, Object> entry : row.entrySet()) {
+                String key = entry.getKey();
+                if (key.equalsIgnoreCase("MaBacSi")) {
+                    standardRow.put("maBacSi", entry.getValue());
+                    standardRow.put("MaBacSi", entry.getValue());
+                } else if (key.equalsIgnoreCase("HoTen")) {
+                    standardRow.put("hoTen", entry.getValue());
+                    standardRow.put("HoTen", entry.getValue());
+                } else if (key.equalsIgnoreCase("TenChuyenKhoa")) {
+                    standardRow.put("tenChuyenKhoa", entry.getValue());
+                    standardRow.put("TenChuyenKhoa", entry.getValue());
+                } else if (key.equalsIgnoreCase("TrangThai")) {
+                    standardRow.put("trangThai", entry.getValue());
+                    standardRow.put("TrangThai", entry.getValue());
+                } else if (key.equalsIgnoreCase("CaHomNay")) {
+                    standardRow.put("caHomNay", entry.getValue());
+                    standardRow.put("CaHomNay", entry.getValue());
+                } else if (key.equalsIgnoreCase("SlotHomNay")) {
+                    standardRow.put("slotHomNay", entry.getValue());
+                    standardRow.put("SlotHomNay", entry.getValue());
+                } else {
+                    standardRow.put(key, entry.getValue());
+                }
+            }
+            standardizedList.add(standardRow);
+        }
+
+        model.addAttribute("danhSach", standardizedList);
+        if (selectedMaBacSi == null && !standardizedList.isEmpty()) {
+            Object val = standardizedList.get(0).get("maBacSi");
+            if (val != null) {
+                selectedMaBacSi = val.toString();
+            }
         }
         
         model.addAttribute("selectedMaBacSi", selectedMaBacSi);
@@ -145,7 +180,11 @@ public class AdminBacSiController {
 
     @GetMapping("/sua/{id}")
     public String hienThiFormSua(@PathVariable String id, Model model) {
-        bacSiService.getBacSiById(id).ifPresent(bs -> model.addAttribute("bacSi", bs));
+        bacSiService.getBacSiById(id).ifPresent(bs -> {
+            if (bs.getChuyenKhoa() == null) bs.setChuyenKhoa(new com.java.BaoCaoDoAn.Model.ChuyenKhoa());
+            if (bs.getTaiKhoan() == null) bs.setTaiKhoan(new com.java.BaoCaoDoAn.Model.TaiKhoan());
+            model.addAttribute("bacSi", bs);
+        });
         model.addAttribute("chuyenKhoas", chuyenKhoaService.getAllChuyenKhoa());
         model.addAttribute("taiKhoans", taiKhoanService.getAllTaiKhoan());
         return "admin/bac-si/form";

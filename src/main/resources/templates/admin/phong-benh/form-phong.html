@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      th:replace="~{fragments/admin-layout :: layout('Quản Lý Phòng Bệnh', 'phong-benh', ~{::section})}">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <section>
+        <style>
+            .form-panel {
+                background: white;
+                border-radius: 8px;
+                border: 1px solid var(--border-color);
+                max-width: 800px;
+                margin: 0 auto;
+            }
+            .panel-header {
+                padding: 16px 24px;
+                border-bottom: 1px solid var(--border-color);
+                background: #F8FAFC;
+                border-radius: 8px 8px 0 0;
+            }
+            .panel-header h2 { font-size: 18px; font-weight: 600; color: var(--accent-blue); }
+            .panel-content { padding: 32px; }
+            
+            .form-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 24px;
+            }
+            .form-group { margin-bottom: 20px; }
+            .form-group.full-width { grid-column: span 2; }
+            .form-group label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500; color: var(--text-main); }
+            .form-control { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 14px; transition: 0.2s; }
+            .form-control:focus { border-color: var(--accent-blue); outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+            
+            .form-actions {
+                margin-top: 32px;
+                padding-top: 24px;
+                border-top: 1px solid var(--border-color);
+                display: flex;
+                gap: 12px;
+                justify-content: flex-end;
+            }
+            .btn { padding: 10px 24px; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; transition: 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+            .btn-save { background: var(--accent-blue); color: white; }
+            .btn-save:hover { background: #1D4ED8; }
+            .btn-back { background: #F1F5F9; color: var(--text-main); }
+            .btn-back:hover { background: #E2E8F0; }
+        </style>
+
+        <div class="form-panel">
+            <div class="panel-header">
+                <h2 th:text="${phongBenh.maPhong == null ? '➕ Thêm Phòng Bệnh Mới' : '✏️ Cập Nhật Phòng Bệnh'}">Thêm Phòng Bệnh</h2>
+            </div>
+            <div class="panel-content">
+                <!-- Thông báo lỗi nếu có -->
+                <div th:if="${error}" class="alert alert-danger" style="margin-bottom: 20px; padding: 10px; border-radius: 4px; border: 1px solid #f5c6cb; background-color: #f8d7da; color: #721c24;">
+                    <span th:text="${error}"></span>
+                </div>
+
+                <form th:action="@{/admin/phong-benh/luu}" th:object="${phongBenh}" method="post">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Mã phòng</label>
+                            <input type="text" th:field="*{maPhong}" class="form-control" placeholder="VD: P101" th:readonly="${phongBenh.maPhong != null}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Chuyên khoa</label>
+                            <select name="maChuyenKhoa" class="form-control" required>
+                                <option value="">-- Chọn chuyên khoa --</option>
+                                <option th:each="ck : ${listChuyenKhoa}" 
+                                        th:value="${ck.maChuyenKhoa}" 
+                                        th:text="${ck.tenChuyenKhoa}"
+                                        th:selected="${phongBenh.chuyenKhoa != null && ck.maChuyenKhoa == phongBenh.chuyenKhoa.maChuyenKhoa}">Khoa nội</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Loại phòng</label>
+                            <select th:field="*{loaiPhong}" class="form-control">
+                                <option value="Thường">Phòng thường</option>
+                                <option value="VIP">Phòng VIP</option>
+                                <option value="Cách ly">Phòng cách ly</option>
+                                <option value="Hồi sức">Phòng hồi sức</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Trạng thái</label>
+                            <select th:field="*{trangThai}" class="form-control">
+                                <option value="Còn nhận">Còn nhận</option>
+                                <option value="Đang xử lý">Đang xử lý</option>
+                                <option value="Hết chỗ">Hết chỗ</option>
+                                <option value="Bảo trì">Bảo trì</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Số giường tối đa</label>
+                            <input type="number" th:field="*{soGiuongToiDa}" class="form-control" min="1" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Số giường đang dùng</label>
+                            <input type="number" th:field="*{soGiuongDangDung}" class="form-control" readonly>
+                            <small style="color: #64748b;">(Tự động tính theo số giường "Có người")</small>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label>Bác sĩ phụ trách</label>
+                            <select name="maBacSiPhuTrach" class="form-control">
+                                <option value="">-- Chọn bác sĩ --</option>
+                                <option th:each="bs : ${listBacSi}" 
+                                        th:value="${bs.maBacSi}" 
+                                        th:text="${bs.hoTen}"
+                                        th:selected="${phongBenh.bacSiPhuTrach != null && bs.maBacSi == phongBenh.bacSiPhuTrach.maBacSi}">Bác sĩ A</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label>Ghi chú</label>
+                            <textarea th:field="*{ghiChu}" class="form-control" rows="3" placeholder="Nhập ghi chú nếu có..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <a th:href="@{/admin/phong-benh}" class="btn btn-back">Huỷ bỏ</a>
+                        <button type="submit" class="btn btn-save">Lưu thông tin</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

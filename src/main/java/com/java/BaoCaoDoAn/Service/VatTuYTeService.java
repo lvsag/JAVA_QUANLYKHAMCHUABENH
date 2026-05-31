@@ -35,4 +35,11 @@ public class VatTuYTeService {
     public List<VatTuYTe> searchByName(String name) {
         return vatTuYTeRepository.findByTenVatTuContainingIgnoreCase(name);
     }
+
+    public List<VatTuYTe> searchVatTu(String keyword) {
+        if (keyword == null || keyword.isEmpty()) {
+            return findAll();
+        }
+        return vatTuYTeRepository.findByTenVatTuContainingIgnoreCase(keyword);
+    }
 }

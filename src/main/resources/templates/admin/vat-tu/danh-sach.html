@@ -84,6 +84,13 @@
 
         <!-- Thống kê nhanh -->
         <div class="stats-container">
+            <div th:if="${message}" style="grid-column: span 3; padding: 12px; background: #DCFCE7; color: #166534; border-radius: 6px; margin-bottom: 10px; font-size: 14px;">
+                ✅ <span th:text="${message}">Thông báo thành công</span>
+            </div>
+            <div th:if="${error}" style="grid-column: span 3; padding: 12px; background: #FEF2F2; color: #EF4444; border-radius: 6px; margin-bottom: 10px; font-size: 14px;">
+                ❌ <span th:text="${error}">Thông báo lỗi</span>
+            </div>
+            
             <div class="stat-card">
                 <div class="stat-icon" style="background: #DBEAFE; color: #2563EB;">📋</div>
                 <div class="stat-info">
@@ -151,9 +158,15 @@
             <div class="panel">
                 <div class="panel-header">
                     <h2>💊 Kho Thuốc và Vật Dụng Y Tế</h2>
-                    <div style="display: flex; gap: 10px;">
-                        <a th:href="@{/admin/vat-tu/thuoc/them}" class="btn-sm btn-add">➕ Thêm thuốc</a>
-                        <a th:href="@{/admin/vat-tu/vattu/them}" class="btn-sm btn-add">➕ Thêm vật tư</a>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <form th:action="@{/admin/vat-tu}" method="get" style="display: flex; gap: 5px;">
+                            <input type="text" name="keywordKho" th:value="${keywordKho}" placeholder="Tìm thuốc/vật tư..." 
+                                   style="padding: 5px 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 13px;">
+                            <input type="hidden" name="keywordDichVu" th:value="${keywordDichVu}">
+                            <button type="submit" class="btn-sm btn-edit">🔍</button>
+                        </form>
+                        <a th:href="@{/admin/vat-tu/thuoc/them}" class="btn-sm btn-add">+ Thêm thuốc</a>
+                        <a th:href="@{/admin/vat-tu/vattu/them}" class="btn-sm btn-add">+ Thêm vật tư</a>
                     </div>
                 </div>
                 <div class="panel-content">

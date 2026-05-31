@@ -104,4 +104,11 @@ public class DichVuService {
     public void deleteDichVu(String maDichVu) {
         dichVuRepository.deleteById(maDichVu);
     }
+
+    public List<DichVu> searchDichVu(String keyword) {
+        if (keyword == null || keyword.isEmpty()) {
+            return getAllDichVu();
+        }
+        return dichVuRepository.findByTenDichVuContainingIgnoreCaseOrMaDichVuContainingIgnoreCase(keyword, keyword);
+    }
 }

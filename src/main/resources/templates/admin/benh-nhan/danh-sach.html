@@ -9,11 +9,20 @@
             <h1 style="color: #1565C0; font-size: 24px; font-weight: bold; margin: 0;">Quản Lý Bệnh Nhân</h1>
             <p style="color: #78909C; font-size: 14px; margin-top: 5px;">Quản lý hồ sơ bệnh nhân và lịch sử khám</p>
         </div>
+
+        <!-- Thông báo lỗi/thành công -->
+        <div th:if="${errorMessage}" style="background-color: #FEE2E2; border-left: 4px solid #EF4444; color: #B91C1C; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; font-size: 14px; font-weight: 500; display: flex; justify-content: space-between; align-items: center;">
+            <span th:text="${errorMessage}"></span>
+        </div>
+        <div th:if="${successMessage}" style="background-color: #D1FAE5; border-left: 4px solid #10B981; color: #065F46; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; font-size: 14px; font-weight: 500; display: flex; justify-content: space-between; align-items: center;">
+            <span th:text="${successMessage}"></span>
+        </div>
         
         <div style="background: white; border: 1px solid #E3EDFF; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="font-size: 16px; margin: 0; color: #455A64;">👥 Danh Sách Bệnh Nhân</h2>
                 <div>
+                    <a th:href="@{/admin/noi-tru}" style="background: #0D9488; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-size: 14px; cursor: pointer; text-decoration: none; margin-right: 10px;">🏥 Danh sách nội trú</a>
                     <a th:href="@{/admin/benh-nhan/them}" style="background: #1565C0; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-size: 14px; cursor: pointer; text-decoration: none;">+ Bệnh nhân mới</a>
                     <button style="background: #F5F8FF; border: 1px solid #90B8F8; color: #1565C0; padding: 8px 16px; border-radius: 4px; margin-left: 10px; cursor: pointer;">🔍 Lọc</button>
                 </div>
@@ -28,7 +37,7 @@
                         <th style="padding: 12px;">Giới tính</th>
                         <th style="padding: 12px;">Số ĐT</th>
                         <th style="padding: 12px;">Địa chỉ</th>
-                        <th style="padding: 12px;">Thao tác</th>
+                        <th style="padding: 12px; min-width: 330px;">Trạng thái nội trú / Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -39,10 +48,29 @@
                         <td style="padding: 12px;" th:text="${bn.gioiTinh}">Nam</td>
                         <td style="padding: 12px;" th:text="${bn.soDienThoai}">0901234567</td>
                         <td style="padding: 12px;" th:text="${bn.diaChi}">Hà Nội</td>
-                        <td style="padding: 12px;">
-                            <a th:href="@{/admin/benh-nhan/chi-tiet/{id}(id=${bn.maBenhNhan})}" style="color: #1565C0; text-decoration: none; margin-right: 8px;">Chi tiết</a>
-                            <a th:href="@{/admin/benh-nhan/sua/{id}(id=${bn.maBenhNhan})}" style="color: #2563EB; text-decoration: none; margin-right: 8px;">Sửa</a>
-                            <a th:href="@{/admin/benh-nhan/xoa/{id}(id=${bn.maBenhNhan})}" onclick="return confirm('Bạn có chắc chắn muốn xóa bệnh nhân này?')" style="color: #DC2626; text-decoration: none;">Xóa</a>
+                        <td style="padding: 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <!-- Đang nội trú -->
+                            <th:block th:if="${trangThaiNoiTruMap[bn.maBenhNhan] == 'Đang nội trú'}">
+                                <span style="background-color: #D1FAE5; color: #065F46; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; display: inline-block;">Đang nội trú</span>
+                            </th:block>
+                            
+                            <!-- Chưa nội trú -->
+                            <th:block th:if="${trangThaiNoiTruMap[bn.maBenhNhan] == 'Chưa nội trú'}">
+                                <span style="background-color: #F3F4F6; color: #4B5563; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; display: inline-block;">Chưa nội trú</span>
+                                <a th:href="@{/admin/noi-tru/nhap-vien/{id}(id=${bn.maBenhNhan})}" style="background: #2563EB; color: white; padding: 4px 8px; border-radius: 4px; text-decoration: none; font-size: 11px; font-weight: bold;">🏥 Nhập viện</a>
+                            </th:block>
+
+                            <!-- Đã xuất viện -->
+                            <th:block th:if="${trangThaiNoiTruMap[bn.maBenhNhan] == 'Đã xuất viện'}">
+                                <span style="background-color: #FEF3C7; color: #92400E; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; display: inline-block;">Đã xuất viện</span>
+                                <a th:href="@{/admin/noi-tru/nhap-vien/{id}(id=${bn.maBenhNhan})}" style="background: #059669; color: white; padding: 4px 8px; border-radius: 4px; text-decoration: none; font-size: 11px; font-weight: bold;">🏥 Nhập viện lại</a>
+                            </th:block>
+
+                            <span style="color: #CBD5E1;">|</span>
+
+                            <a th:href="@{/admin/benh-nhan/chi-tiet/{id}(id=${bn.maBenhNhan})}" style="color: #1565C0; text-decoration: none; font-weight: 500;">Chi tiết</a>
+                            <a th:href="@{/admin/benh-nhan/sua/{id}(id=${bn.maBenhNhan})}" style="color: #2563EB; text-decoration: none; font-weight: 500;">Sửa</a>
+                            <a th:href="@{/admin/benh-nhan/xoa/{id}(id=${bn.maBenhNhan})}" onclick="return confirm('Bạn có chắc chắn muốn xóa bệnh nhân này?')" style="color: #DC2626; text-decoration: none; font-weight: 500;">Xóa</a>
                         </td>
                     </tr>
                 </tbody>
